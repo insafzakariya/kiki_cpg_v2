@@ -23,7 +23,7 @@ public class ViewerTokens {
 	@JoinColumn(name = "token_id")
 	private Tokens token_id;
 
-	@Column(name = "rec_id")
+	@Column(name = "viewer_id")
 	private int viewer_id;
 
 	public Integer getRec_id() {

@@ -38,7 +38,7 @@ public class Tokens {
 	@Column(name = "token_hash")
 	private String token_hash;
 	
-	@OneToMany(mappedBy = "viewer_tokens", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "token_id", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<ViewerTokens> viewer_tokens = new ArrayList<>();
 
 	public Integer getToken_id() {

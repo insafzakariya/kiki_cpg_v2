@@ -8,6 +8,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.persistence.Table;
 
 import com.kiki_cpg.development.enums.DealerSubscriptionType;
@@ -16,6 +17,7 @@ import com.kiki_cpg.development.enums.DealerSubscriptionType;
 @Table(name = "customer")
 public class Customer {
 
+	@Id
 	@Column(name = "id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;

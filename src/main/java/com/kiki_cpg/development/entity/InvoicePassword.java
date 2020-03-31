@@ -4,12 +4,14 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
 @Table(name = "invoice_password")
 public class InvoicePassword {
 	
+	@Id
 	@Column(name = "id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
@@ -20,18 +22,18 @@ public class InvoicePassword {
 	@Column(name = "plain_verification_password")
 	private String plainVerificationPassword;
 	
-	@Column(name = "id")
+	@Column(name = "ammount")
 	private String ammount;
 	
-	@Column(name = "id")
+	@Column(name = "mcash_reference_id")
 	private String mcashReferenceId;
 	
-	@Column(name = "id")
+	@Column(name = "customer_mobile")
 	private String customerMobile;
 	
-	@Column(name = "id")
+	@Column(name = "status_code")
 	private String statusCode;
 	
-	@Column(name = "id")
+	@Column(name = "sha256_checksum")
 	private String sha256Checksum;
 }

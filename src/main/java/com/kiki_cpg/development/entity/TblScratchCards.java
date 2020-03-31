@@ -15,7 +15,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "mobitel_registration")
+@Table(name = "tbl_scratch_cards")
 public class TblScratchCards {
 
 	@Id
@@ -38,7 +38,7 @@ public class TblScratchCards {
 	@Column(name = "Status")
 	private int Status;
 	
-	@OneToMany(mappedBy = "tbl_scratch_card_codes", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "tblScratchCards", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<TblScratchCardCodes> tbl_scratch_card_codes = new ArrayList<>();
 
 	public Integer getCardID() {

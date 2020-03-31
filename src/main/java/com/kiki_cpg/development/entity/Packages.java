@@ -40,7 +40,7 @@ public class Packages {
     @OneToMany(mappedBy = "packages", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<PackagePolicies> packagePolicies = new ArrayList<>();
 
-    @OneToMany(mappedBy = "package_viewertypes", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "packages", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<PackageViewertypes> package_viewertypes = new ArrayList<>();
     
     public Packages() {
