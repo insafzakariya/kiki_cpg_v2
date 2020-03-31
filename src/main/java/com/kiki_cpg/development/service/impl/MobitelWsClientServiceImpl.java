@@ -1,4 +1,4 @@
-package com.kiki_cpg.development.service;
+package com.kiki_cpg.development.service.impl;
 
 import com.google.gson.JsonObject;
 import com.kiki_cpg.development.entity.MerchantAccount;
@@ -11,6 +11,9 @@ import com.kiki_cpg.development.repository.MerchantAccountRepository;
 import com.kiki_cpg.development.repository.TrialPeriodRepository;
 import com.kiki_cpg.development.repository.ViewerRepository;
 import com.kiki_cpg.development.repository.ViewerSubscriptionRepository;
+import com.kiki_cpg.development.service.MobitelWsClientService;
+import com.kiki_cpg.development.service.OTPService;
+import com.kiki_cpg.development.service.PaymentLogService;
 
 import lk.mobitel.esms.message.SMSManager;
 import lk.mobitel.esms.session.NullSessionException;
@@ -31,16 +34,13 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
-import javax.transaction.Transactional;
 import java.net.InetAddress;
-import java.net.SocketException;
-import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Service
-public class MobitelWsClient {
+public class MobitelWsClientServiceImpl implements MobitelWsClientService{
 	@Autowired
 	ViewerRepository viewerRepository;
 
@@ -78,11 +78,13 @@ public class MobitelWsClient {
 	Integer transactionId = 460000;
 	private List<ViewerSubscription> viewerSubscriptions = new ArrayList<>();
 	private List<ViewerSubscription> viewerSubscriptionList = new ArrayList<>();
+	
+	private static final Logger logger = LoggerFactory.getLogger(MobitelWsClientServiceImpl.class);
 
-	private static final Logger logger = LoggerFactory.getLogger(MobitelWsClient.class);
 
 	public static String mobitelKey = "TW9iaXRlbFBheW1lbnRTZWNyZXRLZXk=";
 
+	@Override
 	public void midnightTaskToUpdatePoliciess(String startTime, boolean isSecondTime,
 			List<ViewerSubscription> viewerSubscriptionList, List<Viewers> viewersList, Integer cronId)
 			throws Exception {
@@ -174,7 +176,8 @@ public class MobitelWsClient {
 
 	}
 
-	private boolean isTrialPeriodActivated(Integer viewerId) {
+	@Override
+	public boolean isTrialPeriodActivated(Integer viewerId) {
 		ViewerTrialPeriodAssociation viewerTrialPeriodAssociation = trialPeriodRepository
 				.getOnGoingViewerTrialPeriodAssociation(viewerId);
 		if (viewerTrialPeriodAssociation == null) {
@@ -195,6 +198,7 @@ public class MobitelWsClient {
 		}
 	}
 
+	@Override
 	public String createMsisdnForDataBundle(String number) {
 		try {
 			String prefix = "0";
@@ -207,6 +211,7 @@ public class MobitelWsClient {
 		return null;
 	}
 
+	@Override
 	public boolean getIsMobitelNumber(String number) {
 		if (number == null || number.isEmpty()) {
 			return false;
@@ -220,6 +225,7 @@ public class MobitelWsClient {
 		return false;
 	}
 
+	@Override
 	public String activateDataBundle(String mobileNo, int viewerId, String activationStatus, Integer cronId) {
 		try {
 			// TODO create a generic rest client
@@ -333,6 +339,7 @@ public class MobitelWsClient {
 		return null;
 	}
 
+	@Override
 	public void testMobitelConnection() {
 		User user = new User();
 		user.setUsername("esmsusr_kikitv");
@@ -341,6 +348,7 @@ public class MobitelWsClient {
 		System.out.println(st.testService(user));
 	}
 
+	@Override
 	public void logInToMobitelESMS(String userName, String password) {
 		User user = new User();
 		// user.setUsername("esmsusr_kikitv");
@@ -351,6 +359,7 @@ public class MobitelWsClient {
 		sm.login(user);
 	}
 
+	@Override
 	public int sendSms(String aliasMsg, String mobileNo, String message) {
 		Alias alias = new Alias();
 		alias.setAlias(aliasMsg);
@@ -381,6 +390,7 @@ public class MobitelWsClient {
 		}
 	}
 
+	@Override
 	public void logOutFromMobitelESMS() {
 		SessionManager sm = SessionManager.getInstance();
 		sm.logout();
