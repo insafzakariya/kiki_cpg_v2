@@ -12,6 +12,17 @@ public class SubscriptionPaymentDto {
 	private Integer status;
 	private Date createdDate;
 	private Date expireDate;
+	private String mobile;
+	private boolean isMobitel;
+	private String mCashPaymentURL;
+	private boolean trialVerify;
+	private String ideabizSubscription;
+	private String mobitelSubscription;
+	private String viewerSubscription;
+	private boolean alreadySubscribed = false;
+	private Double ideabizAmount;
+	private String ideabizDays;
+	
 	
 	List<PaymentPolicyDto> paymentMethods;
 
@@ -77,6 +88,86 @@ public class SubscriptionPaymentDto {
 
 	public void setPaymentMethods(List<PaymentPolicyDto> paymentMethods) {
 		this.paymentMethods = paymentMethods;
+	}
+
+	public String getMobile() {
+		return mobile;
+	}
+
+	public void setMobile(String mobile) {
+		this.mobile = mobile;
+	}
+
+	public boolean isMobitel() {
+		return isMobitel;
+	}
+
+	public void setMobitel(boolean isMobitel) {
+		this.isMobitel = isMobitel;
+	}
+
+	public String getmCashPaymentURL() {
+		return mCashPaymentURL;
+	}
+
+	public void setmCashPaymentURL(String mCashPaymentURL) {
+		this.mCashPaymentURL = mCashPaymentURL;
+	}
+
+	public boolean isTrialVerify() {
+		return trialVerify;
+	}
+
+	public void setTrialVerify(boolean trialVerify) {
+		this.trialVerify = trialVerify;
+	}
+
+	public String getIdeabizSubscription() {
+		return ideabizSubscription;
+	}
+
+	public void setIdeabizSubscription(String ideabizSubscription) {
+		this.ideabizSubscription = ideabizSubscription;
+	}
+
+	public String getMobitelSubscription() {
+		return mobitelSubscription;
+	}
+
+	public void setMobitelSubscription(String mobitelSubscription) {
+		this.mobitelSubscription = mobitelSubscription;
+	}
+
+	public String getViewerSubscription() {
+		return viewerSubscription;
+	}
+
+	public void setViewerSubscription(String viewerSubscription) {
+		this.viewerSubscription = viewerSubscription;
+	}
+
+	public boolean isAlreadySubscribed() {
+		return alreadySubscribed;
+	}
+
+	public void setAlreadySubscribed(boolean alreadySubscribed) {
+		this.alreadySubscribed = alreadySubscribed;
+	}
+
+	public Double getIdeabizAmount() {
+		return ideabizAmount;
+	}
+
+	public void setIdeabizAmount(Double ideabizAmount) {
+		this.ideabizAmount = ideabizAmount;
+	}
+
+	public String getIdeabizDays() {
+		return ideabizDays;
+	}
+
+	public void setIdeabizDays(String ideabizDays) {
+		this.ideabizDays = ideabizDays;
 	}
 
 }

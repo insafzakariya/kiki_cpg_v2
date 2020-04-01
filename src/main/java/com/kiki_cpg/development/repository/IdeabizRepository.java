@@ -17,4 +17,6 @@ public interface IdeabizRepository  extends JpaRepository<Ideabiz,Integer>, Idea
   //  List<Ideabiz>findBySubscribeAndPolicy_expire_atEqualsOrPolicy_expire_atBefore(Integer subscribe,Date expire_at,Date expire_att);
 
 	 List<Ideabiz> findBySubscribe(Integer subscribe);
+
+	Ideabiz findOneByViwer_idAndSubscribe(Integer viewerID, int i);
 }
