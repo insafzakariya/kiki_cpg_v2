@@ -30,7 +30,7 @@ public class PaymentMethods implements java.io.Serializable {
 	@Column(name = "ModifiedOn")
 	private Date modifiedOn;
 	
-	@OneToMany(mappedBy = "paymentMethod", targetEntity = PaymentPolicies.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "paymentMethod", targetEntity = PaymentPolicies.class)
 	private List<PaymentPolicies> paymentPolicies;
 
 	public PaymentMethods() {

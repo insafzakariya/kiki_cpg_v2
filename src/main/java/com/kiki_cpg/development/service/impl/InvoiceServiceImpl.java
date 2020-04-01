@@ -136,8 +136,8 @@ public class InvoiceServiceImpl implements InvoiceService{
 
 			List<Ideabiz> ideabizOptional = ideabizRepository.findByViwerId(viwer_id);
 			Ideabiz ideabiz = ideabizOptional.get(0);
-			ideabiz.setLast_policy_updated_at(invoiceDetails.getCreatedDate());
-			ideabiz.setPolicy_expire_at(DateCalculate.getbeforeDay(1, invoiceDetails.getValiedDate()));
+			ideabiz.setLastPolicyUpdatedAt(invoiceDetails.getCreatedDate());
+			ideabiz.setPolicyExpireAt(DateCalculate.getbeforeDay(1, invoiceDetails.getValiedDate()));
 			ideabizRepository.save(ideabiz);
 		} catch (Exception e) {
 			CronErrorDto cronErrorDto = new CronErrorDto();

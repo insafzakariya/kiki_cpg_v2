@@ -74,15 +74,15 @@ public class PaymentCalculationImpl implements PaymentCalculation {
 
 					if (getViewers.get(i) != null) {
 						if (getSubList.get(i) != null) {
-							Double amount = getAmountByDays(getSubList.get(i).getSubscribed_days());
+							Double amount = getAmountByDays(getSubList.get(i).getSubscribedDays());
 
 							int invoice_id = ideabizController.proceed_payment(cronStartTime,
-									getSubList.get(i).getViwer_id(), getSubList.get(i).getSubscribed_days(), "Ideabiz",
+									getSubList.get(i).getViwerId(), getSubList.get(i).getSubscribedDays(), "Ideabiz",
 									amount, cronId);
 							id = getViewers.get(i).getViewerId();
 							transactioncount = transactioncount + 1;
 							if (invoice_id > 0) {
-								invoiceService.updatePolicyExpireIdeaBiz(invoice_id, getSubList.get(i).getViwer_id());
+								invoiceService.updatePolicyExpireIdeaBiz(invoice_id, getSubList.get(i).getViwerId());
 							}
 
 						}

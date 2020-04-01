@@ -7,7 +7,7 @@ import com.kiki_cpg.development.enums.DealerSubscriptionType;
 
 public interface CustomerRepository extends JpaRepository<Customer, Integer>{
 
-	Customer findOneByViwer_idAndMobile_noAndStatus(Integer viewerId, String mobileNumber,
+	Customer findOneByViewerIdAndMobileNoAndStatus(Integer viewerId, String mobileNumber,
 			DealerSubscriptionType activated);
 
 }

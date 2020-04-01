@@ -13,7 +13,6 @@ public interface SubscriptionPaymentRepository extends JpaRepository<Subscriptio
 	SubscriptionPayments findOneByTokenHashAndCreatedDateLessThanEqualAndExpireDateGreaterThanEqualAndStatus(
 			String tokenHash, Date createDate, Date expireDate, Integer status);
 
-	ViewerSubscription findOneBySubscriptionTypeAndViewers(SubscriptionType mobitelAddToBill, Integer viewerID);
 
 
 }

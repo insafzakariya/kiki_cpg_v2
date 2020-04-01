@@ -98,6 +98,7 @@ public class MainController {
 			return view;
 
 		} catch (Exception e) {
+			e.printStackTrace();
 			ModelAndView mav = new ModelAndView("error");
 			return mav;
 		}

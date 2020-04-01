@@ -94,12 +94,12 @@ public class SubscriptionPaymentServiceImpl implements SubscriptionPaymentServic
 			subscriptionPaymentDto.setmCashPaymentURL(systemProperty.getValue());
 
 			if (!type.equalsIgnoreCase("new")) {
-				ViewerSubscription viewerSubscription = subscriptionPaymentRepository
+				ViewerSubscription viewerSubscription = subscriptionRepository
 						.findOneBySubscriptionTypeAndViewers(SubscriptionType.MOBITEL_ADD_TO_BILL,
 								subscriptionPayments.getViewerID());
-				Ideabiz ideabiz = ideabizRepository.findOneByViwer_idAndSubscribe(subscriptionPayments.getViewerID(),
+				Ideabiz ideabiz = ideabizRepository.findOneByViwerIdAndSubscribe(subscriptionPayments.getViewerID(),
 						1);
-				Customer customer = customerRepository.findOneByViwer_idAndMobile_noAndStatus(viewer.getViewerId(),
+				Customer customer = customerRepository.findOneByViewerIdAndMobileNoAndStatus(viewer.getViewerId(),
 						viewer.getMobileNumber(), DealerSubscriptionType.activated);
 
 				
@@ -108,10 +108,10 @@ public class SubscriptionPaymentServiceImpl implements SubscriptionPaymentServic
 
 					Config config = configRepository.getOne(1);
 
-					if (ideabiz.getSubscribed_days() == 1) {
+					if (ideabiz.getSubscribedDays() == 1) {
 						subscriptionPaymentDto.setIdeabizDays("Daily");
 						subscriptionPaymentDto.setIdeabizAmount(config.getDay_charge());
-					} else if (ideabiz.getSubscribed_days() == 7) {
+					} else if (ideabiz.getSubscribedDays() == 7) {
 						subscriptionPaymentDto.setIdeabizDays("Weekly");
 						subscriptionPaymentDto.setIdeabizAmount(config.getWeek_charge());
 					}

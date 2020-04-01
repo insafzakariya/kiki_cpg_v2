@@ -37,10 +37,10 @@ public class Packages {
     @Column(name = "availableDays")
     private int availableDays;
 
-    @OneToMany(mappedBy = "packages", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "packages", targetEntity = PackagePolicies.class)
     private List<PackagePolicies> packagePolicies = new ArrayList<>();
 
-    @OneToMany(mappedBy = "packages", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "packages", targetEntity = PackageViewertypes.class)
     private List<PackageViewertypes> package_viewertypes = new ArrayList<>();
     
     public Packages() {
