@@ -141,7 +141,7 @@ public class MobitelWsClientServiceImpl implements MobitelWsClientService{
 
 				String msisdn = viewer.getMobileNumber();
 				msisdn = createMsisdnForDataBundle(msisdn);
-				String resultCode = activateDataBundle(msisdn, viewer.getViewerId(), "1", cronId);
+				String resultCode = activateDataBundle(msisdn, viewer.getViewerId(), "1");
 				paymentLogService.createPaymentLog("Mobitel", resultCode.toString(), "-", viewer.getViewerId(),
 						viewer.getMobileNumber(), "");
 				transactioncount = transactioncount + 1;
@@ -226,7 +226,7 @@ public class MobitelWsClientServiceImpl implements MobitelWsClientService{
 	}
 
 	@Override
-	public String activateDataBundle(String mobileNo, int viewerId, String activationStatus, Integer cronId) {
+	public String activateDataBundle(String mobileNo, int viewerId, String activationStatus) {
 		try {
 			// TODO create a generic rest client
 			String returnValue = "0002";

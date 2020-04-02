@@ -109,22 +109,12 @@ public class InvoiceServiceImpl implements InvoiceService{
 			Invoice invoice = invoiceOptional.get();
 			invoice.setSuccess(status);
 			System.out.println("Invoice before save: " + invoice.getId());
-//			entityManager.persist(invoice);
             invoice = invoiceRepository.save(invoice);
 			System.out.println("Invoice save: " + invoice.getId());
 			
 		} catch (Exception e) {
 			System.out.println("Error in invoice save:" + Arrays.toString(e.getStackTrace()));
-			CronErrorDto cronErrorDto = new CronErrorDto();
-			cronErrorDto.setErrorDate(new Date());
-			// cronErrorDto.setViewerId(id);
-			cronErrorDto.setErrorDesc(e.getMessage());
-			cronErrorDto.setErrorMsg(e.getStackTrace().toString());
-			cronErrorDto.setSystemPage("IS upIn");
-			// cronErrorDto.setCronId();
 
-//			cronErrorService.addCronError(cronErrorDto);
-			//otpService.sendMsg("+94767072477", "Error in InvoiceService -InvUp " + e.getMessage());
 		}
 	}
 
@@ -140,16 +130,7 @@ public class InvoiceServiceImpl implements InvoiceService{
 			ideabiz.setPolicy_expire_at(DateCalculate.getbeforeDay(1, invoiceDetails.getValiedDate()));
 			ideabizRepository.save(ideabiz);
 		} catch (Exception e) {
-			CronErrorDto cronErrorDto = new CronErrorDto();
-			cronErrorDto.setErrorDate(new Date());
-			// cronErrorDto.setViewerId(id);
-			cronErrorDto.setErrorDesc(e.getMessage());
-			cronErrorDto.setErrorMsg(e.getStackTrace().toString());
-			cronErrorDto.setSystemPage("IS upPolExpIdbz");
-			// cronErrorDto.setCronId();
-
-//			cronErrorService.addCronError(cronErrorDto);
-//			otpService.sendMsg("+94767072477", "Error in InvoiceService -UpPolExpIdz" + e.getMessage());
+		
 		}
 
 	}

@@ -28,6 +28,7 @@ import org.springframework.web.client.RestTemplate;
 
 import com.kiki_cpg.development.controller.IdeabizController;
 import com.kiki_cpg.development.dto.ResponseDto;
+import com.kiki_cpg.development.entity.Viewers;
 import com.kiki_cpg.development.repository.ViewerRepository;
 import com.kiki_cpg.development.service.ViewerService;
 
@@ -145,4 +146,20 @@ public class ViewerServiceImpl implements ViewerService {
 		return null;
 	}
 
+	@Override
+	public Viewers getViewerByid(int viewerID) {
+		// TODO Auto-generated method stub
+		Viewers viewer=repository.findByViewerId(viewerID);
+		return viewer;
+	}
+
+	@Override
+	public void updateViewerMobileNumber(String mobile_no, Integer viewerId) {
+		// TODO Auto-generated method stub
+		Viewers viewers=repository.findByViewerId(viewerId);
+		viewers.setMobileNumber(mobile_no);
+		repository.save(viewers);
+	}
+
+	
 }

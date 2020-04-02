@@ -76,9 +76,9 @@ public class PaymentCalculationImpl implements PaymentCalculation {
 						if (getSubList.get(i) != null) {
 							Double amount = getAmountByDays(getSubList.get(i).getSubscribed_days());
 
-							int invoice_id = ideabizController.proceed_payment(cronStartTime,
+							int invoice_id = ideabizController.proceed_payment(
 									getSubList.get(i).getViwer_id(), getSubList.get(i).getSubscribed_days(), "Ideabiz",
-									amount, cronId);
+									amount);
 							id = getViewers.get(i).getViewerId();
 							transactioncount = transactioncount + 1;
 							if (invoice_id > 0) {
@@ -91,20 +91,7 @@ public class PaymentCalculationImpl implements PaymentCalculation {
 
 				}
 			} catch (Exception e) {
-//				CronErrorDto cronErrorDto = new CronErrorDto();
-//				cronErrorDto.setErrorDate(new Date());
-//				cronErrorDto.setViewerId(id);
-//				cronErrorDto.setErrorDesc(e.getMessage());
-//				cronErrorDto.setErrorMsg(e.getStackTrace().toString());
-//				cronErrorDto.setSystemPage("PC");
-//				cronErrorDto.setCronId(cronId);
-//
-//				cronErrorService.addCronError(cronErrorDto);
 
-//				OTPService.sendMsg("+94773799390",
-//						"Exception :  " + e.getMessage() + "Class : PC ForLoop" + "Viewer Id : " + id);
-//				OTPService.sendMsg("+94767072477",
-//						"Exception :  " + e.getMessage() + "Class : PC ForLoop" + "Viewer Id : " + id);
 			}
 			Date date = new Date();
 			SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
@@ -119,21 +106,6 @@ public class PaymentCalculationImpl implements PaymentCalculation {
 					+ totalSubscribedUser + " -Cron Stoped :" + sdf.format(date) + " -Server Ip : " + ipAddress);
 
 		} catch (Exception e) {
-//			e.getStackTrace();
-//			CronErrorDto cronErrorDto = new CronErrorDto();
-//			cronErrorDto.setErrorDate(new Date());
-//			cronErrorDto.setViewerId(id);
-//			cronErrorDto.setErrorDesc(e.getMessage());
-//			cronErrorDto.setErrorMsg(e.getStackTrace().toString());
-//			cronErrorDto.setSystemPage("PC");
-//			cronErrorDto.setCronId(cronId);
-//
-//			cronErrorService.addCronError(cronErrorDto);
-
-//			OTPService.sendMsg("+94773799390",
-//					"Exception :  " + e.getMessage() + "Class : PC " + "Viewer Id : " + id);
-//			OTPService.sendMsg("+94767072477",
-//					"Exception :  " + e.getMessage() + "Class : PC " + "Viewer Id : " + id);
 		}
 
 	}

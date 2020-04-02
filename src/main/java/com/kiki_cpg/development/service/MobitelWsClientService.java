@@ -17,7 +17,7 @@ public interface MobitelWsClientService {
 
 	public boolean getIsMobitelNumber(String number);
 
-	public String activateDataBundle(String mobileNo, int viewerId, String activationStatus, Integer cronId);
+	public String activateDataBundle(String mobileNo, int viewerId, String activationStatus);
 
 	public void testMobitelConnection();
 

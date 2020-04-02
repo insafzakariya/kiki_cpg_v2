@@ -82,8 +82,6 @@ public class ContentRepositoryImpl implements ContentRepositoryCustom {
 		System.out.println("query check");
 		vp = viewerPackagesList.get(0);
 		System.out.println("Package Id : " + vp.getPackageID());
-		// meka wada krla nane??
-		// me mrthod ek run wela nawage
 
 		if (vp.getPackageID() == newPackageID) {
 			// want to write String query
