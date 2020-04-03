@@ -34,7 +34,7 @@ public class IdeabizRepositoryImpl implements IdeabizRepositoryCustom {
         List<Ideabiz> ideabizs = query.getResultList();
         boolean equal = false;
         for (int i = 0; i < ideabizs.size(); i++) {
-            today.equals(ideabizs.get(i).getPolicy_expire_at());
+            today.equals(ideabizs.get(i).getPolicyExpireAt());
             ideabizsResult.add(ideabizs.get(i));
             //System.out.println("Equal");
             equal = true;

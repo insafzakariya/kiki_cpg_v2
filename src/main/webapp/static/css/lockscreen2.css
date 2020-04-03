@@ -1,0 +1,288 @@
+/* Fonts Imported from Google */
+@import url(http://fonts.googleapis.com/css?family=Open+Sans:600,400);
+
+/*   Core: General style
+----------------------------*/
+body {
+  font-family: 'Open Sans' !important;
+  height:100%;
+  padding-top:5%;
+      background-color: #333;
+}
+html,body{
+    position: relative;
+    height: 100%;
+}
+
+.lockscreen-container{
+    position: relative;
+    width: 100%;
+    text-align: center;
+    background: #333;
+    text-decoration-color: #fff
+}
+
+#output{
+    position: absolute;
+    width: 100%;
+    top: -75px;
+    left: 0;
+    color: #fff;
+}
+
+#output.alert-success{
+    background: #428BCA;
+    border: 0;
+}
+
+#output.alert-danger{
+    background: rgb(228, 105, 105);
+    border: 0;
+}
+
+.lockscreen-container::after{
+    top: 5px;
+    z-index: -2;
+    -webkit-transform: rotateZ(-2deg);
+     -moz-transform: rotateZ(-2deg);
+      -ms-transform: rotateZ(-2deg);
+
+}
+
+.avatar{
+    width: 72px;
+    height: 72px;
+    border-radius: 20%;
+    border: 4px solid #f1f1f1;
+    background-size: cover;
+    margin: auto;
+    margin-top: -36px;
+}
+.payment{
+    width: 72px;
+    height: 72px;
+    border-radius: 0px;
+    border: 4px solid #f1f1f1;
+    background-size: cover;
+    margin: auto;
+}
+.payment1{
+    width: 72px;
+    height: 72px;
+    border-radius: 0px;
+    border: 4px solid #f1f1f1;
+    background-size: cover;
+    margin: auto;
+}
+.payment2{
+    width: 72px;
+    height: 72px;
+    border-radius: 0px;
+    border: 4px solid #f1f1f1;
+    background-size: cover;
+    margin: auto;
+}
+.payment3{
+    width: 72px;
+    height: 72px;
+    border-radius: 0px;
+    border: 4px solid #f1f1f1;
+    background-size: cover;
+    margin: auto;
+}
+
+.payment4{
+    width: 72px;
+    height: 72px;
+    border-radius: 0px;
+    border: 4px solid #f1f1f1;
+    background-size: cover;
+    background-image: url('../img/authors/scratchcard.jpg');
+}
+
+
+.form-box {
+   color: #fff;
+   padding-top:20px;
+}
+.form-box input{
+    width: 80%;
+    padding: 10px;
+    text-align: center;
+    margin-left: 10%;
+    margin-top: 25px;
+    border: 1px solid #ccc;
+    background: #fafafa;
+    transition: 0.2s ease-in-out;
+    
+}
+
+.form-box input:focus{
+    outline: 0;
+    background: #eee;
+}
+
+.form-box input[type="text"]{
+    border-radius: 5px 5px 0 0;
+    text-transform: lowercase;
+}
+
+.form-box input[type="password"]{
+    border-radius:  5px;
+}
+
+.form-box button.login{
+    margin:15px;
+    padding: 6px 34px;
+}
+
+.animated {
+  -webkit-animation-duration: 1s;
+  animation-duration: 1s;
+  -webkit-animation-fill-mode: both;
+  animation-fill-mode: both;
+}
+
+@-webkit-keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    -webkit-transform: translateY(20px);
+    transform: translateY(20px);
+  }
+
+  100% {
+    opacity: 1;
+    -webkit-transform: translateY(0);
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    -webkit-transform: translateY(20px);
+    -ms-transform: translateY(20px);
+    transform: translateY(20px);
+  }
+
+  100% {
+    opacity: 1;
+    -webkit-transform: translateY(0);
+    -ms-transform: translateY(0);
+    transform: translateY(0);
+  }
+}
+
+.fadeInUp {
+  -webkit-animation-name: fadeInUp;
+  animation-name: fadeInUp;
+}
+.avatar{
+
+  background-image: url('../img/authors/avatar1.jpg');
+}
+.payment{
+
+  background-image: url('../img/authors/mcash.jpg');
+}
+.payment1{
+
+  background-image: url('../img/authors/ezcash.jpg');
+}
+.payment2{
+
+  background-image: url('../img/authors/dviu.jpg');
+}
+.payment3{
+
+  background-image: url('../img/authors/madd.jpg');
+}
+.user-name{
+    width:100%;
+    height: 100px;
+    background: #009b9e;
+    color: #fff;
+}
+.user-name h4 {
+    padding-top: 25px;
+    margin-bottom: 0;
+}
+/*======preloader=====*/
+.preloader{
+    position:fixed;
+    width:100%;
+    height:100%;
+    top:0;
+    left:0;
+    z-index:100000;
+    backface-visibility: hidden;
+    background: #ffffff;
+}
+.loader_img{
+    width: 50px;
+    height: 50px;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    background-position: center;
+    margin:-25px 0 0 -25px;
+}
+.select2-container {
+    box-sizing: border-box;
+    display: inline-block;
+    margin: 0;
+    position: relative;
+    vertical-align: middle;
+}
+.dropdown-container {
+    box-sizing: border-box;
+    margin: 10px;
+    padding-top: 10px;
+    padding-bottom: 20px;
+    position: relative;
+    vertical-align: middle;
+}
+
+
+.payment-trial{
+    margin-left : 20% !important;
+    margin-right :20% !important;
+    background: gray;
+    margin-top: 8px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.labelOveride{
+    margin-top: 9px !important;
+    margin-bottom: 9px !important;
+}
+
+.payment-image{
+    width: 50px !important;
+    height: 50px !important;
+    border-radius: 0%;
+    border: 2px solid white !important;
+}
+
+.payemnt-div{
+    padding-top: 5%;
+    text-align: left;
+}
+
+.selected-trial-box{
+  background: white !important;
+  color: black !important;
+}
+
+.trial-button-div{
+    margin-left : 20% !important;
+    margin-right :20% !important;
+    margin-top: 20px;
+    margin-bottom:40px;
+}
+
+.trial-button{
+    width: 100%;
+    background: #009b9e;
+}

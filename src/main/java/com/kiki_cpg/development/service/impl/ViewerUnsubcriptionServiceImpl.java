@@ -1,12 +1,14 @@
  package com.kiki_cpg.development.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.kiki_cpg.development.dto.ViewerUnsubcriptionDto;
 import com.kiki_cpg.development.entity.ViewerUnsubcription;
 import com.kiki_cpg.development.repository.ViewerUnsubcriptionRepository;
 import com.kiki_cpg.development.service.ViewerUnsubcriptionService;
 
+@Service
 public class ViewerUnsubcriptionServiceImpl implements ViewerUnsubcriptionService{
 	@Autowired
 	ViewerUnsubcriptionRepository repo;

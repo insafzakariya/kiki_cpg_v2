@@ -23,17 +23,17 @@ public class Customer {
 	private Integer id;
 
 	@Column(name = "viwer_id")
-	private Integer viwer_id;
+	private Integer viewerId;
 
 	@Column(name = "mobile_no")
-	private String mobile_no;
+	private String mobileNo;
 
 	@Column(name = "status")
 	@Enumerated(EnumType.STRING)
 	private DealerSubscriptionType status;
 
 	@Column(name = "dealer_id")
-	private BigInteger dealer_id;
+	private BigInteger dealerId;
 
 	public Integer getId() {
 		return id;
@@ -43,20 +43,20 @@ public class Customer {
 		this.id = id;
 	}
 
-	public Integer getViwer_id() {
-		return viwer_id;
+	public Integer getViewerId() {
+		return viewerId;
 	}
 
-	public void setViwer_id(Integer viwer_id) {
-		this.viwer_id = viwer_id;
+	public void setViewerId(Integer viewerId) {
+		this.viewerId = viewerId;
 	}
 
-	public String getMobile_no() {
-		return mobile_no;
+	public String getMobileNo() {
+		return mobileNo;
 	}
 
-	public void setMobile_no(String mobile_no) {
-		this.mobile_no = mobile_no;
+	public void setMobileNo(String mobileNo) {
+		this.mobileNo = mobileNo;
 	}
 
 	public DealerSubscriptionType getStatus() {
@@ -67,14 +67,12 @@ public class Customer {
 		this.status = status;
 	}
 
-	public BigInteger getDealer_id() {
-		return dealer_id;
+	public BigInteger getDealerId() {
+		return dealerId;
 	}
 
-	public void setDealer_id(BigInteger dealer_id) {
-		this.dealer_id = dealer_id;
+	public void setDealerId(BigInteger dealerId) {
+		this.dealerId = dealerId;
 	}
-	
-	
 
 }

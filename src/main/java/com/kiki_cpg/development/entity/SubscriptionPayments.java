@@ -16,82 +16,80 @@ public class SubscriptionPayments {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "SubscriptionPaymentID")
-	private Integer SubscriptionPaymentID;
-	
+	private Integer subscriptionPaymentID;
+
 	@Column(name = "ViewerID")
-	private int ViewerID;
-	
+	private Integer viewerID;
+
 	@Column(name = "PackageID")
-	private int PackageID;
-	
+	private Integer packageID;
+
 	@Column(name = "TokenHash")
-	public String TokenHash;
-	
+	public String tokenHash;
+
 	@Column(name = "Status")
-	private int Status;
-	
+	private int status;
+
 	@Column(name = "CreatedDate")
-	private Date CreatedDate;
-	
+	private Date createdDate;
+
 	@Column(name = "ExpireDate")
-	private Date ExpireDate;
+	private Date expireDate;
 
 	public Integer getSubscriptionPaymentID() {
-		return SubscriptionPaymentID;
+		return subscriptionPaymentID;
 	}
 
 	public void setSubscriptionPaymentID(Integer subscriptionPaymentID) {
-		SubscriptionPaymentID = subscriptionPaymentID;
+		this.subscriptionPaymentID = subscriptionPaymentID;
 	}
 
-	public int getViewerID() {
-		return ViewerID;
+	public Integer getViewerID() {
+		return viewerID;
 	}
 
-	public void setViewerID(int viewerID) {
-		ViewerID = viewerID;
+	public void setViewerID(Integer viewerID) {
+		this.viewerID = viewerID;
 	}
 
-	public int getPackageID() {
-		return PackageID;
+	public Integer getPackageID() {
+		return packageID;
 	}
 
-	public void setPackageID(int packageID) {
-		PackageID = packageID;
+	public void setPackageID(Integer packageID) {
+		this.packageID = packageID;
 	}
 
 	public String getTokenHash() {
-		return TokenHash;
+		return tokenHash;
 	}
 
 	public void setTokenHash(String tokenHash) {
-		TokenHash = tokenHash;
+		this.tokenHash = tokenHash;
 	}
 
 	public int getStatus() {
-		return Status;
+		return status;
 	}
 
 	public void setStatus(int status) {
-		Status = status;
+		this.status = status;
 	}
 
 	public Date getCreatedDate() {
-		return CreatedDate;
+		return createdDate;
 	}
 
 	public void setCreatedDate(Date createdDate) {
-		CreatedDate = createdDate;
+		this.createdDate = createdDate;
 	}
 
 	public Date getExpireDate() {
-		return ExpireDate;
+		return expireDate;
 	}
 
 	public void setExpireDate(Date expireDate) {
-		ExpireDate = expireDate;
+		this.expireDate = expireDate;
 	}
-	
-	
 
 }

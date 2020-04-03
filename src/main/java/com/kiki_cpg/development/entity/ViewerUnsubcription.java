@@ -1,7 +1,6 @@
 package com.kiki_cpg.development.entity;
 
 import java.util.Date;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -101,6 +100,5 @@ public class ViewerUnsubcription {
 	public void setServiceProvider(String serviceProvider) {
 		this.serviceProvider = serviceProvider;
 	}
-	
-	
+
 }

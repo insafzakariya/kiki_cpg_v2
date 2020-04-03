@@ -31,6 +31,9 @@ public class Policies {
 
     @OneToMany(mappedBy = "policies", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<PackagePolicies>packagePolicies = new ArrayList<>();
+    
+    @OneToMany(mappedBy = "policy", targetEntity = PaymentPolicies.class)
+    private List<PaymentPolicies>paymentPolicies = new ArrayList<>();
 
     public Policies() {
     }

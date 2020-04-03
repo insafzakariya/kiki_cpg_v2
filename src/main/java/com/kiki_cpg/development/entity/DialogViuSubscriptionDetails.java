@@ -16,10 +16,10 @@ public class DialogViuSubscriptionDetails {
 	@Id
 	@Column(name = "Id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private int id;
+	private Integer id;
 	
 	@Column(name = "ViewerId")
-	private int viewerId;
+	private Integer viewerId;
 	
 	@Column(name = "MobileNo")
 	private String mobileNo;
@@ -28,24 +28,24 @@ public class DialogViuSubscriptionDetails {
 	private String token;
 	
 	@Column(name = "Status")
-	private int status;
+	private Integer status;
 	
 	@Column(name="lastupdated")
 	private Date lastupdated;
 
-	public int getId() {
+	public Integer getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 
-	public int getViewerId() {
+	public Integer getViewerId() {
 		return viewerId;
 	}
 
-	public void setViewerId(int viewerId) {
+	public void setViewerId(Integer viewerId) {
 		this.viewerId = viewerId;
 	}
 
@@ -65,11 +65,11 @@ public class DialogViuSubscriptionDetails {
 		this.token = token;
 	}
 
-	public int getStatus() {
+	public Integer getStatus() {
 		return status;
 	}
 
-	public void setStatus(int status) {
+	public void setStatus(Integer status) {
 		this.status = status;
 	}
 

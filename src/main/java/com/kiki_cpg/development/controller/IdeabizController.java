@@ -256,7 +256,7 @@ public class IdeabizController {
 
 	@RequestMapping(value = "/ideabiz/create_access_token", method = RequestMethod.POST)
 	@ResponseBody
-	private String create_access_token() {
+	public String create_access_token() {
 		String url = "https://ideabiz.lk/apicall/token";
 
 		HttpClient client = HttpClientBuilder.create().build();

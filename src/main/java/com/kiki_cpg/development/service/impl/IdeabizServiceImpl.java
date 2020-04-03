@@ -37,11 +37,19 @@ public class IdeabizServiceImpl implements IdeabizService {
 		
 		Ideabiz ideabiz=new Ideabiz();
 		ideabiz.setMobile(mobile_no);
-		ideabiz.setViwer_id(viewerId);
+		ideabiz.setViwerId(viewerId);
 		ideabiz.setCreatedDate(ts);
 		ideabiz.setSubscribe(1);
-		ideabiz.setSubscribed_days(days);
+		ideabiz.setSubscribedDays(days);
 		ideabizRepository.save(ideabiz);
 	}
+
+	@Override
+	public Ideabiz findOneByViwerIdAndSubscribe(Integer viewerID, int i) {
+		Ideabiz ideabiz=ideabizRepository.findOneByViwerIdAndSubscribe(viewerID, i);
+		return ideabiz;
+	}
+	
+	
 
 }

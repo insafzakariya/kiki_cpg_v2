@@ -14,37 +14,36 @@ public class SystemProperty {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "PID")
-	private Integer PID;
-	
-	@Column(name = "KeyValue")
-	private String KeyValue;
-	
-	@Column(name = "Value")
-	private String Value;
+	private Integer pID;
 
-	public Integer getPID() {
-		return PID;
+	@Column(name = "KeyValue")
+	private String keyValue;
+
+	@Column(name = "Value")
+	private String value;
+
+	public Integer getpID() {
+		return pID;
 	}
 
-	public void setPID(Integer pID) {
-		PID = pID;
+	public void setpID(Integer pID) {
+		this.pID = pID;
 	}
 
 	public String getKeyValue() {
-		return KeyValue;
+		return keyValue;
 	}
 
 	public void setKeyValue(String keyValue) {
-		KeyValue = keyValue;
+		this.keyValue = keyValue;
 	}
 
 	public String getValue() {
-		return Value;
+		return value;
 	}
 
 	public void setValue(String value) {
-		Value = value;
+		this.value = value;
 	}
-	
-	
+
 }
