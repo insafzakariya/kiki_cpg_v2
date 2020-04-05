@@ -9,7 +9,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -87,7 +90,7 @@ public class MainController {
 					view.addObject("ideabiz_subscribed", subscriptionPaymentDto.getIdeabizSubscription());
 					view.addObject("mobitel_subscribed", subscriptionPaymentDto.getMobitelSubscription());
 					view.addObject("ck_subscribed", subscriptionPaymentDto.getViewerSubscription());
-					if (subscriptionPaymentDto.isAlreadySubscribed()) {
+					if (!subscriptionPaymentDto.isAlreadySubscribed()) {
 						view.setViewName("payment-home");
 					} else {
 						view.setViewName("already-subscribed");
@@ -104,5 +107,8 @@ public class MainController {
 		}
 
 	}
+	
+	
+
 
 }

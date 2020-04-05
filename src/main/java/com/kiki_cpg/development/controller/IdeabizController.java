@@ -101,19 +101,6 @@ public class IdeabizController {
 
 	private static final Logger logger = LoggerFactory.getLogger(IdeabizController.class);
 
-	@RequestMapping(value = "/select_payment_type", method = RequestMethod.GET)
-	public PaymentTypeDto select_payment_type(ModelMap model,
-			@RequestParam(value = "subscriptionPaymentId", required = false, defaultValue = "") int subscriptionPaymentId) {
-
-		Double one_day_amount = paymentCalculation.getAmountByDays(1);
-		Double one_week_amount = paymentCalculation.getAmountByDays(7);
-
-		PaymentTypeDto pdto = new PaymentTypeDto();
-		pdto.setOne_day_amount(one_day_amount);
-		pdto.setOne_week_amount(one_week_amount);
-		return pdto;
-	}
-
 	public int proceed_payment(Integer viwer_id, Integer subscribed_days, String serviceId,
 			Double amount) {
 		try {
