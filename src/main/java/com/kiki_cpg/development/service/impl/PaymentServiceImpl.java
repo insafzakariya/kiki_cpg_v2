@@ -5,14 +5,14 @@ import org.springframework.stereotype.Service;
 
 import com.kiki_cpg.development.entity.SubscriptionPayments;
 import com.kiki_cpg.development.entity.Viewers;
-import com.kiki_cpg.development.repository.SubscriptionPaymentsRepository;
+import com.kiki_cpg.development.repository.SubscriptionPaymentRepository;
 import com.kiki_cpg.development.service.PaymentService;
 import com.kiki_cpg.development.service.ViewerService;
 
 @Service
 public class PaymentServiceImpl implements PaymentService{
 	@Autowired
-	SubscriptionPaymentsRepository subPayRepo;
+	SubscriptionPaymentRepository subPayRepo;
 	
 	@Autowired
 	ViewerService viewerService;

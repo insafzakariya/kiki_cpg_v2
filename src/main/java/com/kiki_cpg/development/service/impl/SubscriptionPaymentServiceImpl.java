@@ -94,16 +94,12 @@ public class SubscriptionPaymentServiceImpl implements SubscriptionPaymentServic
 			subscriptionPaymentDto.setmCashPaymentURL(systemProperty.getValue());
 
 			if (!type.equalsIgnoreCase("new")) {
-				ViewerSubscription viewerSubscription = subscriptionRepository
-						.findOneBySubscriptionTypeAndViewers(SubscriptionType.MOBITEL_ADD_TO_BILL,
-								subscriptionPayments.getViewerID());
-				Ideabiz ideabiz = ideabizRepository.findOneByViwerIdAndSubscribe(subscriptionPayments.getViewerID(),
-						1);
+				ViewerSubscription viewerSubscription = subscriptionRepository.findOneBySubscriptionTypeAndViewers(
+						SubscriptionType.MOBITEL_ADD_TO_BILL, subscriptionPayments.getViewerID());
+				Ideabiz ideabiz = ideabizRepository.findOneByViwerIdAndSubscribe(subscriptionPayments.getViewerID(), 1);
 				Customer customer = customerRepository.findOneByViewerIdAndMobileNoAndStatus(viewer.getViewerId(),
 						viewer.getMobileNumber(), DealerSubscriptionType.activated);
 
-				
-				
 				if (ideabiz != null) {
 
 					Config config = configRepository.getOne(1);
@@ -117,7 +113,7 @@ public class SubscriptionPaymentServiceImpl implements SubscriptionPaymentServic
 					}
 					subscriptionPaymentDto.setIdeabizSubscription("subscribed");
 					subscriptionPaymentDto.setAlreadySubscribed(true);
-					
+
 				} else {
 					subscriptionPaymentDto.setIdeabizSubscription("");
 				}
@@ -211,6 +207,27 @@ public class SubscriptionPaymentServiceImpl implements SubscriptionPaymentServic
 		dto.setPaymentMethodId(paymentMethod.getPaymentMethodId());
 		dto.setStatus(paymentMethod.getStatus());
 		return dto;
+	}
+
+	@Override
+	public SubscriptionPayments validatePaymentToken(String token) {
+		// TODO Auto-generated method stub
+
+		SubscriptionPayments subscriptionPayments = subscriptionPaymentRepository.findByTokenHash(token);
+		if (subscriptionPayments != null) {
+			
+			SubscriptionPayments subscriptionPaymentsOne=subscriptionPaymentRepository
+					.findOneByTokenHashAndCreatedDateLessThanEqualAndExpireDateGreaterThanEqualAndStatus(token,
+							subscriptionPayments.getCreatedDate(), subscriptionPayments.getExpireDate(), 1);
+			
+			if(subscriptionPaymentsOne!=null) {
+				return subscriptionPaymentsOne;
+			}else {
+				return null;
+			}
+			
+		}
+		return null;
 	}
 
 }

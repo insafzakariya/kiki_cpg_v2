@@ -15,4 +15,6 @@ public interface SubscriptionPaymentService {
 	SubscriptionPaymentDto getSubscriptionPaymentDto(SubscriptionPayments subscriptionPayments,
 			List<PaymentPolicies> paymentPolicies, boolean isMobitel, Viewers viewer, ViewerTrialPeriodAssociation viewerTrialPeriodAssociation);
 
+	SubscriptionPayments validatePaymentToken(String token);
+
 }
