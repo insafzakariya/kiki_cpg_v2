@@ -68,7 +68,7 @@ $(document).ready(function(){
 		    var parameters = {};
 		    parameters.isDialogViuPayment = true;
 		    //var url = "/susilawebpay/validatePayment?paymentMethodId="+paymentMethodId+"&subscriptionPaymentId="+$("#subscriptionPaymentId").val();
-		    var url = "/susilawebpay/select_payment_type?subscriptionPaymentId="+$("#subscriptionPaymentId").val();
+		    var url = "/susilawebpay/select_payment_type?paymentMethodId="+paymentMethodId+"&subscriptionPaymentId="+$("#subscriptionPaymentId").val();
 		    window.location.href = url;
 		    
 	}
