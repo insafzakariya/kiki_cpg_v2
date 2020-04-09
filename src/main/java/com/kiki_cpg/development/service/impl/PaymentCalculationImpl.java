@@ -10,6 +10,7 @@ import com.kiki_cpg.development.entity.Viewers;
 import com.kiki_cpg.development.repository.ConfigRepository;
 import com.kiki_cpg.development.repository.IdeabizRepository;
 import com.kiki_cpg.development.repository.ViewerRepository;
+import com.kiki_cpg.development.service.IdeabizService;
 import com.kiki_cpg.development.service.InvoiceService;
 import com.kiki_cpg.development.service.OTPService;
 import com.kiki_cpg.development.service.PaymentCalculation;
@@ -39,6 +40,9 @@ public class PaymentCalculationImpl implements PaymentCalculation {
 
 	@Autowired
 	OTPService otpService;
+	
+	@Autowired
+	IdeabizService ideabizService;
 
 
 	// @Transactional
@@ -81,7 +85,7 @@ public class PaymentCalculationImpl implements PaymentCalculation {
 //									getSubList.get(i).getViwer_id(), getSubList.get(i).getSubscribed_days(), "Ideabiz",
 //									amount);
 //=======
-							int invoice_id = ideabizController.proceed_payment(getSubList.get(i).getViwerId(), getSubList.get(i).getSubscribedDays(), "Ideabiz",
+							int invoice_id = ideabizService.proceed_payment(getSubList.get(i).getViwerId(), getSubList.get(i).getSubscribedDays(), "Ideabiz",
 									amount);
 
 							id = getViewers.get(i).getViewerId();

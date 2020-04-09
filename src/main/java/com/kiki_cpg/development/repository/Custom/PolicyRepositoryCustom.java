@@ -10,4 +10,5 @@ import java.util.List;
 @Repository
 public interface PolicyRepositoryCustom {
     List<Policies> getPoliciesByPackageID(int newPackageID);
+    List<Policies> getPoliciesByPackageIDAndValidDate(int newPackageID);
 }

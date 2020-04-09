@@ -1,21 +1,66 @@
 package com.kiki_cpg.development.service.impl;
 
+import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.ModelMap;
 
+import com.kiki_cpg.development.controller.DialogScratchCardController;
+import com.kiki_cpg.development.entity.Packages;
+import com.kiki_cpg.development.entity.Policies;
+import com.kiki_cpg.development.entity.SubscriptionPayments;
 import com.kiki_cpg.development.entity.TblScratchCardCodes;
 import com.kiki_cpg.development.entity.TblScratchCards;
+import com.kiki_cpg.development.entity.ViewerPackages;
+import com.kiki_cpg.development.entity.ViewerPolicies;
+import com.kiki_cpg.development.repository.PackageRepository;
 import com.kiki_cpg.development.repository.ScratchCardCodesRepository;
+import com.kiki_cpg.development.service.PackagesService;
+import com.kiki_cpg.development.service.PolicyService;
 import com.kiki_cpg.development.service.ScratchCardCodesService;
+import com.kiki_cpg.development.service.SubscriptionPaymentService;
+import com.kiki_cpg.development.service.ViewerCodesService;
+import com.kiki_cpg.development.service.ViewerPackagesService;
+import com.kiki_cpg.development.service.ViewerPoliciesService;
+import com.kiki_cpg.development.service.ViewerService;
 
 @Service
 public class ScratchCardCodesServiceImpl implements ScratchCardCodesService {
 
 	@Autowired
 	ScratchCardCodesRepository scratchCardCodeRepo;
+
+	@Autowired
+	SubscriptionPaymentService subscriptionPayService;
+
+	@Autowired
+	ViewerCodesService viewerCodesService;
+
+	@Autowired
+	ViewerPackagesService viewerPackagesService;
+
+	@Autowired
+	PackagesService packagesService;
+
+	@Autowired
+	PolicyService policyService;
+
+	@Autowired
+	ViewerPoliciesService viewerPoliciesService;
+
+	@Autowired
+	ViewerService viewerService;
+
+	private static final Logger logger = LoggerFactory.getLogger(ScratchCardCodesServiceImpl.class);
 
 	@Override
 	public TblScratchCards validateCode(String cardCode) {
@@ -45,6 +90,157 @@ public class ScratchCardCodesServiceImpl implements ScratchCardCodesService {
 			return tblScratchCard;
 		}
 
+	}
+
+	@Override
+	public String setPayment(String cardCode, ModelMap model, HttpServletRequest request) {
+		// TODO Auto-generated method stub
+		HttpSession session = request.getSession(true);
+
+		Object viewerId = session.getAttribute("viewerID");
+		int viewerID = 0;
+		if (viewerId == null) {
+			String trasactionToken = session.getAttribute("token").toString();
+			SubscriptionPayments subscriptionPayment = subscriptionPayService.validatePaymentToken(trasactionToken);
+			viewerID = subscriptionPayment.getViewerID();
+		} else {
+			viewerID = (int) session.getAttribute("viewerID");
+		}
+
+		if (logger.isInfoEnabled()) {
+			logger.info("Validate and Use Promo" + viewerID);
+		}
+
+		TblScratchCards tblScratchCard = null;
+		TblScratchCardCodes tblScratchCardCode = null;
+
+		try {
+			tblScratchCard = validateCode(cardCode);
+
+		} catch (NumberFormatException nf) {
+			if (logger.isInfoEnabled()) {
+				logger.info("Could not parse card code");
+			}
+		}
+
+		if (tblScratchCard != null) {
+			Iterator listIterator = tblScratchCard.getTbl_scratch_card_codes().iterator();
+			tblScratchCardCode = (TblScratchCardCodes) listIterator.next();
+			if (!viewerCodesService.isAlreadyUsedViewerScratchCardCode(viewerID,
+					tblScratchCardCode.getRecordId().intValue()) || tblScratchCard.getCardType() == 2) {
+
+				viewerCodesService.addViewerCode(viewerID, tblScratchCardCode.getRecordId());
+				ViewerPackages viewerPackages = viewerPackagesService.getPackageById(viewerID);
+				List<Packages> packagesList = packagesService.getPackageById(tblScratchCard.getPackageID());
+
+				if (packagesList != null && !packagesList.isEmpty()) {
+
+					Packages vPackage = (Packages) packagesList.get(0);
+					int newPackageID = vPackage.getPackageId();
+					List<Policies> policiesList = policyService.getPoliciesByPackageIDAndValidDate(newPackageID);
+
+					if (viewerPackages.getPackageID() == newPackageID) {
+
+						if (logger.isInfoEnabled()) {
+							logger.info("Payment for existing package");
+						}
+
+						List<ViewerPolicies> viewerPolicies = viewerPoliciesService
+								.getFilteredViewerPoliciesForCurPackage(viewerID);
+						int nofDaysForPolicy = 0;
+						nofDaysForPolicy = vPackage.getAvailableDays();
+
+						if (!viewerPolicies.isEmpty()) {
+							Iterator vplistIterator = viewerPolicies.iterator();
+							ViewerPolicies vpp = (ViewerPolicies) vplistIterator.next();
+
+							// Calclate addtional days = Extracted date - Today
+							Date date2 = vpp.getEndDate();
+							Date date1 = new Date();
+							long diff = date2.getTime() - date1.getTime();
+
+							if (diff > 0) {
+								// IF addtional days > 0 => New days to function = addtional days +
+								// vPackage.getAvailableDays()
+								// Has more days before expire
+								int diffDays = (int) TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);
+								nofDaysForPolicy = nofDaysForPolicy + diffDays;
+							}
+
+						}
+						if (viewerPoliciesService.addViewerPolicies(policiesList, viewerID, nofDaysForPolicy,
+								viewerPackagesService.getPackageById(viewerID))) {
+							if (logger.isInfoEnabled()) {
+								logger.info("Successfully Added the polices");
+							}
+						} else {
+
+							model.addAttribute("errorMessage", "Could not update the package");
+							if (logger.isInfoEnabled()) {
+								logger.info("Could not Add the polices");
+							}
+							return "error";
+						}
+					} else {
+						if (logger.isInfoEnabled()) {
+							logger.info("New Package payment");
+						}
+						if (viewerPackagesService.updateViewerPackage(viewerID)) {
+							ViewerPackages savedViewerPackage = viewerPackagesService.addViewerPackage(newPackageID,
+									viewerID);
+
+							if (savedViewerPackage.getRowId() != null && savedViewerPackage.getRowId().intValue() > 0) {
+
+								if (viewerPoliciesService.addViewerPolicies(policiesList, viewerID,
+										vPackage.getAvailableDays(), savedViewerPackage)) {
+								} else {
+
+									model.addAttribute("errorMessage", "Could not update the package");
+
+									if (logger.isInfoEnabled()) {
+										logger.info("Could not add viewer policy");
+									}
+									return "error";
+								}
+
+							} else {
+								model.addAttribute("errorMessage", "Could not update the package");
+								if (logger.isInfoEnabled()) {
+									logger.info("Could not add package");
+								}
+								return "error";
+							}
+						} else {
+							model.addAttribute("errorMessage", "Could not update the package");
+							if (logger.isInfoEnabled()) {
+								logger.info("Could not remove existing package");
+							}
+							return "error";
+						}
+					}
+				} else {
+					model.addAttribute("errorMessage", "Could not update the package");
+					if (logger.isInfoEnabled()) {
+						logger.info("Could not get package");
+					}
+					return "error";
+				}
+
+			} else {
+				model.addAttribute("errorMessage", "Already used code");
+				if (logger.isInfoEnabled()) {
+					logger.info("User already used same code");
+				}
+				return "error";
+			}
+		} else {
+			model.addAttribute("errorMessage", "Invalid card code");
+			if (logger.isInfoEnabled()) {
+				logger.info("Invalid  code");
+			}
+			return "error";
+		}
+		return "Success";
 	}
 
 }

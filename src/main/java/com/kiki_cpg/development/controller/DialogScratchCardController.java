@@ -1,5 +1,7 @@
 package com.kiki_cpg.development.controller;
 
+import java.util.Iterator;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
@@ -39,35 +41,7 @@ public class DialogScratchCardController {
 	@RequestMapping(value = { "/payment" }, method = RequestMethod.POST)
 	public String validateAndUseCode(@RequestParam("card_code") String cardCode, ModelMap model,
 			HttpServletRequest request) {
-
-		HttpSession session = request.getSession(true);
-		
-		Object viewerId = session.getAttribute("viewerID");
-		int viewerID = 0;
-		if (viewerId == null) {
-			String trasactionToken = session.getAttribute("token").toString();
-			SubscriptionPayments subscriptionPayment = subscriptionPayService.validatePaymentToken(trasactionToken);
-			viewerID = subscriptionPayment.getViewerID();
-		} else {
-			viewerID = (int) session.getAttribute("viewerID");
-		}
-
-		if (logger.isInfoEnabled()) {
-            logger.info("Validate and Use Promo" + viewerID);
-        }
-
-        TblScratchCards tblScratchCard = null;
-        TblScratchCardCodes tblScratchCardCode = null;
-		
-        try {
-            tblScratchCard = scratchCardCodeService.validateCode(cardCode);
-
-        } catch (NumberFormatException nf) {
-            if (logger.isInfoEnabled()) {
-                logger.info("Could not parse card code");
-            }
-        }
-        
-		return null;
+		scratchCardCodeService.setPayment(cardCode,model,request);
+		return "Success";
 	}
 }

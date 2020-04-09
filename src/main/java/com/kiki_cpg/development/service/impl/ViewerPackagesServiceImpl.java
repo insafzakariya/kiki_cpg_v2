@@ -9,6 +9,7 @@ import com.kiki_cpg.development.service.ViewerPackagesService;
 
 import javax.transaction.Transactional;
 import java.util.Date;
+import java.util.List;
 
 @Service
 @Transactional
@@ -31,6 +32,27 @@ public class ViewerPackagesServiceImpl implements ViewerPackagesService {
 		viewerPackage.setViewerId(viewerID);
 
 		return viewerPackagesRepository.save(viewerPackage);
+	}
+
+	@Override
+	public ViewerPackages getPackageById(int viewerID) {
+		// TODO Auto-generated method stub
+		List<ViewerPackages> viewerPackages = viewerPackagesRepository.getViewerPackages(viewerID);
+		if (viewerPackages != null) {
+			ViewerPackages viewerPackage = viewerPackages.get(0);
+			return viewerPackage;
+		}
+		return null;
+	}
+
+	@Override
+	public boolean updateViewerPackage(int viewerID) {
+		// TODO Auto-generated method stub
+		ViewerPackages viewerPackage =viewerPackagesRepository.findByViewerId(viewerID);
+		viewerPackage.setStatus(0);
+		viewerPackage.setModifiedOn(new Date());
+		viewerPackagesRepository.save(viewerPackage);
+		return true;
 	}
 
 	

@@ -22,6 +22,8 @@ import java.util.List;
 public class ViewerPoliciesServiceImpl implements ViewerPoliciesService {
 	@Autowired
 	ViewerPoliciesRepository viewerPoliciesRepository;
+	
+	
 
 	@Override
     public boolean addViewerPolicies(List<Policies> policies, Integer viewerID, Integer nofDaysForPolicy, ViewerPackages viewerPackages) {
@@ -95,4 +97,16 @@ public class ViewerPoliciesServiceImpl implements ViewerPoliciesService {
         
         return actionStatus;
     }
+
+	@Override
+	public List<ViewerPolicies> getFilteredViewerPoliciesForCurPackage(int viewerID) {
+		// TODO Auto-generated method stub
+		List<ViewerPolicies> viewerPolicies=viewerPoliciesRepository.getFilteredViewerPoliciesForCurPackage(viewerID);
+		if(viewerPolicies!=null) {
+			return viewerPolicies;
+		}
+		return null;
+	}
+	
+	
 }

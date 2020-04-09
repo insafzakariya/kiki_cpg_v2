@@ -1,6 +1,7 @@
 package com.kiki_cpg.development.service;
 
 import com.kiki_cpg.development.dto.ResponseDto;
+import com.kiki_cpg.development.entity.ViewerPackages;
 import com.kiki_cpg.development.entity.Viewers;
 
 public interface ViewerService {
@@ -16,6 +17,7 @@ public interface ViewerService {
 	public Viewers getViewerByid(int viewerID);
 
 	public void updateViewerMobileNumber(String mobile_no, Integer viewerId);
+
 
 	
 

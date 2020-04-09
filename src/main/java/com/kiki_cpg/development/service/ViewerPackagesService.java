@@ -6,4 +6,8 @@ public interface ViewerPackagesService {
 	
 	public ViewerPackages addViewerPackage(Integer newPackageID, Integer viewerID);
 
+	public ViewerPackages getPackageById(int viewerID);
+
+	public boolean updateViewerPackage(int viewerID);
+
 }

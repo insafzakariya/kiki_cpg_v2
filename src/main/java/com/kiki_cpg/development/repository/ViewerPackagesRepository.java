@@ -6,4 +6,6 @@ import com.kiki_cpg.development.entity.ViewerPackages;
 import com.kiki_cpg.development.repository.Custom.ViewerPackagesRepositoryCustom;
 
 public interface ViewerPackagesRepository extends JpaRepository<ViewerPackages,Integer>, ViewerPackagesRepositoryCustom {
+
+	ViewerPackages findByViewerId(int viewerID);
 }
