@@ -16,12 +16,10 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kiki_cpg.development.dto.ViewerUnsubcriptionDto;
-import com.kiki_cpg.development.dto.ViewersDto;
 import com.kiki_cpg.development.entity.Ideabiz;
 import com.kiki_cpg.development.entity.SubscriptionPayments;
 import com.kiki_cpg.development.entity.Viewers;

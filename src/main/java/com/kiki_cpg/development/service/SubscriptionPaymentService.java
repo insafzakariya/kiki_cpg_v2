@@ -17,4 +17,6 @@ public interface SubscriptionPaymentService {
 
 	SubscriptionPayments validatePaymentToken(String token);
 
+	boolean isValidateById(Integer subscriptionPaymentId);
+
 }

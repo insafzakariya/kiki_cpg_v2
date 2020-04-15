@@ -1,89 +1,41 @@
 package com.kiki_cpg.development.controller;
 
-import org.apache.commons.codec.binary.Base64;
 import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.message.BasicNameValuePair;
-import org.hibernate.internal.CriteriaImpl.Subcriteria;
 //import org.apache.log4j.Logger;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 import java.util.LinkedHashMap;
 
-import com.kiki_cpg.development.dto.CronDto;
-import com.kiki_cpg.development.dto.PaymentTypeDto;
-import com.kiki_cpg.development.dto.ViewerUnsubcriptionDto;
-import com.kiki_cpg.development.entity.IdeabizConfig;
-import com.kiki_cpg.development.entity.SubscriptionPayments;
-import com.kiki_cpg.development.entity.Viewers;
-import com.kiki_cpg.development.repository.ContentRepository;
-import com.kiki_cpg.development.repository.IdeabizConfigRepository;
-import com.kiki_cpg.development.repository.IdeabizRepository;
-import com.kiki_cpg.development.repository.ViewerRepository;
 import com.kiki_cpg.development.service.IdeabizService;
-import com.kiki_cpg.development.service.InvoiceService;
-import com.kiki_cpg.development.service.OTPService;
-import com.kiki_cpg.development.service.PaymentCalculation;
-import com.kiki_cpg.development.service.PaymentLogService;
-import com.kiki_cpg.development.service.PaymentService;
-import com.kiki_cpg.development.service.ViewerService;
-import com.kiki_cpg.development.service.ViewerUnsubcriptionService;
 import com.kiki_cpg.development.util.AppUtility;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
 @CrossOrigin("")
 @RestController("kiki-cpg/api/v1/ideabiz")
 public class IdeabizController {
+	
+	private static final Logger logger = LoggerFactory.getLogger(IdeabizController.class);
 
 	@Autowired
 	IdeabizService ideabizService;
 
 	@Autowired
-	PaymentCalculation paymentCalculation;
-
-	@Autowired
-	ViewerUnsubcriptionService viewerUnsubcriptionService;
-
-	@Autowired
 	private AppUtility appUtility;
 	
 	// Payment Proceed
-	private Integer viewerId = null;
-	private Integer invoiceId = null;
-	private Double chargeAmount = null;
-	private String cron_start_time = null;
-	private String paymentStatus = null;
-	private String cronType = null;
-	private String responseMsg = null;
-	private String serverResponse = null;
-	private Date responseDateAndTime = null;
-
-	private static final Logger logger = LoggerFactory.getLogger(IdeabizController.class);
-
-	public int proceed_payment(Integer viwer_id, Integer subscribed_days, String serviceId,
-			Double amount) {
-		int invoice_id=ideabizService.proceed_payment(viwer_id, subscribed_days, serviceId, amount);	
-		return invoice_id;
-	}
 
 	@RequestMapping(value = "/ideabiz/payment", method = RequestMethod.GET)
 	@ResponseBody
@@ -110,9 +62,6 @@ public class IdeabizController {
 
 	}
 
-	private CronDto addCronReport(CronDto cronDto) {
-		return cronDto;
-	}
 	
 	@RequestMapping(value="/ideabiz/pin_subscription",method=RequestMethod.POST,produces = "application/json")
 	@ResponseBody
@@ -179,7 +128,6 @@ public class IdeabizController {
 				System.out.println(serverRef);
 			} catch (Exception e) {
 				logger.info(e.getMessage());
-				// TODO: handle exception
 			}
 			System.out.println(statusCode);
 			

@@ -93,20 +93,11 @@ public class ScratchCardCodesServiceImpl implements ScratchCardCodesService {
 	}
 
 	@Override
-	public String setPayment(String cardCode, ModelMap model, HttpServletRequest request) {
+	public String setPayment(String cardCode, Integer viewerId) {
 		// TODO Auto-generated method stub
-		HttpSession session = request.getSession(true);
-
-		Object viewerId = session.getAttribute("viewerID");
-		int viewerID = 0;
-		if (viewerId == null) {
-			String trasactionToken = session.getAttribute("token").toString();
-			SubscriptionPayments subscriptionPayment = subscriptionPayService.validatePaymentToken(trasactionToken);
-			viewerID = subscriptionPayment.getViewerID();
-		} else {
-			viewerID = (int) session.getAttribute("viewerID");
-		}
-
+		
+		int viewerID = viewerId;
+		
 		if (logger.isInfoEnabled()) {
 			logger.info("Validate and Use Promo" + viewerID);
 		}
@@ -175,11 +166,10 @@ public class ScratchCardCodesServiceImpl implements ScratchCardCodesService {
 							}
 						} else {
 
-							model.addAttribute("errorMessage", "Could not update the package");
 							if (logger.isInfoEnabled()) {
 								logger.info("Could not Add the polices");
 							}
-							return "error";
+							return "Could not update the package";
 						}
 					} else {
 						if (logger.isInfoEnabled()) {
@@ -195,50 +185,44 @@ public class ScratchCardCodesServiceImpl implements ScratchCardCodesService {
 										vPackage.getAvailableDays(), savedViewerPackage)) {
 								} else {
 
-									model.addAttribute("errorMessage", "Could not update the package");
 
 									if (logger.isInfoEnabled()) {
 										logger.info("Could not add viewer policy");
 									}
-									return "error";
+									return "Could not update the package";
 								}
 
 							} else {
-								model.addAttribute("errorMessage", "Could not update the package");
 								if (logger.isInfoEnabled()) {
 									logger.info("Could not add package");
 								}
-								return "error";
+								return "Could not update the package";
 							}
 						} else {
-							model.addAttribute("errorMessage", "Could not update the package");
 							if (logger.isInfoEnabled()) {
 								logger.info("Could not remove existing package");
 							}
-							return "error";
+							return "Could not update the package";
 						}
 					}
 				} else {
-					model.addAttribute("errorMessage", "Could not update the package");
 					if (logger.isInfoEnabled()) {
 						logger.info("Could not get package");
 					}
-					return "error";
+					return "Could not update the package";
 				}
 
 			} else {
-				model.addAttribute("errorMessage", "Already used code");
 				if (logger.isInfoEnabled()) {
 					logger.info("User already used same code");
 				}
-				return "error";
+				return "Already used code";
 			}
 		} else {
-			model.addAttribute("errorMessage", "Invalid card code");
 			if (logger.isInfoEnabled()) {
 				logger.info("Invalid  code");
 			}
-			return "error";
+			return "Invalid card code";
 		}
 		return "Success";
 	}

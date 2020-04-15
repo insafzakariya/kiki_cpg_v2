@@ -14,8 +14,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
@@ -23,6 +22,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.kiki_cpg.development.dto.PackageDto;
 import com.kiki_cpg.development.dto.SubscriptionPaymentDto;
 import com.kiki_cpg.development.service.DialogService;
+import com.kiki_cpg.development.service.ScratchCardCodesService;
 import com.kiki_cpg.development.service.SubscriptionPaymentService;
 
 @Controller
@@ -35,6 +35,9 @@ public class MainController {
 
 	@Autowired
 	private DialogService dialogService;
+	
+	@Autowired
+	private ScratchCardCodesService scratchCardCodesService;
 
 	@GetMapping("/home")
 	public ModelAndView homePage(HttpServletRequest request, @RequestParam(value = "token") String paymentToken,
@@ -182,17 +185,58 @@ public class MainController {
 		return packageDtos;
 	}
 	
+	@GetMapping(value = { "/validatePayment" })
+	public ModelAndView validatePayment(ModelMap model, HttpServletRequest request,
+			@RequestParam(value = "paymentMethodId", required = false, defaultValue = "0") int paymentMethodId,
+			@RequestParam(value = "subscriptionPaymentId", required = false, defaultValue = "0") int subscriptionPaymentId,
+			@RequestParam(value = "numberString", required = false, defaultValue = "") String numberString,
+			@RequestParam(value = "isTrial", required = false, defaultValue = "false") boolean isTrial) {
+		
+		System.out.println(paymentMethodId);
+		System.out.println(subscriptionPaymentId);
+		
+		System.out.println(numberString);
+		System.out.println(isTrial);
+		
+		boolean isValidate = subscriptionPaymentService.isValidateById(subscriptionPaymentId);
+		if (isValidate) {
+			return new ModelAndView("strech-card/strech-card");
+		} else {
+			ModelAndView modelAndView = new ModelAndView("error");
+			modelAndView.addObject("errorMessage", "Subscripion payment is null.");
+			return modelAndView;
+		}
+	}
+
+	@PostMapping(value = { "/scratchCardPayment" })
+	public ModelAndView validateAndUseCode(@RequestParam("card_code") String cardCode,
+			HttpServletRequest request) {
+		HttpSession session = request.getSession();
+		SubscriptionPaymentDto subscriptionPaymentDto = (SubscriptionPaymentDto) session.getAttribute("subscriptionPaymentDto");
+		if (logger.isInfoEnabled()) {
+			logger.info("Validate and Use Promo" + subscriptionPaymentDto.getViewerId());
+		}
+		
+		String resp = scratchCardCodesService.setPayment(cardCode, subscriptionPaymentDto.getViewerId());
+		
+		if(resp.equals("Success")){
+			return new ModelAndView("success/success");
+		} else {
+			ModelAndView modelAndView = new ModelAndView("error");
+			modelAndView.addObject("errorMessage", resp);
+			return modelAndView;
+		}
+	}
+	
+	
 	@GetMapping(value="/thanks_ideabiz")
 	public String thanks(HttpServletRequest request) {
 		ModelAndView view = new ModelAndView("thanks/thanks");
-		
 		HttpSession session= request.getSession();
 		String paymentToken = (String) session.getAttribute("token");
 		System.out.println(paymentToken);
 		view.addObject("paymentToken", paymentToken);
-		
 		return "Thanks";
-		
 	}
 
 }
