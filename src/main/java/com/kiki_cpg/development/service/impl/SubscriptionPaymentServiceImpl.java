@@ -211,23 +211,34 @@ public class SubscriptionPaymentServiceImpl implements SubscriptionPaymentServic
 
 	@Override
 	public SubscriptionPayments validatePaymentToken(String token) {
-		// TODO Auto-generated method stub
 
-		SubscriptionPayments subscriptionPayments = subscriptionPaymentRepository.findByTokenHash(token);
-		if (subscriptionPayments != null) {
-			
-			SubscriptionPayments subscriptionPaymentsOne=subscriptionPaymentRepository
-					.findOneByTokenHashAndCreatedDateLessThanEqualAndExpireDateGreaterThanEqualAndStatus(token,
-							subscriptionPayments.getCreatedDate(), subscriptionPayments.getExpireDate(), 1);
-			
-			if(subscriptionPaymentsOne!=null) {
-				return subscriptionPaymentsOne;
-			}else {
-				return null;
-			}
-			
+		SubscriptionPayments subscriptionPaymentsOne = subscriptionPaymentRepository
+				.findOneByTokenHashAndCreatedDateLessThanEqualAndExpireDateGreaterThanEqualAndStatus(token, new Date(),
+						new Date(), 1);
+
+		if (subscriptionPaymentsOne != null) {
+			System.out.println("1");
+			return subscriptionPaymentsOne;
+		} else {
+			System.out.println("2");
+			return null;
 		}
-		return null;
+
+	}
+
+	@Override
+	public boolean isValidateById(Integer subscriptionPaymentId) {
+
+		SubscriptionPayments subscriptionPayments = subscriptionPaymentRepository
+				.findOneBySubscriptionPaymentIDAndCreatedDateLessThanEqualAndExpireDateGreaterThanEqualAndStatus(
+						subscriptionPaymentId, new Date(), new Date(), 1);
+
+		if (subscriptionPayments != null) {
+			return true;
+		} else {
+			return false;
+		}
+
 	}
 
 }

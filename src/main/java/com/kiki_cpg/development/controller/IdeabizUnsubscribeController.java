@@ -16,12 +16,10 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kiki_cpg.development.dto.ViewerUnsubcriptionDto;
-import com.kiki_cpg.development.dto.ViewersDto;
 import com.kiki_cpg.development.entity.Ideabiz;
 import com.kiki_cpg.development.entity.SubscriptionPayments;
 import com.kiki_cpg.development.entity.Viewers;
@@ -39,9 +37,6 @@ public class IdeabizUnsubscribeController {
 
 	@Autowired
 	IdeabizService ideabizService;
-
-	@Autowired
-	IdeabizController ideabizController;
 
 	@Autowired
 	ViewerUnsubcriptionService viewerUnsubService;
@@ -69,7 +64,7 @@ public class IdeabizUnsubscribeController {
 
 			post.setHeader("content-type", "application/json");
 
-			String access_token = ideabizController.create_access_token();
+			String access_token = ideabizService.create_access_token();
 			post.setHeader("Authorization", access_token);
 
 			JSONObject json = new JSONObject();
