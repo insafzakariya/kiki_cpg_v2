@@ -41,9 +41,6 @@ public class IdeabizUnsubscribeController {
 	IdeabizService ideabizService;
 
 	@Autowired
-	IdeabizController ideabizController;
-
-	@Autowired
 	ViewerUnsubcriptionService viewerUnsubService;
 
 	@Autowired
@@ -69,7 +66,7 @@ public class IdeabizUnsubscribeController {
 
 			post.setHeader("content-type", "application/json");
 
-			String access_token = ideabizController.create_access_token();
+			String access_token = ideabizService.create_access_token();
 			post.setHeader("Authorization", access_token);
 
 			JSONObject json = new JSONObject();
