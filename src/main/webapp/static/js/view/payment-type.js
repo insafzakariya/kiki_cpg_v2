@@ -1,11 +1,11 @@
 /**
  * 
  */
-function initialize(paymentId) {
+function initialize(paymentId, type) {
 
 	$
 			.get(
-					"http://localhost:8080/susilawebpay/payment-type/4",
+					"http://localhost:8080/susilawebpay/payment-type/" + paymentId +"/" + type,
 					function(data, status) {
 						console.log(status);
 						if (status == "success") {

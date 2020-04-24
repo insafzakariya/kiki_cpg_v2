@@ -27,6 +27,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.kiki_cpg.development.client.DialogClient;
+import com.kiki_cpg.development.dto.DialogOtpConfirmDto;
+import com.kiki_cpg.development.dto.DialogOtpDto;
 import com.kiki_cpg.development.dto.ViewerUnsubcriptionDto;
 import com.kiki_cpg.development.entity.IdeabizConfig;
 import com.kiki_cpg.development.entity.Viewers;
@@ -54,19 +56,19 @@ public class DialogClientImpl implements DialogClient {
 
 	@Autowired
 	IdeabizService ideabizService;
-	
+
 	@Autowired
 	ViewerUnsubcriptionService viewerUnsubcriptionService;
 
 	@Autowired
 	PaymentCalculation paymentCalculation;
-	
+
 	@Autowired
 	ViewerService viewerService;
-	
+
 	@Autowired
 	InvoiceService invoiceService;
-	
+
 	private static final Logger logger = LoggerFactory.getLogger(DialogClientImpl.class);
 
 	@Override
@@ -202,21 +204,11 @@ public class DialogClientImpl implements DialogClient {
 	}
 
 	@Override
-	public HashMap<String, String> pin_subscription_confirm(Map<String, String> userMap, HttpServletRequest request) {
-		HttpSession session = request.getSession();
-		String accessToken = create_access_token();
-		String pin = userMap.get("pin");
-		String serverRef = userMap.get("serverRef");
-		String subscriptionPaymentId = userMap.get("subscriptionPaymentId");
-		Integer days = Integer.parseInt(userMap.get("day"));
-		Double amount = paymentCalculation.getAmountByDays(days);
+	public DialogOtpDto pinSubscriptionConfirm(DialogOtpConfirmDto dialogOtpConfirmDto, Double amount, String accessToken) throws Exception {
 
 		System.out.println("access-token is: " + accessToken);
-		System.out.println("referen-token is: " + serverRef);
-		System.out.println("subscriptionPaymentId is: " + subscriptionPaymentId);
-
-		int subscriptionPaymentId_int = Integer.parseInt(subscriptionPaymentId);
-		Viewers viwer = ideabizService.get_viwer_id_by_sID(subscriptionPaymentId_int);
+		System.out.println("referen-token is: " + dialogOtpConfirmDto.getServerRef());
+		System.out.println("subscriptionPaymentId is: " + dialogOtpConfirmDto.getSubscriptionPaymentId());
 
 		String statusCode = "FAIL";
 		String message = "";
@@ -238,8 +230,80 @@ public class DialogClientImpl implements DialogClient {
 			JSONObject json = new JSONObject();
 
 			// Body
-			json.put("pin", pin);
-			json.put("serverRef", serverRef);
+			json.put("pin", dialogOtpConfirmDto.getPin());
+			json.put("serverRef", dialogOtpConfirmDto.getServerRef());
+
+			StringEntity params = new StringEntity(json.toString());
+
+			post.setEntity(params);
+			HttpResponse response = client.execute(post);
+
+			System.out.println("Response  : " + response.getEntity().getContent());
+
+			BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+			StringBuffer result = new StringBuffer();
+			String line = "";
+			while ((line = rd.readLine()) != null) {
+				result.append(line);
+			}
+			System.out.println(result);
+
+			JSONObject jsonObj = new JSONObject(result.toString());
+			System.out.println(jsonObj.get("statusCode"));
+
+			JSONObject jsonObjRef = (JSONObject) jsonObj.get("data");
+
+			DialogOtpDto dialogOtpDto = new DialogOtpDto();
+
+			dialogOtpDto.setStatusCode(jsonObj.get("statusCode").toString());
+			dialogOtpDto.setServerRef(jsonObjRef.get("serverRef").toString());
+			dialogOtpDto.setMsisdn(jsonObjRef.get("msisdn").toString());
+			dialogOtpDto.setServiceId(jsonObjRef.get("serviceId").toString());
+			dialogOtpDto.setStatus(jsonObjRef.get("status").toString());
+			dialogOtpDto.setResult(result.toString());
+			dialogOtpDto.setMessage(jsonObj.get("message").toString());
+			try {
+				dialogOtpDto.setTransactionOperationStatus(jsonObjRef.get("transactionOperationStatus").toString());
+			} catch (Exception e) {
+
+			}
+
+			return dialogOtpDto;
+
+		} catch (Exception e) {
+			logger.info(e.getMessage());
+			throw e;
+		}
+
+		
+	}
+
+	@Override
+	public DialogOtpDto sendOtp(String mobile_no, Integer day, String access_token) throws Exception {
+		String serverRef = "";
+		String url = "https://ideabiz.lk/apicall/pin/subscription/v1/subscribe";
+		try {
+
+			HttpClient client = HttpClientBuilder.create().build();
+			HttpPost post = new HttpPost(url);
+
+			// add header
+			post.setHeader("content-type", "application/json");
+
+			post.setHeader("Authorization", access_token);
+
+			System.out.println("start");
+			JSONObject json = new JSONObject();
+
+			// Body
+			json.put("method", "mobilevisions");
+			json.put("msisdn", mobile_no);
+			System.out.println("DAY" + day);
+			if (day == 1) {
+				json.put("serviceId", "BF110848-23CA-4B7D-8A3F-872B59BFD32E");
+			} else if (day == 7) {
+				json.put("serviceId", "f0ce6a27-7aca-4e12-b121-25eeee7a840a");
+			}
 
 			StringEntity params = new StringEntity(json.toString());
 
@@ -256,74 +320,24 @@ public class DialogClientImpl implements DialogClient {
 			}
 			System.out.println(result);
 			JSONObject jsonObj = new JSONObject(result.toString());
-			System.out.println(jsonObj.get("statusCode"));
-			if (jsonObj.get("statusCode").equals("SUCCESS")) {
 
-				JSONObject jsonObjRef = (JSONObject) jsonObj.get("data");
-				statusCode = jsonObj.get("statusCode").toString();
-				serverRef_res = jsonObjRef.get("serverRef").toString();
-				status = jsonObjRef.get("status").toString();
-				serviceId = jsonObjRef.get("serviceId").toString();
-				msisdn = jsonObjRef.get("msisdn").toString();
+			JSONObject jsonObjRef = (JSONObject) jsonObj.get("data");
 
-				String mobile_no = msisdn;
-				mobile_no = mobile_no.replace("tel:", "");
-				viewerService.updateViewerMobileNumber(mobile_no, viwer.getViewerId());
+			DialogOtpDto dialogOtpDto = new DialogOtpDto();
 
-				if (jsonObjRef.get("status").equals("SUBSCRIBED")) {
-					ideabizService.idabiz_subscribe(viwer, msisdn, days);
+			dialogOtpDto.setStatusCode(jsonObj.get("statusCode").toString());
+			dialogOtpDto.setServerRef(jsonObjRef.get("serverRef").toString());
+			dialogOtpDto.setMsisdn(jsonObjRef.get("msisdn").toString());
+			dialogOtpDto.setServiceId(jsonObjRef.get("serviceId").toString());
 
-					System.out.println("MOBILE NEW" + mobile_no);
+			System.out.println(serverRef);
 
-					message = "SUBSCRIBED";
-
-					int invoice_id = ideabizService.proceed_payment(viwer.getViewerId(), days, "Ideabiz", amount);
-
-					invoiceService.updatePolicyExpireIdeaBiz(invoice_id, viwer.getViewerId());
-
-					ViewerUnsubcriptionDto dto = new ViewerUnsubcriptionDto();
-					dto.setCreatedDateTime(new Date());
-					dto.setLastUpdatedTime(new Date());
-					dto.setMobileNumber(viwer.getMobileNumber());
-					dto.setViewerId(viwer.getViewerId());
-					dto.setSubcriptionType("SUBCRIBE");
-					dto.setServiceProvider("Dialog");
-
-					viewerUnsubcriptionService.addViewerUnsubcription(dto);
-
-					System.out.println("PAYMENT API");
-				} else if (jsonObjRef.get("status").equals("ALREADY_SUBSCRIBED")) {
-					message = "ALREADY SUBSCRIBED";
-					paymentLogService.createPaymentLog("Dialog", "-",
-							jsonObjRef.get("transactionOperationStatus").toString(), viwer.getViewerId(), mobile_no,
-							result.toString());
-
-					System.out.println("ALREADY SUBSCRIBED");
-				}
-
-			} else {
-				message = jsonObj.get("message").toString();
-				paymentLogService.createPaymentLog("Dialog", "-", jsonObj.get("message").toString(),
-						viwer.getViewerId(), jsonObj.get("msisdn").toString(), result.toString());
-
-			}
-
+			return dialogOtpDto;
 		} catch (Exception e) {
+			e.printStackTrace();
 			logger.info(e.getMessage());
-
+			throw e;
 		}
-
-		HashMap<String, String> result_obj = new LinkedHashMap<String, String>();
-		result_obj.put("PIN-SUBMIT", statusCode);
-		result_obj.put("SERVER-REF", serverRef_res);
-		result_obj.put("STATUS", status);
-		result_obj.put("SERVICE-ID", serviceId);
-		result_obj.put("ACCESS-TOKEN", accessToken);
-		result_obj.put("MSISDN", msisdn);
-		result_obj.put("MESSAGE", message);
-		result_obj.put("SYSTEM-TOKEN", (String) session.getAttribute("token"));
-
-		return result_obj;
 	}
 
 }

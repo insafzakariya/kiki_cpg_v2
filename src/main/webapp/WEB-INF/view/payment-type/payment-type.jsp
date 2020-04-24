@@ -9,7 +9,7 @@
 	content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link rel="stylesheet" type="text/css" href="static/css/main.css">
 </head>
-<body onload="initialize(${subscriptionPaymentId})">
+<body onload="initialize(${subscriptionPaymentId}, ${paymentMethodId})">
 	<div class="main_container">
 		<div class="header_container">
 			<h5 class="header">Choose package</h5>

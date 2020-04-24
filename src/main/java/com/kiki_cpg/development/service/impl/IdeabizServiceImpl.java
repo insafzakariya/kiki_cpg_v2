@@ -17,6 +17,9 @@ import org.springframework.stereotype.Service;
 
 import com.kiki_cpg.development.client.DialogClient;
 import com.kiki_cpg.development.controller.IdeabizController;
+import com.kiki_cpg.development.dto.DialogOtpConfirmDto;
+import com.kiki_cpg.development.dto.DialogOtpDto;
+import com.kiki_cpg.development.dto.SubscriptionPaymentDto;
 import com.kiki_cpg.development.dto.ViewerUnsubcriptionDto;
 import com.kiki_cpg.development.entity.Ideabiz;
 import com.kiki_cpg.development.entity.IdeabizConfig;
@@ -187,9 +190,84 @@ public class IdeabizServiceImpl implements IdeabizService {
 	}
 
 	@Override
-	public HashMap<String, String> pin_subscription_confirm(Map<String, String> userMap, HttpServletRequest request) {
-		HashMap<String, String> result_obj = dialogClient.pin_subscription_confirm(userMap, request);
+	public HashMap<String, String> pin_subscription_confirm(Map<String, String> userMap, HttpServletRequest request) throws Exception {
+		String message = "";
+		
+		String accessToken = dialogClient.create_access_token();
+
+		DialogOtpConfirmDto dialogOtpConfirmDto = getDialogOtpConfirmDto(userMap);
+
+		SubscriptionPaymentDto subscriptionPaymentDto = (SubscriptionPaymentDto) request.getSession()
+				.getAttribute("subscriptionPaymentDto");
+
+		Double amount = paymentCalculation.getAmountByDays(dialogOtpConfirmDto.getDay());
+		
+		DialogOtpDto dialogOtpDto = dialogClient.pinSubscriptionConfirm(dialogOtpConfirmDto, amount, accessToken);
+
+		if (dialogOtpDto.getStatusCode().equals("SUCCESS")) {
+
+			String mobile_no = dialogOtpDto.getMsisdn();
+			mobile_no = mobile_no.replace("tel:", "");
+			viewerService.updateViewerMobileNumber(mobile_no, subscriptionPaymentDto.getViewerId());
+
+			if (dialogOtpDto.getStatus().equals("SUBSCRIBED")) {
+				ideabizService.idabiz_subscribe(subscriptionPaymentDto.getViewerId(), dialogOtpDto.getMsisdn(),
+						dialogOtpConfirmDto.getDay());
+
+				System.out.println("MOBILE NEW" + mobile_no);
+
+				message = "SUBSCRIBED";
+
+				int invoice_id = ideabizService.proceed_payment(subscriptionPaymentDto.getViewerId(),
+						dialogOtpConfirmDto.getDay(), "Ideabiz", amount);
+
+				invoiceService.updatePolicyExpireIdeaBiz(invoice_id, subscriptionPaymentDto.getViewerId());
+
+				ViewerUnsubcriptionDto dto = new ViewerUnsubcriptionDto();
+				dto.setCreatedDateTime(new Date());
+				dto.setLastUpdatedTime(new Date());
+				dto.setMobileNumber(mobile_no);
+				dto.setViewerId(subscriptionPaymentDto.getViewerId());
+				dto.setSubcriptionType("SUBCRIBE");
+				dto.setServiceProvider("Dialog");
+
+				viewerUnsubcriptionService.addViewerUnsubcription(dto);
+
+				System.out.println("PAYMENT API");
+			} else {
+				message = "ALREADY SUBSCRIBED";
+				paymentLogService.createPaymentLog("Dialog", "-", dialogOtpDto.getTransactionOperationStatus(),
+						subscriptionPaymentDto.getViewerId(), mobile_no, dialogOtpDto.getResult());
+
+				System.out.println("ALREADY SUBSCRIBED");
+			}
+		} else {
+
+			paymentLogService.createPaymentLog("Dialog", "-", dialogOtpDto.getMessage(),
+					subscriptionPaymentDto.getViewerId(), dialogOtpDto.getMsisdn(), dialogOtpDto.getResult());
+		}
+
+		HashMap<String, String> result_obj = new LinkedHashMap<String, String>();
+		result_obj.put("PIN-SUBMIT", dialogOtpDto.getStatusCode());
+		result_obj.put("SERVER-REF", dialogOtpDto.getServerRef());
+		result_obj.put("STATUS", dialogOtpDto.getStatus());
+		result_obj.put("SERVICE-ID", dialogOtpDto.getServiceId());
+		result_obj.put("ACCESS-TOKEN", accessToken);
+		result_obj.put("MSISDN", dialogOtpDto.getMsisdn());
+		result_obj.put("MESSAGE", message);
+		result_obj.put("SYSTEM-TOKEN", (String) request.getSession().getAttribute("token"));
+
 		return result_obj;
+	}
+
+	private DialogOtpConfirmDto getDialogOtpConfirmDto(Map<String, String> userMap) {
+		DialogOtpConfirmDto dto = new DialogOtpConfirmDto();
+		dto.setDay(Integer.parseInt(userMap.get("day")));
+		dto.setPin(userMap.get("pin"));
+		dto.setServerRef(userMap.get("serverRef"));
+		dto.setSubscriptionPaymentId(Integer.parseInt(userMap.get("subscriptionPaymentId")));
+
+		return dto;
 	}
 
 	@Override
@@ -204,9 +282,9 @@ public class IdeabizServiceImpl implements IdeabizService {
 	}
 
 	@Override
-	public String idabiz_subscribe(Viewers viwer, String mobile_no, Integer days) {
+	public String idabiz_subscribe(Integer viewerId, String mobile_no, Integer days) {
 		mobile_no = mobile_no.replace("tel:+", "");
-		ideabizService.addIdabiz_subscribe(viwer.getViewerId(), mobile_no, days);
+		ideabizService.addIdabiz_subscribe(viewerId, mobile_no, days);
 		return "success";
 	}
 }

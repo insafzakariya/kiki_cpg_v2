@@ -22,6 +22,8 @@ public class SubscriptionPaymentDto {
 	private boolean alreadySubscribed = false;
 	private Double ideabizAmount;
 	private String ideabizDays;
+	private boolean mobitelSubscribe = false;
+	private boolean mobitelConnection = false;
 	
 	
 	List<PaymentPolicyDto> paymentMethods;
@@ -168,6 +170,34 @@ public class SubscriptionPaymentDto {
 
 	public void setIdeabizDays(String ideabizDays) {
 		this.ideabizDays = ideabizDays;
+	}
+
+	public boolean isMobitelSubscribe() {
+		return mobitelSubscribe;
+	}
+
+	public void setMobitelSubscribe(boolean mobitelSubscribe) {
+		this.mobitelSubscribe = mobitelSubscribe;
+	}
+
+	public boolean isMobitelConnection() {
+		return mobitelConnection;
+	}
+
+	public void setMobitelConnection(boolean mobitelConnection) {
+		this.mobitelConnection = mobitelConnection;
+	}
+
+	@Override
+	public String toString() {
+		return "SubscriptionPaymentDto [subscriptionPaymentId=" + subscriptionPaymentId + ", viewerId=" + viewerId
+				+ ", packageId=" + packageId + ", tokenHash=" + tokenHash + ", status=" + status + ", createdDate="
+				+ createdDate + ", expireDate=" + expireDate + ", mobile=" + mobile + ", isMobitel=" + isMobitel
+				+ ", mCashPaymentURL=" + mCashPaymentURL + ", trialVerify=" + trialVerify + ", ideabizSubscription="
+				+ ideabizSubscription + ", mobitelSubscription=" + mobitelSubscription + ", viewerSubscription="
+				+ viewerSubscription + ", alreadySubscribed=" + alreadySubscribed + ", ideabizAmount=" + ideabizAmount
+				+ ", ideabizDays=" + ideabizDays + ", mobitelSubscribe=" + mobitelSubscribe + ", mobitelConnection="
+				+ mobitelConnection + ", paymentMethods=" + paymentMethods + "]";
 	}
 
 }

@@ -29,9 +29,12 @@ public class PaymentMethods implements java.io.Serializable {
 	private Integer modifiedBy;
 	@Column(name = "ModifiedOn")
 	private Date modifiedOn;
-	
+
 	@OneToMany(mappedBy = "paymentMethod", targetEntity = PaymentPolicies.class)
 	private List<PaymentPolicies> paymentPolicies;
+
+	@OneToMany(mappedBy = "paymentMethods", targetEntity = PaymentMethodPlan.class)
+	private List<PaymentMethodPlan> paymentMethodPlans;
 
 	public PaymentMethods() {
 	}
@@ -95,6 +98,14 @@ public class PaymentMethods implements java.io.Serializable {
 
 	public void setPaymentPolicies(List<PaymentPolicies> paymentPolicies) {
 		this.paymentPolicies = paymentPolicies;
+	}
+
+	public List<PaymentMethodPlan> getPaymentMethodPlans() {
+		return paymentMethodPlans;
+	}
+
+	public void setPaymentMethodPlans(List<PaymentMethodPlan> paymentMethodPlans) {
+		this.paymentMethodPlans = paymentMethodPlans;
 	}
 
 }

@@ -26,9 +26,9 @@ public interface IdeabizService {
 	
 	public String genarate_authorization_code();
 	
-	public HashMap<String, String> pin_subscription_confirm(Map<String, String> userMap,HttpServletRequest request);
+	public HashMap<String, String> pin_subscription_confirm(Map<String, String> userMap,HttpServletRequest request) throws Exception;
 	
 	public Viewers get_viwer_id_by_sID(Integer subscriptionPaymentId);
 	
-	public String idabiz_subscribe(Viewers viwer, String mobile_no, Integer days);
+	public String idabiz_subscribe(Integer viewerId, String mobile_no, Integer days);
 }

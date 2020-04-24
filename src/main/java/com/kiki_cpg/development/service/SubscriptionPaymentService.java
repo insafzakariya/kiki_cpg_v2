@@ -2,6 +2,8 @@ package com.kiki_cpg.development.service;
 
 import java.util.List;
 
+import com.kiki_cpg.development.dto.NavigationDto;
+import com.kiki_cpg.development.dto.PackageDto;
 import com.kiki_cpg.development.dto.SubscriptionPaymentDto;
 import com.kiki_cpg.development.entity.PaymentPolicies;
 import com.kiki_cpg.development.entity.SubscriptionPayments;
@@ -18,5 +20,10 @@ public interface SubscriptionPaymentService {
 	SubscriptionPayments validatePaymentToken(String token);
 
 	boolean isValidateById(Integer subscriptionPaymentId);
+
+	List<PackageDto> getPaymentPlan(Integer paymentMethodId);
+
+	SubscriptionPaymentDto getSubscriptionPaymentByTokenRest(String paymentToken, String type) throws Exception;
+
 
 }

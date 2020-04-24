@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.kiki_cpg.development.dto.PackageDto;
 import com.kiki_cpg.development.dto.PaymentMethodDto;
 import com.kiki_cpg.development.dto.PaymentPolicyDto;
 import com.kiki_cpg.development.dto.PolicyDto;
@@ -28,6 +29,7 @@ import com.kiki_cpg.development.enums.SubscriptionType;
 import com.kiki_cpg.development.repository.ConfigRepository;
 import com.kiki_cpg.development.repository.CustomerRepository;
 import com.kiki_cpg.development.repository.IdeabizRepository;
+import com.kiki_cpg.development.repository.PaymentMethodRepository;
 import com.kiki_cpg.development.repository.SubscriptionPaymentRepository;
 import com.kiki_cpg.development.repository.SubscriptionRepository;
 import com.kiki_cpg.development.repository.SystemPropertyRepository;
@@ -69,7 +71,12 @@ public class SubscriptionPaymentServiceImpl implements SubscriptionPaymentServic
 	private ConfigRepository configRepository;
 
 	@Autowired
+	private PaymentMethodRepository paymentMethodRepository;
+	
+	@Autowired
 	private AppUtility appUtility;
+	
+	
 
 	@Override
 	public SubscriptionPaymentDto getSubscriptionPaymentByToken(String paymentToken, String type) throws Exception {
@@ -239,6 +246,108 @@ public class SubscriptionPaymentServiceImpl implements SubscriptionPaymentServic
 			return false;
 		}
 
+	}
+
+	@Override
+	public List<PackageDto> getPaymentPlan(Integer paymentMethodId) {
+		PaymentMethods paymentMethods = paymentMethodRepository.findById(paymentMethodId).get();
+		System.out.println(paymentMethods == null);
+		List<PackageDto> packageDtos = new ArrayList<PackageDto>();
+		paymentMethods.getPaymentMethodPlans().forEach(e-> {
+			PackageDto packageDto = new PackageDto();
+			packageDto.setName(e.getName());
+			packageDto.setValue("Rs. "+e.getValue()+" + Tax per day");
+			packageDto.setOffer(e.getOffer());
+			packageDto.setPaymentMethodId(paymentMethodId);
+			packageDto.setDay(e.getDays());
+			packageDtos.add(packageDto);
+		});
+		
+		return packageDtos;
+	}
+
+	@Override
+	public SubscriptionPaymentDto getSubscriptionPaymentByTokenRest(String paymentToken, String type) throws Exception {
+		SubscriptionPayments subscriptionPayments = subscriptionPaymentRepository
+				.findOneByTokenHashAndCreatedDateLessThanEqualAndExpireDateGreaterThanEqualAndStatus(paymentToken,
+						new Date(), new Date(), 1);
+
+		if (subscriptionPayments != null) {
+
+			Viewers viewer = viewerRepository.findByViewerId(subscriptionPayments.getViewerID());
+			ViewerTrialPeriodAssociation viewerTrialPeriodAssociation = viewerTrialPeriodAssociationRepository
+					.findOneByViewerId(subscriptionPayments.getViewerID());
+
+			SubscriptionPaymentDto subscriptionPaymentDto = getSubscriptionPaymentDto2(subscriptionPayments,
+				viewer, viewerTrialPeriodAssociation);
+
+			SystemProperty systemProperty = systemPropertyRepository
+					.findOneByKeyValue("susilawebpay.mcash.payment.url");
+			subscriptionPaymentDto.setmCashPaymentURL(systemProperty.getValue());
+
+			if (!type.equalsIgnoreCase("new")) {
+				ViewerSubscription viewerSubscription = subscriptionRepository.findOneBySubscriptionTypeAndViewers(
+						SubscriptionType.MOBITEL_ADD_TO_BILL, subscriptionPayments.getViewerID());
+				Ideabiz ideabiz = ideabizRepository.findOneByViwerIdAndSubscribe(subscriptionPayments.getViewerID(), 1);
+				Customer customer = customerRepository.findOneByViewerIdAndMobileNoAndStatus(viewer.getViewerId(),
+						viewer.getMobileNumber(), DealerSubscriptionType.activated);
+
+				if (ideabiz != null) {
+
+					Config config = configRepository.getOne(1);	
+
+					if (ideabiz.getSubscribedDays() == 1) {
+						subscriptionPaymentDto.setIdeabizDays("Daily");
+						subscriptionPaymentDto.setIdeabizAmount(config.getDay_charge());
+					} else if (ideabiz.getSubscribedDays() == 7) {
+						subscriptionPaymentDto.setIdeabizDays("Weekly");
+						subscriptionPaymentDto.setIdeabizAmount(config.getWeek_charge());
+					}
+					subscriptionPaymentDto.setIdeabizSubscription("subscribed");
+					subscriptionPaymentDto.setAlreadySubscribed(true);
+
+				} else {
+					subscriptionPaymentDto.setIdeabizSubscription("");
+				}
+
+				if (viewerSubscription != null) {
+					subscriptionPaymentDto.setMobitelSubscription("subscribed");
+					subscriptionPaymentDto.setAlreadySubscribed(true);
+				} else {
+					subscriptionPaymentDto.setMobitelSubscription("");
+				}
+
+				if (customer != null) {
+					subscriptionPaymentDto.setViewerSubscription("subscribed");
+					subscriptionPaymentDto.setAlreadySubscribed(true);
+				} else {
+					subscriptionPaymentDto.setViewerSubscription("");
+				}
+			}
+
+			return subscriptionPaymentDto;
+
+		}
+		return null;
+	}
+
+	private SubscriptionPaymentDto getSubscriptionPaymentDto2(SubscriptionPayments subscriptionPayments,
+			Viewers viewer,
+			ViewerTrialPeriodAssociation viewerTrialPeriodAssociation) {
+		SubscriptionPaymentDto dto = new SubscriptionPaymentDto();
+		dto.setPackageId(subscriptionPayments.getPackageID());
+		dto.setSubscriptionPaymentId(subscriptionPayments.getSubscriptionPaymentID());
+		dto.setTokenHash(subscriptionPayments.getTokenHash());
+		dto.setViewerId(subscriptionPayments.getViewerID());
+		dto.setMobile(viewer.getMobileNumber());
+
+		if (viewerTrialPeriodAssociation != null && !viewerTrialPeriodAssociation.isActivated()) {
+			dto.setTrialVerify(true);
+		} else {
+			dto.setTrialVerify(false);
+		}
+
+		return dto;
 	}
 
 }

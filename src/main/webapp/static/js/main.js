@@ -105,12 +105,10 @@ $(document).ready(function(){
             payMCash(selectedPaymentOption);
         }
         else if(selectedPaymentOption == 4){
-//            dialogViu(selectedPaymentOption);
         	 select_payment_type(4);
-//        	mobile_no_capture(4);
 
         }else if(selectedPaymentOption == 5){
-            redirectToMobitelPayMent(selectedPaymentOption);
+        	select_payment_type(5);
         }else if(selectedPaymentOption == 6){
             scratchCardPayment(selectedPaymentOption);
         }else if(selectedPaymentOption == 7){
@@ -303,77 +301,6 @@ function reAnimateLoadingIcon(){
 
 function hidePreLoader(){
     $(".preloader").css('display','none');
-}
-function redirectToMobitelPayMent(paymentMethodId){
-	 /*parameters = {};
-	 parameters.subscriptionPaymentId = $("#subscriptionPaymentId").val();*/
-
-     reAnimateLoadingIcon();
-  //   window.location.href = "https://services.mobitel.lk/MCCPortal/service/?compId=SusilaTV&reqType=ACTIVE&servId=SUWS&bridgeID="+$("#subscriptionPaymentId").val();
-  //  window.location.href = "http://localhost:8090/input";
-   /* parameters.compId="SusilaTv";
-    parameters.reqType="ACTIVE";
-    parameters.servId="SUWS";
-    parameters.bridgeID="SUWS";
-    */
-    //parameters.isDialogViuPayment = true;
-    var url = "";
-    var parameters = {};
-    $.ajax({
-        type : "get",
-        //  contentType: "application/json",
-        url : "http://220.247.201.206:90/",
-        data: parameters,
-        success: function (data) {
-        	
-            if(typeof data != 'undefined' && data != "") {
-                var numberObject = JSON.parse(data);
-                var number = numberObject.mobno;
-                if (number !=null) {
-                	number=number.replace("+", "");
-				}
-                
-                url = "/susilawebpay/validatePayment?paymentMethodId="+paymentMethodId+"&subscriptionPaymentId="+$("#subscriptionPaymentId").val()+"&numberString="+number;
-            }else{
-                url = "/susilawebpay/validatePayment?paymentMethodId="+paymentMethodId+"&subscriptionPaymentId="+$("#subscriptionPaymentId").val();
-            }
-            window.location.href = url;
-        },
-        error: function(e){
-            // console.log('An error occurred while updating payment transaction : ', data);
-            url = "/susilawebpay/validatePayment?paymentMethodId="+paymentMethodId+"&subscriptionPaymentId="+$("#subscriptionPaymentId").val();
-            window.location.href = url;
-        }
-    });
-
-
-    /*var parameters = {};
-    parameters.subscriptionPaymentId = $("#subscriptionPaymentId").val(); */
-   // httpGetAsync("http://220.247.201.206:90/", callbackFunction);
-  //  makeCorsRequest();
-  //   var parameters = {};
-  //   $.ajax({
-  //       type : "get",
-  //     //  contentType: "application/json",
-  //       url : "http://220.247.201.206:90/",
-  //       data: parameters,
-  //       success: function (data) {
-  //           alert("data");
-  //          // alert('success');
-  //           if(typeof data != 'undefined' && data != "") {
-  //
-  //               var url = "https://services.mobitel.lk/MCCPortal/service/?compId=SusilaTV&reqType=ACTIVE&servId=SUWS&returnUrl=http://220.247.201.239:8080/susilawebpay/mobitel/mobitelPay?bridgeID="+$("#subscriptionPaymentId").val();
-  //               window.location.href = url;
-  //           }else{
-  //               $("#mobitelRegistration").removeClass("hide");
-  //               message = "sorry could not complete the process please try again";
-  //           }
-  //       },
-  //       error: function(e){
-  //           // console.log('An error occurred while updating payment transaction : ', data);
-  //           alert("error occured");
-  //       }
-  //   });
 }
 
 function paymentOptionRadioButtonsChangeEvent(event){

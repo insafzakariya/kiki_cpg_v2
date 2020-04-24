@@ -82,20 +82,7 @@
 	    font-weight: 600;
 	    text-transform: uppercase;
 	}
-	.form_submit_unsubscrib {
-		background-color: #c3252e;
-	    color: #ffffff;
-	    margin-top: 25px;
-	    width: 100%;
-	    text-align: center;
-	    border: none;
-	    padding-top: 15px;
-	    padding-bottom: 15px;
-	    border-radius: 2px;
-	    font-size: 14px;
-	    font-weight: 600;
-	    text-transform: uppercase;
-	}
+	
 
 	@media screen and (min-width: 360px) {
 		body {
@@ -130,7 +117,7 @@
 		<form enctype="multipart/form-data" method="post">
 		
 			<c:if test="${not empty ideabiz_subscribed}">
-				<input id="Dviu" class="Dviu" type="radio" name="payMethod" value="${pageContext.request.contextPath}/idiabiz_unsubscribe?token=${token}">
+				<input id="Dviu" class="Dviu" type="radio" name="payMethod" value="/ideabiz/ideabiz_unsubscribe">
 				<a href="" class="Mcash_wrapper_href" onClick="selectID('Dviu'); return false;">
 					<div class="body_frame">
 						<div style="width: 100%; display: inline-block;">
@@ -160,19 +147,6 @@
 			</button>
 			
 			
-		<%-- 	<c:choose>
-			    <c:when test="${not empty mobitel_subscribed}">
-			       <button type="button" href="" class="form_submit_unsubscrib" id="form_submit_unsubscrib">
-					Unsubscribe
-				</button>
-			    </c:when>
-			    <c:when test="${not empty ideabiz_subscribed}">
-			       <button type="button" href="" class="form_submit_unsubscrib" id="form_submit_unsubscrib">
-						Unsubscribe
-					</button>
-			    </c:when>
-			    
-			</c:choose> --%>
 			
 			
 			
@@ -193,23 +167,34 @@ function selectID(IDS) {
   IDxx.checked = true;
   var value=$("input:radio[name=payMethod]:checked").val();
 	if (value) {
-		window.location.replace(value);
+		console.log(value);
+		
+		var data = {
+				token : '${token}'
+		}
+		
+		console.log(data);
+		
+		$.ajax({
+	        type : "post",
+	        //  contentType: "application/json",
+	        url : "http://localhost:8080" +value,
+	        data: data,
+	        success: function (data) {
+	            // alert('success');
+	            document.open();
+	            document.write(data);
+	            document.close();
+	        },
+	        error: function(e){
+	            // console.log('An error occurred while updating payment transaction : ', data);
+	        }
+	    });
 	}else{
 		alert('Please select one.');
 	}
 }
 
-$("#form_submit_unsubscrib").click(function(){
-	var value=$("input:radio[name=payMethod]:checked").val();
-	if (value) {
-		window.location.replace(value);
-	}else{
-		alert('Please select one.');
-	}
-	
-
-	
-	})
 </script>
 
 

@@ -310,6 +310,9 @@ p {
 	<script src="https://www.paypalobjects.com/api/checkout.js"></script>
 	<!-- Hotjar Tracking Code for https://payment.kiki.lk/ -->
 	<script>
+	
+		sessionStorage.setItem("subscriptionPaymentId", ${subscriptionPaymentId});
+	
 		(function(h, o, t, j, a, r) {
 			h.hj = h.hj || function() {
 				(h.hj.q = h.hj.q || []).push(arguments)

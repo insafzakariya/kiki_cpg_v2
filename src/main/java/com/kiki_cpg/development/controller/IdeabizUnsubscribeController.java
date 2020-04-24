@@ -13,6 +13,8 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -29,7 +31,7 @@ import com.kiki_cpg.development.service.ViewerService;
 import com.kiki_cpg.development.service.ViewerUnsubcriptionService;
 
 @CrossOrigin("")
-@RestController("kiki-cpg/api/v1/ideabiz/unsubscribe")
+@RestController()
 public class IdeabizUnsubscribeController {
 
 	@Autowired
@@ -43,8 +45,14 @@ public class IdeabizUnsubscribeController {
 
 	@Autowired
 	SubscriptionPaymentService subscriptioPayService;
+	
+	
+	@GetMapping("/test")
+	public String test() {
+		return "test 213";
+	}
 
-	@RequestMapping(value = "/ideabiz/ideabiz_unsubscribe", method = RequestMethod.POST, produces = "application/json")
+	@PostMapping(value = "/ideabiz/ideabiz_unsubscribe", produces = "application/json")
 	@ResponseBody
 	public boolean ideabiz_unsubscribe(@RequestBody Map<String, String> userMap) {
 		boolean res = false;
@@ -57,15 +65,15 @@ public class IdeabizUnsubscribeController {
 			Viewers viewers = viewerService.getViewerByid(subscriptionPayment.getViewerID());
 			Ideabiz ideabiz = ideabizService.findOneByViwerIdAndSubscribe(subscriptionPayment.getViewerID(), 1);
 
-			String url = "https://ideabiz.lk/apicall/subscription/v3/unsubscribe";
+			//String url = "https://ideabiz.lk/apicall/subscription/v3/unsubscribe";
 
 			HttpClient client = HttpClientBuilder.create().build();
-			HttpPost post = new HttpPost(url);
+			//HttpPost post = new HttpPost(url);
 
-			post.setHeader("content-type", "application/json");
+			//post.setHeader("content-type", "application/json");
 
 			String access_token = ideabizService.create_access_token();
-			post.setHeader("Authorization", access_token);
+			//post.setHeader("Authorization", access_token);
 
 			JSONObject json = new JSONObject();
 
@@ -85,19 +93,20 @@ public class IdeabizUnsubscribeController {
 
 				StringEntity params = new StringEntity(json.toString());
 
-				post.setEntity(params);
-				HttpResponse response = client.execute(post);
-				System.out.println("Response  : " + response.getEntity().getContent());
+				//post.setEntity(params);
+				//HttpResponse response = client.execute(post);
+				//System.out.println("Response  : " + response.getEntity().getContent());
 
-				BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+				//BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
 				StringBuffer result = new StringBuffer();
 				String line = "";
-				while ((line = rd.readLine()) != null) {
-					result.append(line);
-				}
+				//while ((line = rd.readLine()) != null) {
+				//	result.append(line);
+				//}
 				JSONObject jsonObj = new JSONObject(result.toString());
 				System.out.println(jsonObj);
-				if (jsonObj.get("statusCode").equals("SUCCESS")) {
+				if (true) {
+				//if (jsonObj.get("statusCode").equals("SUCCESS")) {
 					ideabizService.unsubscribe(viewers.getViewerId());
 
 					ViewerUnsubcriptionDto dto = new ViewerUnsubcriptionDto();

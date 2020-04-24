@@ -18,14 +18,7 @@ public class PaymentController {
 	
 	@GetMapping(value = "/paymentselection")
 	public ModelAndView select_payment_type(@RequestParam(value = "subscriptionPaymentId", required = false, defaultValue = "") int subscriptionPaymentId) {
-
-		//Double one_day_amount = paymentCalculation.getAmountByDays(1);
-		//Double one_week_amount = paymentCalculation.getAmountByDays(7);
-
-		//PaymentTypeDto pdto = new PaymentTypeDto();
-		//pdto.setOne_day_amount(one_day_amount);
-		//pdto.setOne_week_amount(one_week_amount);
-		//return pdto;
+		
 		return null;
 	}
 }

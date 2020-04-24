@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,14 +15,17 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kiki_cpg.development.dto.PackageDto;
 import com.kiki_cpg.development.dto.SubscriptionPaymentDto;
 import com.kiki_cpg.development.service.SubscriptionPaymentService;
 
-@RestController("/rest/home")
+@RestController()
+@RequestMapping("/rest/home")
 @CrossOrigin(origins = "*")
 public class MainControllerRest {
 
@@ -31,16 +35,19 @@ public class MainControllerRest {
 	private SubscriptionPaymentService subscriptionPaymentService;
 
 	@GetMapping("/initialize")
-	public ResponseEntity<Object> homePage(HttpServletRequest request,
-			@RequestParam(value = "token") String paymentToken,
-			@RequestParam(value = "isFreeTrial", required = false, defaultValue = "false") boolean isFreeTrial,
-			@RequestParam(value = "type", required = false, defaultValue = "false") String type) throws IOException {
+	public ResponseEntity<Object> homePage(HttpServletRequest request) throws IOException {
 
+		HttpSession session = request.getSession();
+		
+		String paymentToken = (String) session.getAttribute("paymentToken");
+		String type = (String) session.getAttribute("type");
+		
 		logger.info("susilawebpay application started.");
 
 		try {
 			SubscriptionPaymentDto subscriptionPaymentDto = subscriptionPaymentService
-					.getSubscriptionPaymentByToken(paymentToken, type);
+					.getSubscriptionPaymentByTokenRest(paymentToken, type);
+			session.setAttribute("subscriptionPaymentDto", subscriptionPaymentDto);
 			if (subscriptionPaymentDto != null) {
 				return new ResponseEntity<Object>(subscriptionPaymentDto, HttpStatus.OK);
 			} else {
@@ -52,5 +59,12 @@ public class MainControllerRest {
 			return new ResponseEntity<Object>("404", HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
+	}
+	
+	@GetMapping("/planlist/{paymentMethodId}")
+	public List<PackageDto> getPaymentListDto( @PathVariable Integer paymentMethodId) {
+		System.out.println("paymentMethodId" + paymentMethodId);
+		List<PackageDto> packageDtos = subscriptionPaymentService.getPaymentPlan(paymentMethodId);
+		return packageDtos;
 	}
 }

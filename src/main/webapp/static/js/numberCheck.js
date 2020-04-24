@@ -8,6 +8,7 @@ $(document).ready(function(){
         $("#mobitelConnectionError").removeClass("hide");
         $("#countryCode").addClass("hide");
 
+        
 
 
     }
