@@ -72,7 +72,7 @@ public class DialogClientImpl implements DialogClient {
 	private static final Logger logger = LoggerFactory.getLogger(DialogClientImpl.class);
 
 	@Override
-	public String dialog_payment_confirm(String server_ref, String mobile_no, Double amount, Integer subscribed_days,
+	public String dialogPaymentConfirm(String server_ref, String mobile_no, Double amount, Integer subscribed_days,
 			int viwerId) {
 		try {
 			System.out.println("payment confirm");
@@ -130,7 +130,7 @@ public class DialogClientImpl implements DialogClient {
 			if (jsonObj.has("amountTransaction")) {
 
 				JSONObject jsonObjRef = (JSONObject) jsonObj.get("amountTransaction");
-				paid = "Sucess";
+				paid = "Success";
 				paymentLogService.createPaymentLog("Dialog", "-",
 						jsonObjRef.get("transactionOperationStatus").toString(), viwerId, mobile_no, result.toString());
 				// cron
@@ -197,7 +197,6 @@ public class DialogClientImpl implements DialogClient {
 			access_token = jsonObj.get("access_token").toString();
 		} catch (Exception e) {
 			logger.info(e.getMessage());
-			// TODO: handle exception
 		}
 
 		return "Bearer " + access_token;

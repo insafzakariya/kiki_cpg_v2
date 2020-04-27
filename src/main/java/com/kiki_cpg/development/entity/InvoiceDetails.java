@@ -12,7 +12,7 @@ public class InvoiceDetails {
     private Integer id;
 
     @Column(name = "invoice_id")
-    private Integer invoice_id;
+    private Integer invoiceId;
 
     @Column(name = "amount")
     private Double amount;
@@ -42,12 +42,7 @@ public class InvoiceDetails {
     public void setId(Integer id) {
         this.id = id;
     }
-    public Integer getInvoice_id() {
-        return invoice_id;
-    }
-    public void setInvoice_id(Integer invoice_id) {
-        this.invoice_id = invoice_id;
-    }
+   
     public Double getAmount() {
         return amount;
     }
@@ -60,5 +55,13 @@ public class InvoiceDetails {
     public void setCreatedDate(Date createdDate) {
         this.createdDate = createdDate;
     }
+
+	public Integer getInvoiceId() {
+		return invoiceId;
+	}
+
+	public void setInvoiceId(Integer invoiceId) {
+		this.invoiceId = invoiceId;
+	}
 
 }

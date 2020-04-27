@@ -19,4 +19,6 @@ public interface IdeabizRepository extends JpaRepository<Ideabiz, Integer>, Idea
 
 	Ideabiz findOneByViwerIdAndSubscribe(Integer viewerID, int i);
 
+	Ideabiz findOneByViwerId(Integer viewerId);
+
 }

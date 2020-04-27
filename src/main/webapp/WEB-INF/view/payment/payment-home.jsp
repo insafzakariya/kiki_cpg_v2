@@ -145,7 +145,8 @@
 	 	});
 	 	
 	 	$('#button5').click(function(){
-	 		alert("5")
+	 		sessionStorage.setItem('paymentId', $('#button5').val());
+	 		window.location.replace(baseURL + "/screch-card");
 	 	});
 		
 	</script>

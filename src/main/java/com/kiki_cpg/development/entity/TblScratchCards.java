@@ -22,24 +22,24 @@ public class TblScratchCards {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "CardID")
 	private Integer CardID;
-	
+
 	@Column(name = "PackageID")
 	private Integer PackageID;
-	
+
 	@Column(name = "CardType")
 	private int CardType;
-	
+
 	@Column(name = "ActivityStartDate")
 	private Date ActivityStartDate;
-	
+
 	@Column(name = "ActivityEndDate")
 	private Date ActivityEndDate;
-	
+
 	@Column(name = "Status")
 	private int Status;
-	
+
 	@OneToMany(mappedBy = "tblScratchCards", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<TblScratchCardCodes> tbl_scratch_card_codes = new ArrayList<>();
+	private List<TblScratchCardCodes> tblScratchCardCodes = new ArrayList<>();
 
 	public Integer getCardID() {
 		return CardID;
@@ -89,13 +89,12 @@ public class TblScratchCards {
 		Status = status;
 	}
 
-	public List<TblScratchCardCodes> getTbl_scratch_card_codes() {
-		return tbl_scratch_card_codes;
+	public List<TblScratchCardCodes> getTblScratchCardCodes() {
+		return tblScratchCardCodes;
 	}
 
-	public void setTbl_scratch_card_codes(List<TblScratchCardCodes> tbl_scratch_card_codes) {
-		this.tbl_scratch_card_codes = tbl_scratch_card_codes;
+	public void setTblScratchCardCodes(List<TblScratchCardCodes> tblScratchCardCodes) {
+		this.tblScratchCardCodes = tblScratchCardCodes;
 	}
-	
-	
+
 }

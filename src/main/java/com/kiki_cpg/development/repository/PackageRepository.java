@@ -19,4 +19,8 @@ public interface PackageRepository extends JpaRepository<Packages, Integer>, Pac
 
     @Query(value = "SELECT * FROM packages where PackageID=:packageId and ActivityStartDate <=:todayDate  and ActivityEndDate >=:todayDate", nativeQuery = true)
     List<Object[]>getPackagesByIs(@Param("packageId")int packageId, @Param("todayDate") Date todayDate);
+
+
+	List<Packages> findByPackageIdAndActivityStartDateLessThanEqualAndActivityEndDateGreaterThanEqual(Integer packageId,
+			Date date, Date date2);
 }

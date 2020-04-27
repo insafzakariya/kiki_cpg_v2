@@ -85,7 +85,7 @@ public class PaymentCalculationImpl implements PaymentCalculation {
 //									getSubList.get(i).getViwer_id(), getSubList.get(i).getSubscribed_days(), "Ideabiz",
 //									amount);
 //=======
-							int invoice_id = ideabizService.proceed_payment(getSubList.get(i).getViwerId(), getSubList.get(i).getSubscribedDays(), "Ideabiz",
+							int invoice_id = ideabizService.proceedPayment( getViewers.get(i), getSubList.get(i).getSubscribedDays(), "Ideabiz",
 									amount);
 
 							id = getViewers.get(i).getViewerId();

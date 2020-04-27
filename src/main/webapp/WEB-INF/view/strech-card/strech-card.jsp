@@ -98,21 +98,14 @@ input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
 		</div>
 	</div>
 	</div>
-	<!-- global js -->
 	<script src="<c:url value='/static/js/jquery-1.11.3.min.js'/>"
 		type="text/javascript"></script>
 	<script src="<c:url value='/static/js/bootstrap.min.js'/>"
 		type="text/javascript"></script>
-
-	<!-- end of global js -->
-	<!-- page css -->
 	<script src="<c:url value='/static/js/lockscreen2.js'/>"></script>
-
 	<script src="<c:url value='/static/vendors/iCheck/js/icheck.js'/>"></script>
+	<script src="<c:url value='/static/js/globle.js'/>" type="text/javascript"></script>
 	<script src="<c:url value='/static/js/view/strech-card.js' />"></script>
-	<!-- end of global js -->
-	<!-- page css -->
-	<!-- end of page css -->
 </body>
 
 

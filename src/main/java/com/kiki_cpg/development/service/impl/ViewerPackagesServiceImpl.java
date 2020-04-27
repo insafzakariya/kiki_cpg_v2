@@ -51,8 +51,12 @@ public class ViewerPackagesServiceImpl implements ViewerPackagesService {
 		ViewerPackages viewerPackage =viewerPackagesRepository.findByViewerId(viewerID);
 		viewerPackage.setStatus(0);
 		viewerPackage.setModifiedOn(new Date());
-		viewerPackagesRepository.save(viewerPackage);
-		return true;
+		if(viewerPackagesRepository.save(viewerPackage)!= null) {
+			return true;	
+		} else {
+			return false;
+		}
+		
 	}
 
 	

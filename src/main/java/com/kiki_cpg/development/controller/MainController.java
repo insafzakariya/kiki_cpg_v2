@@ -338,5 +338,24 @@ public class MainController {
 		return view;
 
 	}
+	
+	@GetMapping(value = "/screch-card")
+	public ModelAndView screchCard(HttpServletRequest request) {
+		SubscriptionPaymentDto subscriptionPaymentDto = (SubscriptionPaymentDto) request.getSession().getAttribute("subscriptionPaymentDto");
+		boolean isValidate = subscriptionPaymentService.isValidateById(subscriptionPaymentDto.getSubscriptionPaymentId());
+		if (isValidate) {
+			return new ModelAndView("strech-card/strech-card");
+		} else {
+			ModelAndView modelAndView = new ModelAndView("error");
+			modelAndView.addObject("errorMessage", "Subscripion payment is null.");
+			return modelAndView;
+		}
+
+	}
+	
+	@GetMapping(value = "/success")
+	public ModelAndView success(HttpServletRequest request) {
+		return new ModelAndView("success/success");
+	}
 
 }

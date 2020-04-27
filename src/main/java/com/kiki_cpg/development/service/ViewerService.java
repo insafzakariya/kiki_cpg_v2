@@ -8,7 +8,7 @@ public interface ViewerService {
 
 	public ResponseDto vieweBalance(String mobileNumber);
 
-	public String create_access_token();
+	//public String create_access_token();
 
 	public String genarate_authorization_code();
 
@@ -16,7 +16,7 @@ public interface ViewerService {
 
 	public Viewers getViewerByid(int viewerID);
 
-	public void updateViewerMobileNumber(String mobile_no, Integer viewerId);
+	public Viewers updateViewerMobileNumber(String mobile_no, Integer viewerId);
 
 
 	

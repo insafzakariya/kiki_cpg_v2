@@ -1,5 +1,6 @@
 package com.kiki_cpg.development.service.impl;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +18,7 @@ public class PackagesServiceImpl implements PackagesService {
 	@Override
 	public List<Packages> getPackageById(Integer packageID) {
 		// TODO Auto-generated method stub
-		List<Packages>packagers=packageRepo.getPackageById(packageID);
+		List<Packages>packagers=packageRepo.findByPackageIdAndActivityStartDateLessThanEqualAndActivityEndDateGreaterThanEqual(packageID, new Date(), new Date());
 		if(packagers!=null) {
 			return packagers;
 		}

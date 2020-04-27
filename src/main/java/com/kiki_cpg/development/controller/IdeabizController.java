@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.LinkedHashMap;
 
+import com.kiki_cpg.development.dto.SubscriptionPaymentDto;
 import com.kiki_cpg.development.service.IdeabizService;
 import com.kiki_cpg.development.util.AppUtility;
 
@@ -45,7 +46,7 @@ public class IdeabizController {
 	private String payment_confirm(String server_ref, String mobile_no, Double amount, Integer subscribed_days,
 			int viwerId) {
 
-		ideabizService.payment_confirm(server_ref, mobile_no, amount, subscribed_days, viwerId);
+		//ideabizService.paymentConfirm(server_ref, mobile_no, amount, subscribed_days, viwerId);
 		return "Paid";
 
 	}
@@ -150,8 +151,12 @@ public class IdeabizController {
 	@ResponseBody
 	public ResponseEntity<Object> pin_subscription_confirm(@RequestBody Map<String, String> userMap,
 			HttpServletRequest request) {
+		SubscriptionPaymentDto subscriptionPaymentDto = (SubscriptionPaymentDto) request.getSession()
+				.getAttribute("subscriptionPaymentDto");
+		
+		 String systemToken = (String) request.getSession().getAttribute("token");
 		try {
-			HashMap<String, String> result_obj = ideabizService.pin_subscription_confirm(userMap, request);
+			HashMap<String, String> result_obj = ideabizService.pinSubscriptionConfirm(userMap, subscriptionPaymentDto, systemToken);
 			return new ResponseEntity<Object>(result_obj, HttpStatus.OK);
 		} catch (Exception e) {
 			e.printStackTrace();

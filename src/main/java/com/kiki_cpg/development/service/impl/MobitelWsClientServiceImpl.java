@@ -6,11 +6,11 @@ import com.kiki_cpg.development.entity.ViewerSubscription;
 import com.kiki_cpg.development.entity.ViewerTrialPeriodAssociation;
 import com.kiki_cpg.development.entity.Viewers;
 import com.kiki_cpg.development.enums.TransactionType;
-import com.kiki_cpg.development.repository.ContentRepository;
 import com.kiki_cpg.development.repository.MerchantAccountRepository;
 import com.kiki_cpg.development.repository.TrialPeriodRepository;
 import com.kiki_cpg.development.repository.ViewerRepository;
 import com.kiki_cpg.development.repository.ViewerSubscriptionRepository;
+import com.kiki_cpg.development.service.ContentService;
 import com.kiki_cpg.development.service.MobitelWsClientService;
 import com.kiki_cpg.development.service.OTPService;
 import com.kiki_cpg.development.service.PaymentLogService;
@@ -57,7 +57,7 @@ public class MobitelWsClientServiceImpl implements MobitelWsClientService{
 	PaymentLogService paymentLogService;
 
 	@Autowired
-	ContentRepository contentRepository;
+	ContentService contentService;
 
 	@Autowired
 	OTPService otpService;
@@ -148,11 +148,11 @@ public class MobitelWsClientServiceImpl implements MobitelWsClientService{
 				if (resultCode.equals("1000")) { // operation successful
 					// 101 is the mobitel package if the current package is also 101 the it will
 					// extend the duration
-					contentRepository.updateViewerPolicies(viewer.getViewerId(), 81, false);
+					contentService.updateViewerPolicies(viewer.getViewerId(), 81, false);
 
 				} else { // if payment is not successful
 
-					contentRepository.updateViewerPolicies(viewer.getViewerId(), 1, false);
+					contentService.updateViewerPolicies(viewer.getViewerId(), 1, false);
 
 				}
 //				Thread.sleep(3000);

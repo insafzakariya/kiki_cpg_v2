@@ -41,13 +41,13 @@ function scratchCardPayment(){
     $.ajax({
         type : "post",
         //  contentType: "application/json",
-        url : "/susilawebpay/scratchCardPayment",
+        url : baseURL + "/scratchcard/scratchCardPayment",
         data: data,
         success: function (data) {
-            // alert('success');
-            document.open();
-            document.write(data);
-            document.close();
+        	console.log(data);
+            if(data == "Success"){
+            	window.location.replace(baseURL + "/success");
+            }
         },
         error: function(e){
             // console.log('An error occurred while updating payment transaction : ', data);

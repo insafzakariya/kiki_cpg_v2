@@ -2,6 +2,7 @@ package com.kiki_cpg.development.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.kiki_cpg.development.client.DialogClient;
 import com.kiki_cpg.development.dto.CronErrorDto;
 import com.kiki_cpg.development.entity.Ideabiz;
 import com.kiki_cpg.development.entity.Invoice;
@@ -10,6 +11,7 @@ import com.kiki_cpg.development.entity.Viewers;
 import com.kiki_cpg.development.repository.IdeabizRepository;
 import com.kiki_cpg.development.repository.InvoiceDetailsRepository;
 import com.kiki_cpg.development.repository.InvoiceRepository;
+import com.kiki_cpg.development.service.ContentService;
 import com.kiki_cpg.development.service.InvoiceService;
 import com.kiki_cpg.development.service.OTPService;
 import com.kiki_cpg.development.service.calculation.DateCalculate;
@@ -18,7 +20,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.sql.Timestamp;
 import java.text.DecimalFormat;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -39,6 +40,12 @@ public class InvoiceServiceImpl implements InvoiceService{
 
 	@Autowired
 	OTPService otpService;
+	
+	@Autowired
+	private DialogClient dialogClient;
+	
+	@Autowired
+	private ContentService contentService;
 
 //	@Autowired
 //	CronErrorService cronErrorService;
@@ -60,9 +67,9 @@ public class InvoiceServiceImpl implements InvoiceService{
 
 			Invoice invoice = new Invoice();
 			invoice.setServiceId(serviceId);
-			invoice.setViwer_id(viewers.getViewerId());
+			invoice.setViewerId(viewers.getViewerId());
 			invoice.setMobile(viewers.getMobileNumber());
-			invoice.setSubscribed_days(subscribed_days);
+			invoice.setSubscribedDays(subscribed_days);
 			invoice.setAmount(amount);
 			invoice.setSuccess(0);
 			invoice.setCreatedDate(ts);
@@ -74,7 +81,7 @@ public class InvoiceServiceImpl implements InvoiceService{
 				for (Integer i = 0; i < dates.size(); i++) {
 					System.out.println("dates" + dates.get(i).toString());
 					InvoiceDetails invoiceDetails = new InvoiceDetails();
-					invoiceDetails.setInvoice_id(invoice.getId());
+					invoiceDetails.setInvoiceId(invoice.getId());
 					invoiceDetails.setAmount(Double.parseDouble(df2.format(day_charge)));
 					invoiceDetails.setCreatedDate(ts);
 					invoiceDetails.setValiedDate(dates.get(i));
@@ -103,35 +110,68 @@ public class InvoiceServiceImpl implements InvoiceService{
 	}
 
 	@Override
-	public void updateInvoice(Integer invoice_id, Integer status) {
+	public boolean updateInvoice(Integer invoiceId, Integer status) {
 		try {
-			Optional<Invoice> invoiceOptional = invoiceRepository.findById(invoice_id);
-			Invoice invoice = invoiceOptional.get();
+			Invoice invoice = invoiceRepository.findById(invoiceId).get();
 			invoice.setSuccess(status);
 			System.out.println("Invoice before save: " + invoice.getId());
             invoice = invoiceRepository.save(invoice);
 			System.out.println("Invoice save: " + invoice.getId());
-			
+			return true;
 		} catch (Exception e) {
-			System.out.println("Error in invoice save:" + Arrays.toString(e.getStackTrace()));
-
+			e.printStackTrace();
+			return false;
 		}
 	}
 
 	@Override
-	public void updatePolicyExpireIdeaBiz(Integer invoice_id, Integer viwer_id) {
+	public boolean updatePolicyExpireIdeaBiz(Integer invoiceId, Integer viewerId) {
 		try {
-			List<InvoiceDetails> invoiceDetailsList = invoiceDetailsRepository.findByInvoiceId(invoice_id);
+			List<InvoiceDetails> invoiceDetailsList = invoiceDetailsRepository.findByInvoiceId(invoiceId);
 			InvoiceDetails invoiceDetails = invoiceDetailsList.get(invoiceDetailsList.size() - 1);
 
-			List<Ideabiz> ideabizOptional = ideabizRepository.findByViwerId(viwer_id);
-			Ideabiz ideabiz = ideabizOptional.get(0);
+			Ideabiz ideabiz = ideabizRepository.findOneByViwerId(viewerId);
 			ideabiz.setLastPolicyUpdatedAt(invoiceDetails.getCreatedDate());
 			ideabiz.setPolicyExpireAt(DateCalculate.getbeforeDay(1, invoiceDetails.getValiedDate()));
 			ideabizRepository.save(ideabiz);
+			return true;
 		} catch (Exception e) {
-		
+			e.printStackTrace();
+			return false;
 		}
 
+	}
+
+	@Override
+	public int proceedPayment(Viewers viewers, Integer subscribedDays, String serviceId, Double amount) {
+		try {
+
+			System.out.println("viewer id " + viewers.getViewerId());
+
+			int invoiceId = create(serviceId, viewers, subscribedDays, amount);
+			System.out.println("Invoice created " + invoiceId);
+
+
+			String paid = dialogClient.dialogPaymentConfirm(String.valueOf(invoiceId), viewers.getMobileNumber(), amount,
+					subscribedDays, viewers.getViewerId());
+			System.out.println("check paid : " + paid);
+			if (paid.equals("Sucess")) {
+				updateInvoice(invoiceId, 1);
+
+				if (subscribedDays == 1) {
+					contentService.updateViewerPolicies(viewers.getViewerId(), 81, false);
+
+				} else if (subscribedDays == 7) {
+					contentService.updateViewerPolicies(viewers.getViewerId(), 106, false);
+				}
+
+				return invoiceId;
+			} else {
+				return 0;
+			}
+		} catch (Exception e) {
+
+		}
+		return 0;
 	}
 }

@@ -64,21 +64,19 @@ public class ScratchCardCodesServiceImpl implements ScratchCardCodesService {
 
 	@Override
 	public TblScratchCards validateCode(String cardCode) {
-		List<TblScratchCardCodes> tblScratchCardCode = null;
-		TblScratchCardCodes tblScratchCardCodes = null;
 		TblScratchCards tblScratchCard = null;
 		TblScratchCardCodes updatetblScratchCardCode = null;
 		try {
-			tblScratchCardCode = scratchCardCodeRepo.getTblScratchCards(cardCode);
-			tblScratchCardCodes = tblScratchCardCode.get(0);
-			updatetblScratchCardCode = tblScratchCardCodes;
+			updatetblScratchCardCode = scratchCardCodeRepo.getTblScratchCards(cardCode).get(0);
 
-			if (tblScratchCardCodes != null) {
-				if (tblScratchCardCodes.getTblScratchCards() != null) {
-					tblScratchCard = tblScratchCardCodes.getTblScratchCards();
+			if (updatetblScratchCardCode != null) {
+				if (updatetblScratchCardCode.getTblScratchCards() != null) {
+					tblScratchCard = updatetblScratchCardCode.getTblScratchCards();
 					if (tblScratchCard.getCardType() == 2) {
 						updatetblScratchCardCode.setCardStatus(2);
 						scratchCardCodeRepo.save(updatetblScratchCardCode);
+
+						return tblScratchCard;
 					}
 				}
 			}
@@ -86,18 +84,14 @@ public class ScratchCardCodesServiceImpl implements ScratchCardCodesService {
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
-		} finally {
-			return tblScratchCard;
 		}
+		return null;
 
 	}
 
 	@Override
-	public String setPayment(String cardCode, Integer viewerId) {
-		// TODO Auto-generated method stub
-		
-		int viewerID = viewerId;
-		
+	public String setPayment(String cardCode, Integer viewerID) {
+
 		if (logger.isInfoEnabled()) {
 			logger.info("Validate and Use Promo" + viewerID);
 		}
@@ -115,7 +109,7 @@ public class ScratchCardCodesServiceImpl implements ScratchCardCodesService {
 		}
 
 		if (tblScratchCard != null) {
-			Iterator listIterator = tblScratchCard.getTbl_scratch_card_codes().iterator();
+			Iterator listIterator = tblScratchCard.getTblScratchCardCodes().iterator();
 			tblScratchCardCode = (TblScratchCardCodes) listIterator.next();
 			if (!viewerCodesService.isAlreadyUsedViewerScratchCardCode(viewerID,
 					tblScratchCardCode.getRecordId().intValue()) || tblScratchCard.getCardType() == 2) {
@@ -138,8 +132,7 @@ public class ScratchCardCodesServiceImpl implements ScratchCardCodesService {
 
 						List<ViewerPolicies> viewerPolicies = viewerPoliciesService
 								.getFilteredViewerPoliciesForCurPackage(viewerID);
-						int nofDaysForPolicy = 0;
-						nofDaysForPolicy = vPackage.getAvailableDays();
+						int nofDaysForPolicy = vPackage.getAvailableDays();
 
 						if (!viewerPolicies.isEmpty()) {
 							Iterator vplistIterator = viewerPolicies.iterator();
@@ -184,7 +177,6 @@ public class ScratchCardCodesServiceImpl implements ScratchCardCodesService {
 								if (viewerPoliciesService.addViewerPolicies(policiesList, viewerID,
 										vPackage.getAvailableDays(), savedViewerPackage)) {
 								} else {
-
 
 									if (logger.isInfoEnabled()) {
 										logger.info("Could not add viewer policy");

@@ -22,7 +22,7 @@ public class ViewerPackagesRepositoryImpl implements ViewerPackagesRepositoryCus
     public List<ViewerPackages> getViewerPackages(int viewerId) {
         System.out.println("v_id " +viewerId);
         try{
-            Query query=entityManager.createNativeQuery("select vp.* from viewer_packages vp join packages p where vp.PackageID = p.PackageID and vp.viewerId= :viewerId and vp.status=1",ViewerPackages.class);
+            Query query=entityManager.createNativeQuery("select vp.* from viewer_packages vp join packages p where vp.PackageID = p.PackageID and vp.viewerId= :viewerId and vp.status=1 and p.Status = 1",ViewerPackages.class);
             query.setParameter("viewerId",viewerId);
 
             return query.getResultList();

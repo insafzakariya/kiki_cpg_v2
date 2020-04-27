@@ -4,10 +4,13 @@ import com.kiki_cpg.development.entity.Viewers;
 
 public interface InvoiceService {
 	
-	public Integer create(String serviceId, Viewers viewers, Integer subscribed_days, Double amount);
+	public Integer create(String serviceId, Viewers viewers, Integer subscribedDay, Double amount);
 	
-	public void updateInvoice(Integer invoice_id, Integer status);
+	public boolean updateInvoice(Integer invoiceId, Integer status);
 	
-	public void updatePolicyExpireIdeaBiz(Integer invoice_id, Integer viwer_id);
+	public boolean updatePolicyExpireIdeaBiz(Integer invoiceId, Integer viwerId);
+	
+	public int proceedPayment(Viewers viewers, Integer subscribedDays, String serviceId,
+			Double amount);
 
 }
