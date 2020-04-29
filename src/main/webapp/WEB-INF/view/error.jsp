@@ -49,23 +49,15 @@
             <div class="lockscreen-container">
                
                 
-                <div class="form-box">
-                    <div class="panel-body">
-                <c:choose>
-                    <c:when test="${not empty isUnsubscribe}">
-                       
-                    </c:when>
-                    <c:otherwise>
+                
                         <div class="alert " style="align-items: center;">
                         	<span>${errorMessage}</span>
                             <p >
                                       Oh snap! Your payment is not successful. Please try again.
                             </p>
                             
-                             <input type="button" onclick="redirect_ideabiz('${token}')" href="" class="form_submit" VALUE="RETRY" id="btn_otp_approve" style="background:#009b9f">
+                             <input type="button" onclick="redirect_ideabiz()" href="" class="form_submit" VALUE="RETRY" id="btn_otp_approve" style="background:#009b9f">
                         </div>
-                        </c:otherwise>
-                    </c:choose>
                     
                     </div>
                 </div>
@@ -79,10 +71,13 @@
 <!-- end of global js -->
 <!-- page css -->
 <script src="<c:url value='/static/js/lockscreen2.js'/>"></script>
+<script src="<c:url value='/static/js/globle.js'/>" type="text/javascript"></script>
 <!-- end of page css -->
 <script type="text/javascript">
-	function redirect_ideabiz(token) {
-		window.location.href = "/susilawebpay/home?token="+token;
+	function redirect_ideabiz() {
+		var generalData = JSON.parse(sessionStorage.getItem("generalData"));
+		var token = generalData.tokenHash;
+		window.location.replace(baseURL + "/loading?token=" + token);
 	}
 
 </script>

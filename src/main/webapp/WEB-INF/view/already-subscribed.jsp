@@ -121,7 +121,7 @@
 				<a href="" class="Mcash_wrapper_href" onClick="selectID('Dviu'); return false;">
 					<div class="body_frame">
 						<div style="width: 100%; display: inline-block;">
-							<img src="${pageContext.request.contextPath}/static/assets/images/dialog-new.jpg" style="flex: 0 0 20%;">
+							<img src="/susilawebpay/static/assets/images/dialog-new.jpg" style="flex: 0 0 20%;">
 							<p>Dialog<br/><span style="color: red;"> Click to unsubscribe</span></p>
 						</div>
 					</div>
@@ -134,7 +134,7 @@
 				<a href="#" class="Mcash_wrapper_href" onClick="selectID('Mobitel'); return false;">
 					<div class="body_frame">
 					<div style="width: 100%; display: inline-block;">
-						<img src="${pageContext.request.contextPath}/static/assets/images/mobitel.png" style="flex: 0 0 20%;">
+						<img src="/susilawebpay/static/assets/images/mobitel.png" style="flex: 0 0 20%;">
 						<p>Mobitel - Add to my bill<br/><span>Rs. 5 + Tax per day</span></p>
 					</div>
 				</div>
@@ -145,11 +145,6 @@
 			<button type="button"  onclick="location.href = 'home?token=${token}&type=new';" class="form_submit">
 				ADD NEW SUBSCRIPTION5
 			</button>
-			
-			
-			
-			
-			
 			
 		</form>
 	</div>

@@ -46,7 +46,7 @@ function scratchCardPayment(){
         success: function (data) {
         	console.log(data);
             if(data == "Success"){
-            	window.location.replace(baseURL + "/success");
+            	window.location.replace(baseURL + "/success/6");
             }
         },
         error: function(e){

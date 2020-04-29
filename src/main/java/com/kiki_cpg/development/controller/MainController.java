@@ -353,9 +353,39 @@ public class MainController {
 
 	}
 	
-	@GetMapping(value = "/success")
-	public ModelAndView success(HttpServletRequest request) {
-		return new ModelAndView("success/success");
+	@GetMapping(value = "/success/{msg}")
+	public ModelAndView success(HttpServletRequest request, @PathVariable(name = "msg", required = false) Integer message) {
+		ModelAndView modelAndView = new ModelAndView("success/success");
+		switch (message) {
+		case 4:
+			modelAndView.addObject("successMessage", "Well done! Your payment is successfully compleated.");
+			break;
+		case 5:
+			modelAndView.addObject("successMessage", "Well done! Your payment is successfully compleated.");
+			break;
+		case 6:
+			modelAndView.addObject("successMessage", "Well done! Your payment is successfully compleated.");
+			break;
+		case 7:
+			modelAndView.addObject("successMessage", "Well done! Your unsubscription completed.");
+			break;
+
+		default:
+			break;
+		}
+		return modelAndView;
+	}
+	
+	@GetMapping(value = "/already_subscribed")
+	public ModelAndView AlreadySubscribed(HttpServletRequest request) {
+		return new ModelAndView("already-subscribed/already-subscribed");
+	}
+	
+	@GetMapping(value = "/error")
+	public ModelAndView error(HttpServletRequest request) {
+		ModelAndView modelAndView = new ModelAndView("error");
+		modelAndView.addObject("errorMessage", "Error ");
+		return modelAndView;
 	}
 
 }

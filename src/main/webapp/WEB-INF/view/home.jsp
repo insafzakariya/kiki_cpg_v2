@@ -38,7 +38,7 @@
 							window.location.replace(baseURL + "/load_payment_methods");
 						}
 						if(data.alreadySubscribed == true){
-							console.log("already Subscribed");	
+							window.location.replace(baseURL + "/already_subscribed");
 						}
 						if(data.trialVerify == true){
 							console.log("trial");	

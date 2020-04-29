@@ -3,14 +3,11 @@ package com.kiki_cpg.development.client.impl;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
+import java.util.List;
+
+
+
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -29,45 +26,20 @@ import org.springframework.stereotype.Service;
 import com.kiki_cpg.development.client.DialogClient;
 import com.kiki_cpg.development.dto.DialogOtpConfirmDto;
 import com.kiki_cpg.development.dto.DialogOtpDto;
-import com.kiki_cpg.development.dto.ViewerUnsubcriptionDto;
-import com.kiki_cpg.development.entity.IdeabizConfig;
 import com.kiki_cpg.development.entity.Viewers;
-import com.kiki_cpg.development.repository.IdeabizConfigRepository;
 import com.kiki_cpg.development.service.IdeabizService;
-import com.kiki_cpg.development.service.InvoiceService;
-import com.kiki_cpg.development.service.PaymentCalculation;
 import com.kiki_cpg.development.service.PaymentLogService;
-import com.kiki_cpg.development.service.PaymentService;
-import com.kiki_cpg.development.service.ViewerService;
-import com.kiki_cpg.development.service.ViewerUnsubcriptionService;
-import com.kiki_cpg.development.service.impl.IdeabizServiceImpl;
+
 
 @Service
 public class DialogClientImpl implements DialogClient {
 
 	@Autowired
-	PaymentService paymentService;
+	private PaymentLogService paymentLogService;
 
 	@Autowired
-	IdeabizConfigRepository ideabizConfigRepository;
+	private IdeabizService ideabizService;
 
-	@Autowired
-	PaymentLogService paymentLogService;
-
-	@Autowired
-	IdeabizService ideabizService;
-
-	@Autowired
-	ViewerUnsubcriptionService viewerUnsubcriptionService;
-
-	@Autowired
-	PaymentCalculation paymentCalculation;
-
-	@Autowired
-	ViewerService viewerService;
-
-	@Autowired
-	InvoiceService invoiceService;
 
 	private static final Logger logger = LoggerFactory.getLogger(DialogClientImpl.class);
 
@@ -86,9 +58,9 @@ public class DialogClientImpl implements DialogClient {
 			post.setHeader("content-type", "application/json");
 			post.setHeader("Authorization", accessToken);
 
-			IdeabizConfig ideabizConfig = new IdeabizConfig();
-			List<IdeabizConfig> ideabizConfigList = ideabizConfigRepository.findAll();
-			ideabizConfig = ideabizConfigList.get(0);
+			//IdeabizConfig ideabizConfig = new IdeabizConfig();
+			//List<IdeabizConfig> ideabizConfigList = ideabizConfigRepository.findAll();
+			//ideabizConfig = ideabizConfigList.get(0);
 			System.out.println("check--------------------");
 			String serviceID = "";
 			if (subscribed_days == 1) {
@@ -203,18 +175,13 @@ public class DialogClientImpl implements DialogClient {
 	}
 
 	@Override
-	public DialogOtpDto pinSubscriptionConfirm(DialogOtpConfirmDto dialogOtpConfirmDto, Double amount, String accessToken) throws Exception {
+	public DialogOtpDto pinSubscriptionConfirm(DialogOtpConfirmDto dialogOtpConfirmDto, Double amount,
+			String accessToken) throws Exception {
 
 		System.out.println("access-token is: " + accessToken);
 		System.out.println("referen-token is: " + dialogOtpConfirmDto.getServerRef());
 		System.out.println("subscriptionPaymentId is: " + dialogOtpConfirmDto.getSubscriptionPaymentId());
 
-		String statusCode = "FAIL";
-		String message = "";
-		String status = "";
-		String serverRef_res = "";
-		String serviceId = "";
-		String msisdn = "";
 
 		String url = "https://ideabiz.lk/apicall/pin/subscription/v1/submitPin";
 
@@ -274,7 +241,6 @@ public class DialogClientImpl implements DialogClient {
 			throw e;
 		}
 
-		
 	}
 
 	@Override
@@ -336,6 +302,53 @@ public class DialogClientImpl implements DialogClient {
 			e.printStackTrace();
 			logger.info(e.getMessage());
 			throw e;
+		}
+	}
+
+	@Override
+	public JSONObject unsubscribe(String access_token, Viewers viewers, Integer day) {
+		String url = "https://ideabiz.lk/apicall/subscription/v3/unsubscribe";
+
+		HttpClient client = HttpClientBuilder.create().build();
+		HttpPost post = new HttpPost(url);
+
+		post.setHeader("content-type", "application/json");
+
+		post.setHeader("Authorization", access_token);
+
+		JSONObject json = new JSONObject();
+
+		try {
+			String tel = "tel:" + viewers.getMobileNumber();
+			System.out.println(tel);
+			json.put("method", "WEB");
+			json.put("msisdn", tel);
+			System.out.println("ussubscribe===" + day);
+			if (day == 1) {
+				json.put("serviceID", "bf110848-23ca-4b7d-8a3f-872b59bfd32e");
+				System.out.println("SUB" + day);
+			} else if (day == 7) {
+				System.out.println("sdhchsd" + day);
+				json.put("serviceID", "f0ce6a27-7aca-4e12-b121-25eeee7a840a");
+			}
+
+			StringEntity params = new StringEntity(json.toString());
+
+			post.setEntity(params);
+			HttpResponse response = client.execute(post);
+			System.out.println("Response  : " + response.getEntity().getContent());
+
+			BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+			StringBuffer result = new StringBuffer();
+			String line = "";
+			while ((line = rd.readLine()) != null) {
+				result.append(line);
+			}
+			JSONObject jsonObj = new JSONObject(result.toString());
+			return jsonObj;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
 		}
 	}
 

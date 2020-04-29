@@ -1,12 +1,11 @@
 package com.kiki_cpg.development.client;
 
-import java.util.HashMap;
-import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
+import org.json.JSONObject;
 
 import com.kiki_cpg.development.dto.DialogOtpConfirmDto;
 import com.kiki_cpg.development.dto.DialogOtpDto;
+import com.kiki_cpg.development.entity.Viewers;
 
 public interface DialogClient {
 
@@ -18,6 +17,8 @@ public interface DialogClient {
 	DialogOtpDto pinSubscriptionConfirm(DialogOtpConfirmDto dialogOtpConfirmDto, Double amount, String accessToken) throws Exception;
 
 	DialogOtpDto sendOtp(String mobile_no, Integer day, String accessToken) throws Exception;
+
+	JSONObject unsubscribe(String access_token, Viewers viewers, Integer day);
 
 
 }

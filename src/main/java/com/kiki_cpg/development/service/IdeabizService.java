@@ -3,11 +3,11 @@ package com.kiki_cpg.development.service;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
 
 import com.kiki_cpg.development.dto.SubscriptionPaymentDto;
 import com.kiki_cpg.development.dto.ViewerUnsubcriptionDto;
 import com.kiki_cpg.development.entity.Ideabiz;
+import com.kiki_cpg.development.entity.SubscriptionPayments;
 import com.kiki_cpg.development.entity.Viewers;
 
 public interface IdeabizService {
@@ -40,5 +40,7 @@ public interface IdeabizService {
 	Ideabiz getIdeabiz(Integer viewerId, String mobileNo, Integer day);
 
 	ViewerUnsubcriptionDto getViewerUnsubcriptionDto(String mobileNo, Integer viewerId);
+
+	public boolean processUnsubscribe(SubscriptionPayments subscriptionPayment);
 
 }
