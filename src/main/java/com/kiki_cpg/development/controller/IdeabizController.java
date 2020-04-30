@@ -39,18 +39,7 @@ public class IdeabizController {
 	@Autowired
 	private AppUtility appUtility;
 
-	// Payment Proceed
-
-	@RequestMapping(value = "/ideabiz/payment", method = RequestMethod.GET)
-	@ResponseBody
-	private String payment_confirm(String server_ref, String mobile_no, Double amount, Integer subscribed_days,
-			int viwerId) {
-
-		//ideabizService.paymentConfirm(server_ref, mobile_no, amount, subscribed_days, viwerId);
-		return "Paid";
-
-	}
-
+	
 	@RequestMapping(value = "/ideabiz/create_access_token", method = RequestMethod.POST)
 	@ResponseBody
 	public String create_access_token() {
@@ -68,81 +57,17 @@ public class IdeabizController {
 
 	@RequestMapping(value = "/ideabiz/pin_subscription", method = RequestMethod.POST, produces = "application/json")
 	@ResponseBody
-	public HashMap<String, String> pin_subscription(@RequestParam String mobile_no,
+	public HashMap<String, String> pinSubscription(@RequestParam String mobile_no,
 			@RequestParam String subscriptionPaymentId, @RequestParam String day) {
-
-		String statusCode = "FAIL";
-		String serverRef = "";
-		String msisdn = "";
-		String serviceId = "";
-		String url = "https://ideabiz.lk/apicall/pin/subscription/v1/subscribe";
-		String is_dialog = "dialog";
-
-		boolean isdialog = appUtility.getIsDialogNumber(mobile_no);
-		HashMap<String, String> result_obj = new LinkedHashMap<String, String>();
-		if (isdialog) {
-			HttpClient client = HttpClientBuilder.create().build();
-			HttpPost post = new HttpPost(url);
-
-			// add header
-			post.setHeader("content-type", "application/json");
-
-			String access_token = create_access_token();
-			post.setHeader("Authorization", access_token);
-
-			try {
-				System.out.println("start");
-				JSONObject json = new JSONObject();
-
-				// Body
-				json.put("method", "mobilevisions");
-				json.put("msisdn", mobile_no);
-				System.out.println("DAY" + day);
-				if (Integer.parseInt(day) == 1) {
-					json.put("serviceId", "BF110848-23CA-4B7D-8A3F-872B59BFD32E");
-				} else if (Integer.parseInt(day) == 7) {
-					json.put("serviceId", "f0ce6a27-7aca-4e12-b121-25eeee7a840a");
-				}
-
-				StringEntity params = new StringEntity(json.toString());
-
-				post.setEntity(params);
-				HttpResponse response = client.execute(post);
-
-				System.out.println("Response  : " + response.getEntity().getContent());
-
-				BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
-				StringBuffer result = new StringBuffer();
-				String line = "";
-				while ((line = rd.readLine()) != null) {
-					result.append(line);
-				}
-				System.out.println(result);
-				JSONObject jsonObj = new JSONObject(result.toString());
-				JSONObject jsonObjRef = (JSONObject) jsonObj.get("data");
-
-				statusCode = jsonObj.get("statusCode").toString();
-				serverRef = jsonObjRef.get("serverRef").toString();
-				msisdn = jsonObjRef.get("msisdn").toString();
-				serviceId = jsonObjRef.get("serviceId").toString();
-
-				System.out.println(serverRef);
-			} catch (Exception e) {
-				logger.info(e.getMessage());
-			}
-			System.out.println(statusCode);
-
-			result_obj.put("OTP_SEND", statusCode);
-			result_obj.put("SERVER_REF", serverRef);
-			result_obj.put("MSISDN", msisdn);
-			result_obj.put("SERVICE_ID", serviceId);
-			result_obj.put("ACCESS_TOKEN", access_token);
-			result_obj.put("IS_DIALOG", is_dialog);
-		} else {
-			is_dialog = "none";
-			result_obj.put("OTP_SEND", statusCode);
-			result_obj.put("IS_DIALOG", is_dialog);
+		
+		HashMap<String, String> result_obj = null;
+		try {
+			result_obj = ideabizService.pinSubcription(mobile_no, subscriptionPaymentId, day);
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
+
+		
 
 		return result_obj;
 	}

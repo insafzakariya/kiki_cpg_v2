@@ -5,24 +5,17 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.ui.ModelMap;
 
-import com.kiki_cpg.development.controller.DialogScratchCardController;
 import com.kiki_cpg.development.entity.Packages;
 import com.kiki_cpg.development.entity.Policies;
-import com.kiki_cpg.development.entity.SubscriptionPayments;
 import com.kiki_cpg.development.entity.TblScratchCardCodes;
 import com.kiki_cpg.development.entity.TblScratchCards;
 import com.kiki_cpg.development.entity.ViewerPackages;
 import com.kiki_cpg.development.entity.ViewerPolicies;
-import com.kiki_cpg.development.repository.PackageRepository;
 import com.kiki_cpg.development.repository.ScratchCardCodesRepository;
 import com.kiki_cpg.development.service.PackagesService;
 import com.kiki_cpg.development.service.PolicyService;

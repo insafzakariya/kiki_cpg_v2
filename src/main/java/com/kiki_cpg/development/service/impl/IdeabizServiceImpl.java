@@ -25,6 +25,7 @@ import com.kiki_cpg.development.service.PaymentLogService;
 import com.kiki_cpg.development.service.PaymentService;
 import com.kiki_cpg.development.service.ViewerService;
 import com.kiki_cpg.development.service.ViewerUnsubcriptionService;
+import com.kiki_cpg.development.util.AppUtility;
 
 import java.sql.Timestamp;
 import java.util.Date;
@@ -62,6 +63,9 @@ public class IdeabizServiceImpl implements IdeabizService {
 
 	@Autowired
 	DialogClient dialogClient;
+	
+	@Autowired
+	private AppUtility appUtility;
 	
 
 	@Autowired
@@ -296,6 +300,53 @@ public class IdeabizServiceImpl implements IdeabizService {
 			e.printStackTrace();
 		}
 		return false;
+	}
+
+	@Override
+	public HashMap<String, String> pinSubcription(String mobile_no, String subscriptionPaymentId, String day)
+			throws Exception {
+		String accessToken = create_access_token();
+		
+		
+		String statusCode = "FAIL";
+		String serverRef = "";
+		String msisdn = "";
+		String serviceId = "";
+		String is_dialog = "dialog";
+		boolean isdialog = appUtility.getIsDialogNumber(mobile_no);
+		HashMap<String, String> result_obj = new LinkedHashMap<String, String>();
+		
+		if (isdialog) {
+			JSONObject jsonObj = dialogClient.pinSubscription(mobile_no, subscriptionPaymentId, day, accessToken);
+			try {
+				System.out.println("start");
+				
+				JSONObject jsonObjRef = (JSONObject) jsonObj.get("data");
+
+				statusCode = jsonObj.get("statusCode").toString();
+				serverRef = jsonObjRef.get("serverRef").toString();
+				msisdn = jsonObjRef.get("msisdn").toString();
+				serviceId = jsonObjRef.get("serviceId").toString();
+
+				System.out.println(serverRef);
+			} catch (Exception e) {
+				logger.info(e.getMessage());
+			}
+			System.out.println(statusCode);
+
+			result_obj.put("OTP_SEND", statusCode);
+			result_obj.put("SERVER_REF", serverRef);
+			result_obj.put("MSISDN", msisdn);
+			result_obj.put("SERVICE_ID", serviceId);
+			result_obj.put("ACCESS_TOKEN", accessToken);
+			result_obj.put("IS_DIALOG", is_dialog);
+		} else {
+			is_dialog = "none";
+			result_obj.put("OTP_SEND", statusCode);
+			result_obj.put("IS_DIALOG", is_dialog);
+		}
+		
+		return result_obj;
 	}
 
 	/*

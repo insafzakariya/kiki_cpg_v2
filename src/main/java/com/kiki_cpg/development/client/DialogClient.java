@@ -1,6 +1,7 @@
 package com.kiki_cpg.development.client;
 
 
+
 import org.json.JSONObject;
 
 import com.kiki_cpg.development.dto.DialogOtpConfirmDto;
@@ -19,6 +20,8 @@ public interface DialogClient {
 	DialogOtpDto sendOtp(String mobile_no, Integer day, String accessToken) throws Exception;
 
 	JSONObject unsubscribe(String access_token, Viewers viewers, Integer day);
+
+	JSONObject pinSubscription(String mobile_no, String subscriptionPaymentId, String day, String accessToken) throws Exception;
 
 
 }

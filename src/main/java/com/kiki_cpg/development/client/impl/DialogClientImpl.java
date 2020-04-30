@@ -6,9 +6,6 @@ import java.util.ArrayList;
 
 import java.util.List;
 
-
-
-
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
@@ -29,7 +26,7 @@ import com.kiki_cpg.development.dto.DialogOtpDto;
 import com.kiki_cpg.development.entity.Viewers;
 import com.kiki_cpg.development.service.IdeabizService;
 import com.kiki_cpg.development.service.PaymentLogService;
-
+import com.kiki_cpg.development.util.AppConstant;
 
 @Service
 public class DialogClientImpl implements DialogClient {
@@ -40,7 +37,6 @@ public class DialogClientImpl implements DialogClient {
 	@Autowired
 	private IdeabizService ideabizService;
 
-
 	private static final Logger logger = LoggerFactory.getLogger(DialogClientImpl.class);
 
 	@Override
@@ -50,7 +46,8 @@ public class DialogClientImpl implements DialogClient {
 			System.out.println("payment confirm");
 			String paid = "Fail";
 			String accessToken = create_access_token();
-			String url = "https://ideabiz.lk/apicall/payment/v4/" + mobile_no + "/transactions/amount";
+			String url = AppConstant.URL_IDEABIZ_PAYMENT_CONFIRM_I + mobile_no
+					+ AppConstant.URL_IDEABIZ_PAYMENT_CONFIRM_II;
 			System.out.println(url);
 
 			HttpClient client = HttpClientBuilder.create().build();
@@ -58,15 +55,11 @@ public class DialogClientImpl implements DialogClient {
 			post.setHeader("content-type", "application/json");
 			post.setHeader("Authorization", accessToken);
 
-			//IdeabizConfig ideabizConfig = new IdeabizConfig();
-			//List<IdeabizConfig> ideabizConfigList = ideabizConfigRepository.findAll();
-			//ideabizConfig = ideabizConfigList.get(0);
-			System.out.println("check--------------------");
 			String serviceID = "";
 			if (subscribed_days == 1) {
-				serviceID = "bf110848-23ca-4b7d-8a3f-872b59bfd32e";
+				serviceID = AppConstant.IDEABIZ_SERVICE_1;
 			} else if (subscribed_days == 7) {
-				serviceID = "f0ce6a27-7aca-4e12-b121-25eeee7a840a";
+				serviceID = AppConstant.IDEABIZ_SERVICE_7;
 			}
 
 			String payment_json_string = "{\r\n" + "    \"amountTransaction\": {\r\n" + "        \"clientCorrelator\": "
@@ -88,15 +81,13 @@ public class DialogClientImpl implements DialogClient {
 			post.setEntity(params);
 			HttpResponse response = client.execute(post);
 
-//			System.out.println("Response  : "
-//	                + response.getEntity().getContent());
 			BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
 			StringBuffer result = new StringBuffer();
 			String line = "";
 			while ((line = rd.readLine()) != null) {
 				result.append(line);
 			}
-//			System.out.println(result);
+
 			JSONObject jsonObj = new JSONObject(result.toString());
 
 			if (jsonObj.has("amountTransaction")) {
@@ -105,7 +96,6 @@ public class DialogClientImpl implements DialogClient {
 				paid = "Success";
 				paymentLogService.createPaymentLog("Dialog", "-",
 						jsonObjRef.get("transactionOperationStatus").toString(), viwerId, mobile_no, result.toString());
-				// cron
 
 			} else if (jsonObj.has("requestError")) {
 
@@ -120,12 +110,9 @@ public class DialogClientImpl implements DialogClient {
 				paymentLogService.createPaymentLog("Dialog", jsonObjfault.get("code").toString(),
 						jsonObjfault.get("message").toString(), viwerId, mobile_no, result.toString());
 
-			}
-			// 2020-01-31
-			// UnsubcribeViwerNotInWhitelisted
-			else if (jsonObj.has("fault") && (jsonObj.has("Number is invalid, Number is not whitelisted"))
+			} else if (jsonObj.has("fault") && (jsonObj.has("Number is invalid, Number is not whitelisted"))
 					&& (jsonObj.has("Not a Whitelisted Number"))) {
-
+				paymentLogService.createPaymentLog("Dialog", "", "", viwerId, mobile_no, result.toString());
 			}
 
 			return paid;
@@ -139,10 +126,9 @@ public class DialogClientImpl implements DialogClient {
 
 	@Override
 	public String create_access_token() {
-		String url = "https://ideabiz.lk/apicall/token";
 
 		HttpClient client = HttpClientBuilder.create().build();
-		HttpPost post = new HttpPost(url);
+		HttpPost post = new HttpPost(AppConstant.URL_IDEABIZ_ACCESS_TOKEN);
 
 		// add header
 		post.setHeader("content-type", "application/x-www-form-urlencoded");
@@ -182,17 +168,13 @@ public class DialogClientImpl implements DialogClient {
 		System.out.println("referen-token is: " + dialogOtpConfirmDto.getServerRef());
 		System.out.println("subscriptionPaymentId is: " + dialogOtpConfirmDto.getSubscriptionPaymentId());
 
-
-		String url = "https://ideabiz.lk/apicall/pin/subscription/v1/submitPin";
-
 		HttpClient client = HttpClientBuilder.create().build();
-		HttpPost post = new HttpPost(url);
+		HttpPost post = new HttpPost(AppConstant.URL_IDEABIZ_SUBMIT_PIN);
 
 		post.setHeader("content-type", "application/json");
 		post.setHeader("Authorization", accessToken);
 
 		try {
-			System.out.println("start Pin Confirm");
 			JSONObject json = new JSONObject();
 
 			// Body
@@ -215,7 +197,6 @@ public class DialogClientImpl implements DialogClient {
 			System.out.println(result);
 
 			JSONObject jsonObj = new JSONObject(result.toString());
-			System.out.println(jsonObj.get("statusCode"));
 
 			JSONObject jsonObjRef = (JSONObject) jsonObj.get("data");
 
@@ -231,7 +212,7 @@ public class DialogClientImpl implements DialogClient {
 			try {
 				dialogOtpDto.setTransactionOperationStatus(jsonObjRef.get("transactionOperationStatus").toString());
 			} catch (Exception e) {
-
+				e.printStackTrace();
 			}
 
 			return dialogOtpDto;
@@ -245,12 +226,10 @@ public class DialogClientImpl implements DialogClient {
 
 	@Override
 	public DialogOtpDto sendOtp(String mobile_no, Integer day, String access_token) throws Exception {
-		String serverRef = "";
-		String url = "https://ideabiz.lk/apicall/pin/subscription/v1/subscribe";
 		try {
 
 			HttpClient client = HttpClientBuilder.create().build();
-			HttpPost post = new HttpPost(url);
+			HttpPost post = new HttpPost(AppConstant.URL_IDEABIZ_OTP);
 
 			// add header
 			post.setHeader("content-type", "application/json");
@@ -263,11 +242,10 @@ public class DialogClientImpl implements DialogClient {
 			// Body
 			json.put("method", "mobilevisions");
 			json.put("msisdn", mobile_no);
-			System.out.println("DAY" + day);
 			if (day == 1) {
-				json.put("serviceId", "BF110848-23CA-4B7D-8A3F-872B59BFD32E");
+				json.put("serviceID", AppConstant.IDEABIZ_SERVICE_1);
 			} else if (day == 7) {
-				json.put("serviceId", "f0ce6a27-7aca-4e12-b121-25eeee7a840a");
+				json.put("serviceID", AppConstant.IDEABIZ_SERVICE_7);
 			}
 
 			StringEntity params = new StringEntity(json.toString());
@@ -295,8 +273,6 @@ public class DialogClientImpl implements DialogClient {
 			dialogOtpDto.setMsisdn(jsonObjRef.get("msisdn").toString());
 			dialogOtpDto.setServiceId(jsonObjRef.get("serviceId").toString());
 
-			System.out.println(serverRef);
-
 			return dialogOtpDto;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -307,10 +283,8 @@ public class DialogClientImpl implements DialogClient {
 
 	@Override
 	public JSONObject unsubscribe(String access_token, Viewers viewers, Integer day) {
-		String url = "https://ideabiz.lk/apicall/subscription/v3/unsubscribe";
-
 		HttpClient client = HttpClientBuilder.create().build();
-		HttpPost post = new HttpPost(url);
+		HttpPost post = new HttpPost(AppConstant.URL_IDEABIZ_UNSUBSCRIBE);
 
 		post.setHeader("content-type", "application/json");
 
@@ -323,13 +297,10 @@ public class DialogClientImpl implements DialogClient {
 			System.out.println(tel);
 			json.put("method", "WEB");
 			json.put("msisdn", tel);
-			System.out.println("ussubscribe===" + day);
 			if (day == 1) {
-				json.put("serviceID", "bf110848-23ca-4b7d-8a3f-872b59bfd32e");
-				System.out.println("SUB" + day);
+				json.put("serviceID", AppConstant.IDEABIZ_SERVICE_1);
 			} else if (day == 7) {
-				System.out.println("sdhchsd" + day);
-				json.put("serviceID", "f0ce6a27-7aca-4e12-b121-25eeee7a840a");
+				json.put("serviceID", AppConstant.IDEABIZ_SERVICE_7);
 			}
 
 			StringEntity params = new StringEntity(json.toString());
@@ -350,6 +321,44 @@ public class DialogClientImpl implements DialogClient {
 			e.printStackTrace();
 			return null;
 		}
+	}
+
+	@Override
+	public JSONObject pinSubscription(String mobile_no, String subscriptionPaymentId, String day, String accessToken) throws Exception {
+		HttpClient client = HttpClientBuilder.create().build();
+		HttpPost post = new HttpPost(AppConstant.URL_IDEABIZ_SUBSCRIBE);
+
+		post.setHeader("content-type", "application/json");
+		post.setHeader("Authorization", accessToken);
+		
+		JSONObject json = new JSONObject();
+
+		json.put("method", "mobilevisions");
+		json.put("msisdn", mobile_no);
+		
+		if (Integer.parseInt(day) == 1) {
+			json.put("serviceId", AppConstant.IDEABIZ_SERVICE_1);
+		} else if (Integer.parseInt(day) == 7) {
+			json.put("serviceId", AppConstant.IDEABIZ_SERVICE_7);
+		}
+		
+		StringEntity params = new StringEntity(json.toString());
+		
+		post.setEntity(params);
+		HttpResponse response = client.execute(post);
+
+		System.out.println("Response  : " + response.getEntity().getContent());
+
+		BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+		StringBuffer result = new StringBuffer();
+		String line = "";
+		while ((line = rd.readLine()) != null) {
+			result.append(line);
+		}
+		System.out.println(result);
+		JSONObject jsonObj = new JSONObject(result.toString());
+		
+		return jsonObj;
 	}
 
 }

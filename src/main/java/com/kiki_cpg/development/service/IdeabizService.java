@@ -43,4 +43,6 @@ public interface IdeabizService {
 
 	public boolean processUnsubscribe(SubscriptionPayments subscriptionPayment);
 
+	public HashMap<String, String> pinSubcription(String mobile_no, String subscriptionPaymentId, String day) throws Exception;
+
 }
