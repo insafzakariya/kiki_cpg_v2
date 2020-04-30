@@ -28,7 +28,6 @@ public interface IdeabizService {
 	
 	public String genarate_authorization_code();
 	
-	//public HashMap<String, String> pin_subscription_confirm(Map<String, String> data,SubscriptionPaymentDto subscriptionPaymentDto, String systemToken) throws Exception;
 	
 	public Viewers get_viwer_id_by_sID(Integer subscriptionPaymentId);
 	

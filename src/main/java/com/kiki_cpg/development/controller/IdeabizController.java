@@ -1,26 +1,15 @@
 package com.kiki_cpg.development.controller;
-
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.HttpClientBuilder;
-//import org.apache.log4j.Logger;
-import org.json.JSONObject;
+ 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import java.util.LinkedHashMap;
 
 import com.kiki_cpg.development.dto.SubscriptionPaymentDto;
-import com.kiki_cpg.development.service.IdeabizService;
-import com.kiki_cpg.development.util.AppUtility;
+import com.kiki_cpg.development.service.IdeabizService; 
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -35,10 +24,6 @@ public class IdeabizController {
 
 	@Autowired
 	IdeabizService ideabizService;
-
-	@Autowired
-	private AppUtility appUtility;
-
 	
 	@RequestMapping(value = "/ideabiz/create_access_token", method = RequestMethod.POST)
 	@ResponseBody

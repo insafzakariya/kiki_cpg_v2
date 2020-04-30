@@ -61,9 +61,7 @@ public class MobitelWsClientServiceImpl implements MobitelWsClientService{
 
 	@Autowired
 	OTPService otpService;
-//
-//	@Autowired
-//	CronService cronService;
+
 
 	// Payment Proceed
 	private Integer viewer_id = null;
@@ -101,24 +99,7 @@ public class MobitelWsClientServiceImpl implements MobitelWsClientService{
 			logger.info("charge from mobitel users has started");
 			System.out.println("charge from mobitel users has started");
 			int transactioncount = 0;
-			// Viewers viewers = new Viewers();
-			// List<Viewers> viewersList = new ArrayList<>();
-//        if (!isSecondTime) {
-//
-//            viewerSubscriptions = viewerSubscriptionRepository.getViewersByViewerTypeAndSubscriptionStatus(SubscriptionType.MOBITEL_ADD_TO_BILL);
-////            for (int i = 0; i <1 ; i++) {
-////                viewerSubscriptionList.add(viewerSubscriptions.get(i));
-////                System.out.println("id : "+viewerSubscriptionList.get(i).getViewers());
-////            }
-//        } else {
-//
-//            viewerSubscriptions = viewerSubscriptionRepository.getUsersWhoDidNotUpdateByTaskScheduler(SubscriptionType.MOBITEL_ADD_TO_BILL);
-////            for (int i = 0; i <10 ; i++) {
-////                viewerSubscriptionList.add(viewerSubscriptions.get(i));
-////                System.out.println("id : "+viewerSubscriptionList.get(i).getViewers());
-////            }
-//
-//        }
+
 
 			int totalSubscribedUser = viewersList.size();
 

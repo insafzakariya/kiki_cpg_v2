@@ -21,22 +21,10 @@ public class MobitelController {
 	@Autowired
 	MobitelWsClientService mobitelWsClientService;
 	
-	@Autowired
-	private AppUtility appUtility;
 	
 	@RequestMapping(value = "/mobitel/payment", method = RequestMethod.POST)
 	public String activateDataBundle(String mobileNo, int viewerId, String activationStatus){
-		mobitelWsClientService.activateDataBundle(mobileNo, viewerId, activationStatus);
+		String resp = mobitelWsClientService.activateDataBundle(mobileNo, viewerId, activationStatus);
 		return null;
-	}
-	
-	@PostMapping(value="/verifyMobitelNo")
-	@ResponseBody
-	public String verifyMobitelNo(@RequestParam String mobile_no) {
-		
-		if(appUtility.getIsMobitelNumber(mobile_no)) {
-			return "true";	
-		}
-		return "false";
 	}
 }
