@@ -14,6 +14,7 @@ import com.kiki_cpg.development.repository.SubscriptionRepository;
 import com.kiki_cpg.development.repository.ViewerTrialPeriodAssociationRepository;
 import com.kiki_cpg.development.service.MobitelService;
 import com.kiki_cpg.development.service.MobitelWsClientService;
+import com.kiki_cpg.development.util.AppUtility;
 
 @Service
 public class MobitelServiceImpl implements MobitelService {
@@ -24,10 +25,10 @@ public class MobitelServiceImpl implements MobitelService {
 	private SubscriptionRepository subscriptionRepository;
 
 	@Autowired
-	private MobitelWsClientService mobitelWsClientService;
-
-	@Autowired
 	private ViewerTrialPeriodAssociationRepository viewerTrialPeriodAssociationRepository;
+	
+	@Autowired
+	private AppUtility appUtility;
 
 	@Override
 	public SubscriptionPaymentDto getSubscriptionPaymentDto(int paymentMethodId, int subscriptionPaymentId,
@@ -43,7 +44,7 @@ public class MobitelServiceImpl implements MobitelService {
 			try {
 				if (!numberString.isEmpty() && !numberString.equals("null")) {
 					logger.info("mobileNo = " + numberString);
-					if (mobitelWsClientService.getIsMobitelNumber(numberString)) {
+					if (appUtility.getIsMobitelNumber(numberString)) {
 						if (isTrial) { // add trial period
 
 							ViewerTrialPeriodAssociation viewerTrialPeriodAssociation = viewerTrialPeriodAssociationRepository

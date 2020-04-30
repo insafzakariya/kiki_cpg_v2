@@ -15,8 +15,6 @@ public interface MobitelWsClientService {
 
 	public String createMsisdnForDataBundle(String number);
 
-	public boolean getIsMobitelNumber(String number);
-
 	public String activateDataBundle(String mobileNo, int viewerId, String activationStatus);
 
 	public void testMobitelConnection();

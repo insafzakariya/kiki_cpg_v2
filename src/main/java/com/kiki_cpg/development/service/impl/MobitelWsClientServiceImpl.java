@@ -1,6 +1,7 @@
 package com.kiki_cpg.development.service.impl;
 
 import com.google.gson.JsonObject;
+import com.kiki_cpg.development.client.MobitelClient;
 import com.kiki_cpg.development.entity.MerchantAccount;
 import com.kiki_cpg.development.entity.ViewerSubscription;
 import com.kiki_cpg.development.entity.ViewerTrialPeriodAssociation;
@@ -11,6 +12,7 @@ import com.kiki_cpg.development.repository.TrialPeriodRepository;
 import com.kiki_cpg.development.repository.ViewerRepository;
 import com.kiki_cpg.development.repository.ViewerSubscriptionRepository;
 import com.kiki_cpg.development.service.ContentService;
+import com.kiki_cpg.development.service.MobitelService;
 import com.kiki_cpg.development.service.MobitelWsClientService;
 import com.kiki_cpg.development.service.OTPService;
 import com.kiki_cpg.development.service.PaymentLogService;
@@ -29,6 +31,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -40,7 +43,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Service
-public class MobitelWsClientServiceImpl implements MobitelWsClientService{
+public class MobitelWsClientServiceImpl implements MobitelWsClientService {
 	@Autowired
 	ViewerRepository viewerRepository;
 
@@ -62,11 +65,13 @@ public class MobitelWsClientServiceImpl implements MobitelWsClientService{
 	@Autowired
 	OTPService otpService;
 
+	@Autowired
+	private MobitelClient mobitelClient;
 
 	// Payment Proceed
 	private Integer viewer_id = null;
 	private Integer invoiceId = null;
-	private Double chargeAmount = null;
+	private Double chargeAmounts = null;
 	private String cron_start_time = null;
 	private String paymentStatus = null;
 	private String cronType = null;
@@ -76,9 +81,8 @@ public class MobitelWsClientServiceImpl implements MobitelWsClientService{
 	Integer transactionId = 460000;
 	private List<ViewerSubscription> viewerSubscriptions = new ArrayList<>();
 	private List<ViewerSubscription> viewerSubscriptionList = new ArrayList<>();
-	
-	private static final Logger logger = LoggerFactory.getLogger(MobitelWsClientServiceImpl.class);
 
+	private static final Logger logger = LoggerFactory.getLogger(MobitelWsClientServiceImpl.class);
 
 	public static String mobitelKey = "TW9iaXRlbFBheW1lbnRTZWNyZXRLZXk=";
 
@@ -99,7 +103,6 @@ public class MobitelWsClientServiceImpl implements MobitelWsClientService{
 			logger.info("charge from mobitel users has started");
 			System.out.println("charge from mobitel users has started");
 			int transactioncount = 0;
-
 
 			int totalSubscribedUser = viewersList.size();
 
@@ -193,76 +196,22 @@ public class MobitelWsClientServiceImpl implements MobitelWsClientService{
 	}
 
 	@Override
-	public boolean getIsMobitelNumber(String number) {
-		if (number == null || number.isEmpty()) {
-			return false;
-		}
-		String prefix = "0";
-		number = prefix + number.substring(number.length() - 9, number.length());
-		String serviceProviderCode = number.substring(0, 3);
-		if (serviceProviderCode.equals("070") || serviceProviderCode.equals("071")) {
-			return true;
-		}
-		return false;
-	}
-
-	@Override
 	public String activateDataBundle(String mobileNo, int viewerId, String activationStatus) {
 		try {
-			// TODO create a generic rest client
+
+			ResponseEntity<?> res = mobitelClient.createAccessCode();
 			String returnValue = "0002";
-			final String uri = "https://apphub.mobitel.lk/mobitelint/mapis/developeroauth/oauth2/token";
-			RestTemplate restTemplate = new RestTemplate();
-			HttpHeaders headers = new HttpHeaders();
-			headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-			headers.setCacheControl("no-cache");
-			headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-			MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
-			map.add("grant_type", "password");
-			map.add("client_id", "79305786-dbcb-4d49-bd31-ce861f1f0fe5");
-			map.add("username", "susilatv");
-			map.add("password", "susilatv@api");
-			map.add("scope", "default");
+
 			int lastTransaciontId = 0;
-//        MerchantAccountModel merchantAccountModel = new MerchantAccountModel();
 			try {
-				HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(map,
-						headers);
-				org.springframework.http.ResponseEntity<?> res = restTemplate.exchange(uri, HttpMethod.POST, request,
-						Object.class);
 				LinkedHashMap<String, String> response = (LinkedHashMap<String, String>) res.getBody();
-
-				final String uri1 = "https://apphub.mobitel.lk/mobitelint/mapis/susilatv/manage";
-
-				headers = new HttpHeaders();
-				headers.setContentType(MediaType.APPLICATION_JSON);
-				headers.set("authorization", "Bearer" + response.get("access_token"));
-				headers.setCacheControl("no-cache");
-				headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-				headers.set("x-ibm-client-id", "79305786-dbcb-4d49-bd31-ce861f1f0fe5");
-				JsonObject jsObj = new JsonObject();
-
-				jsObj.addProperty("status", activationStatus);
-				jsObj.addProperty("mobileNo", mobileNo);
-				System.out.println("object--------- " + jsObj.toString());
-				System.out.println("resCode--------- " + (LinkedHashMap<String, String>) res.getBody());
-
 				lastTransaciontId = merchantAccountRepository.getLastTransactionId();
-				//lastTransaciontId = ++lastTransaciontId;
 
 				while (returnValue.equals("0002")) {
-					System.out.println("while test ");
-					jsObj.addProperty("id",++lastTransaciontId);
-					HttpEntity<String> req = new HttpEntity<String>(jsObj.toString(), headers);
-					res = restTemplate.exchange(uri1, HttpMethod.POST, req, Object.class);
-					response = (LinkedHashMap<String, String>) res.getBody();
-					returnValue = response.get("resultCode");
-
-					serverResponse = String.valueOf((LinkedHashMap<String, String>) res.getBody());
-					System.out.println("result  : " + response.get("resultCode"));
-					chargeAmount = Double.valueOf(5);
-					responseDateAndTime = new Date();
-
+					ResponseEntity<?> resp = mobitelClient.mobitelManage(response.get("access_token"), activationStatus,
+							mobileNo, lastTransaciontId);
+					LinkedHashMap<String, String> response2 = (LinkedHashMap<String, String>) resp.getBody();
+					returnValue = response2.get("resultCode");
 				}
 
 			} catch (Exception e) {
@@ -271,9 +220,9 @@ public class MobitelWsClientServiceImpl implements MobitelWsClientService{
 				logger.info(e.getMessage());
 			}
 			double amount = 5;
-			TransactionType transactionType = TransactionType.ACTIVATE;
+			//TransactionType transactionType = TransactionType.ACTIVATE;
 			if (activationStatus.equals("2")) {
-				transactionType = TransactionType.DEACTIVATE;
+				//transactionType = TransactionType.DEACTIVATE;
 				amount = 0;
 			}
 			if (returnValue.equals("1000")) { // add record to merchant account table
@@ -304,14 +253,13 @@ public class MobitelWsClientServiceImpl implements MobitelWsClientService{
 				merchantAccount.setDate(new Date());
 				merchantAccount.setViewerId(viewerId);
 				merchantAccount.setSuccess(false);
-				merchantAccount.setTransactionType(TransactionType.ACTIVATE);
+				merchantAccount.setTransactionType(TransactionType.DEACTIVATE);
 				merchantAccountRepository.save(merchantAccount);
 				paymentStatus = "Fail";
 				responseMsg = "Activation Unsuccessful Error Occurred With Transaction Id";
 				// merchantAccountModel.addMerchantAccountDetails("KiKi",lastTransaciontId, new
 				// Date(), amount, viewerId, false, transactionType);
 			}
-
 
 			return returnValue;
 		} catch (Exception e) {
