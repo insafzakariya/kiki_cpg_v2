@@ -7,6 +7,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ViewerSubscriptionRepository extends JpaRepository<ViewerSubscription,Integer>, ViewerSubscriptionRepositoryCustom {
+
+	ViewerSubscription findOneByViewers(Integer viewerId);
 //List<ViewerSubscription>findBySubscriptionType(SubscriptionType mobitelAddToBill);
 
 }

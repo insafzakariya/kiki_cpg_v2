@@ -50,9 +50,6 @@
 
 							<div class="form-box">
 								<form id="paymentMethodForm">
-
-
-
 									<div class="row" style="margin-left: 0px; margin-right: 0px;">
 										<input type="radio" class="stv-radio-button"
 											name="optionsRadios" value="4" id="button3" /> <label
@@ -142,7 +139,8 @@
 	 	});
 	 	
 	 	$('#button4').click(function(){
-	 		alert("4")
+	 		sessionStorage.setItem('paymentId', $('#button4').val());
+	 		window.location.replace(baseURL + "/plan");
 	 	});
 	 	
 	 	$('#button5').click(function(){

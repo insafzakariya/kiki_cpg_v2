@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
 	pageEncoding="ISO-8859-1"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -7,8 +8,7 @@
 <meta name="viewport"
 	content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
-<link href="<c:url value='/static/css/unsubscribed.css'/>"
-	rel="stylesheet">
+<link href="<c:url value='/static/css/unsubscribed.css'/>" rel="stylesheet">
 
 </head>
 <body>
@@ -20,7 +20,6 @@
 
 		</div>
 		<div class="body_container">
-			<input type="hidden" name="token" value="${paymentToken}"></>
 			<button type="submit" class="form_submit" id="btn-home">Back to home</button>
 		</div>
 	</div>

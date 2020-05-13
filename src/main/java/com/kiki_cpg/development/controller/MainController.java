@@ -11,7 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -32,13 +33,13 @@ public class MainController {
 	private MobitelService mobitelService;
 
 	@GetMapping(value = "/thanks_ideabiz")
-	public String thanks(HttpServletRequest request) {
+	public ModelAndView thanks(HttpServletRequest request) {
 		ModelAndView view = new ModelAndView("thanks/thanks");
 		HttpSession session = request.getSession();
 		String paymentToken = (String) session.getAttribute("token");
 		System.out.println(paymentToken);
 		view.addObject("paymentToken", paymentToken);
-		return "Thanks";
+		return view;
 	}
 
 	@GetMapping(value = { "/mobitel-verify" })
@@ -71,7 +72,8 @@ public class MainController {
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.info("could not validate number exit with exception  = " + e);
-			model.setViewName("error");
+			model.addObject("errorMessage", "Could not validate number exit with exception  = " + e);
+			model.setViewName("error/error");
 		}
 		return model;
 
@@ -96,7 +98,8 @@ public class MainController {
 			return view;
 		} catch (Exception e) {
 			e.printStackTrace();
-			ModelAndView mav = new ModelAndView("error");
+			ModelAndView mav = new ModelAndView("error/error");
+			mav.addObject("errorMessage", "Error");
 			return mav;
 		}
 
@@ -110,7 +113,8 @@ public class MainController {
 			return view;
 		} catch (Exception e) {
 			e.printStackTrace();
-			ModelAndView mav = new ModelAndView("error");
+			ModelAndView mav = new ModelAndView("error/error");
+			mav.addObject("errorMessage", "Error");
 			return mav;
 		}
 
@@ -146,7 +150,7 @@ public class MainController {
 		if (isValidate) {
 			return new ModelAndView("strech-card/strech-card");
 		} else {
-			ModelAndView modelAndView = new ModelAndView("error");
+			ModelAndView modelAndView = new ModelAndView("error/error");
 			modelAndView.addObject("errorMessage", "Subscripion payment is null.");
 			return modelAndView;
 		}
@@ -182,11 +186,62 @@ public class MainController {
 		return new ModelAndView("already-subscribed/already-subscribed");
 	}
 
-	@GetMapping(value = "/error")
-	public ModelAndView error(HttpServletRequest request) {
-		ModelAndView modelAndView = new ModelAndView("error");
+	@GetMapping(value = { "/error-page/{type}", "/error-page" })
+	public ModelAndView error(HttpServletRequest request, @PathVariable(name = "type", required = false) String type) {
+		System.out.println("call error");
+		ModelAndView modelAndView = new ModelAndView("error/error");
 		modelAndView.addObject("errorMessage", "Error ");
+
+		if (type != null) {
+			switch (type) {
+			case "1":
+				modelAndView.addObject("errorMessage", "Session Expiered");
+				break;
+
+			default:
+				break;
+			}
+		}
 		return modelAndView;
+	}
+
+	@RequestMapping(value = "/mobitel/mobitelPay", method = RequestMethod.GET)
+	public ModelAndView mobitelPay(
+			@RequestParam(value = "bridgeId", required = false, defaultValue = "0") int subscriptionID,
+			HttpServletRequest request) throws IOException {
+		ModelAndView modelAndView = new ModelAndView();
+
+		if (subscriptionID == 0) {
+			logger.info("bridgeID not available");
+			modelAndView.addObject("errorMessage", "Bridge ID not Available ");
+			modelAndView.setViewName("error/error");
+			return modelAndView;
+		} else if (subscriptionPaymentService.isValidateById(subscriptionID)) {
+			modelAndView.setViewName("mobitel-payment-load/mobitel-payment-load");
+			return modelAndView;
+		} else {
+			logger.info("Session Expired");
+			modelAndView.addObject("errorMessage", "Session Expired");
+			modelAndView.setViewName("error/error");
+			return modelAndView;
+		}
+
+	}
+
+	@GetMapping(value = "/mobitel/unsubscribe-page")
+	public ModelAndView unsubscribePage(HttpServletRequest request) throws IOException {
+		ModelAndView modelAndView = new ModelAndView("mobitel-unsubscribe/mobitel_unsubscribe");
+
+		return modelAndView;
+
+	}
+	
+	@GetMapping(value = "/unsubscribed")
+	public ModelAndView unsubscribe(HttpServletRequest request) throws IOException {
+		ModelAndView modelAndView = new ModelAndView("unsubscribe/unsubscribed");
+
+		return modelAndView;
+
 	}
 
 }

@@ -50,7 +50,7 @@
                
                 
                 
-                        <div class="alert " style="align-items: center;">
+                        <div class="alert " style="align-items: center; color: white;">
                         	<span>${errorMessage}</span>
                             <p >
                                       Oh snap! Your payment is not successful. Please try again.

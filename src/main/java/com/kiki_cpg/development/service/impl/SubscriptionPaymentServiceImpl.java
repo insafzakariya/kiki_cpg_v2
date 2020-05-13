@@ -34,6 +34,7 @@ import com.kiki_cpg.development.repository.SubscriptionPaymentRepository;
 import com.kiki_cpg.development.repository.SubscriptionRepository;
 import com.kiki_cpg.development.repository.SystemPropertyRepository;
 import com.kiki_cpg.development.repository.ViewerRepository;
+import com.kiki_cpg.development.repository.ViewerSubscriptionRepository;
 import com.kiki_cpg.development.repository.ViewerTrialPeriodAssociationRepository;
 import com.kiki_cpg.development.repository.Custom.PaymentRepositoryCustom;
 import com.kiki_cpg.development.service.SubscriptionPaymentService;
@@ -72,11 +73,12 @@ public class SubscriptionPaymentServiceImpl implements SubscriptionPaymentServic
 
 	@Autowired
 	private PaymentMethodRepository paymentMethodRepository;
-	
+
+	@Autowired
+	private ViewerSubscriptionRepository viewerSubscriptionRepository;
+
 	@Autowired
 	private AppUtility appUtility;
-	
-	
 
 	@Override
 	public SubscriptionPaymentDto getSubscriptionPaymentByToken(String paymentToken, String type) throws Exception {
@@ -160,8 +162,9 @@ public class SubscriptionPaymentServiceImpl implements SubscriptionPaymentServic
 		dto.setSubscriptionPaymentId(subscriptionPayments.getSubscriptionPaymentID());
 		dto.setTokenHash(subscriptionPayments.getTokenHash());
 		dto.setViewerId(subscriptionPayments.getViewerID());
-		dto.setMobile(viewer.getMobileNumber());
-
+		if (viewer != null) {
+			dto.setMobile(viewer.getMobileNumber());
+		}
 		if (viewerTrialPeriodAssociation != null && !viewerTrialPeriodAssociation.isActivated()) {
 			dto.setTrialVerify(true);
 		} else {
@@ -170,9 +173,11 @@ public class SubscriptionPaymentServiceImpl implements SubscriptionPaymentServic
 
 		List<PaymentPolicyDto> paymentMethods = new ArrayList<PaymentPolicyDto>();
 
-		paymentPolicies.forEach(e -> {
-			paymentMethods.add(getPaymentPolicyDto(e));
-		});
+		if (paymentPolicies != null) {
+			paymentPolicies.forEach(e -> {
+				paymentMethods.add(getPaymentPolicyDto(e));
+			});
+		}
 
 		dto.setPaymentMethods(paymentMethods);
 
@@ -217,7 +222,7 @@ public class SubscriptionPaymentServiceImpl implements SubscriptionPaymentServic
 	}
 
 	@Override
-	public SubscriptionPayments validatePaymentToken(String token) {
+	public SubscriptionPaymentDto validatePaymentToken(String token) {
 
 		SubscriptionPayments subscriptionPaymentsOne = subscriptionPaymentRepository
 				.findOneByTokenHashAndCreatedDateLessThanEqualAndExpireDateGreaterThanEqualAndStatus(token, new Date(),
@@ -225,7 +230,8 @@ public class SubscriptionPaymentServiceImpl implements SubscriptionPaymentServic
 
 		if (subscriptionPaymentsOne != null) {
 			System.out.println("1");
-			return subscriptionPaymentsOne;
+			return getSubscriptionPaymentDto(subscriptionPaymentsOne, null, false, null,
+					null);
 		} else {
 			System.out.println("2");
 			return null;
@@ -253,16 +259,16 @@ public class SubscriptionPaymentServiceImpl implements SubscriptionPaymentServic
 		PaymentMethods paymentMethods = paymentMethodRepository.findById(paymentMethodId).get();
 		System.out.println(paymentMethods == null);
 		List<PackageDto> packageDtos = new ArrayList<PackageDto>();
-		paymentMethods.getPaymentMethodPlans().forEach(e-> {
+		paymentMethods.getPaymentMethodPlans().forEach(e -> {
 			PackageDto packageDto = new PackageDto();
 			packageDto.setName(e.getName());
-			packageDto.setValue("Rs. "+e.getValue()+" + Tax per day");
+			packageDto.setValue("Rs. " + e.getValue() + " + Tax per day");
 			packageDto.setOffer(e.getOffer());
 			packageDto.setPaymentMethodId(paymentMethodId);
 			packageDto.setDay(e.getDays());
 			packageDtos.add(packageDto);
 		});
-		
+
 		return packageDtos;
 	}
 
@@ -278,8 +284,8 @@ public class SubscriptionPaymentServiceImpl implements SubscriptionPaymentServic
 			ViewerTrialPeriodAssociation viewerTrialPeriodAssociation = viewerTrialPeriodAssociationRepository
 					.findOneByViewerId(subscriptionPayments.getViewerID());
 
-			SubscriptionPaymentDto subscriptionPaymentDto = getSubscriptionPaymentDto2(subscriptionPayments,
-				viewer, viewerTrialPeriodAssociation);
+			SubscriptionPaymentDto subscriptionPaymentDto = getSubscriptionPaymentDto2(subscriptionPayments, viewer,
+					viewerTrialPeriodAssociation);
 
 			SystemProperty systemProperty = systemPropertyRepository
 					.findOneByKeyValue("susilawebpay.mcash.payment.url");
@@ -294,7 +300,7 @@ public class SubscriptionPaymentServiceImpl implements SubscriptionPaymentServic
 
 				if (ideabiz != null) {
 
-					Config config = configRepository.getOne(1);	
+					Config config = configRepository.getOne(1);
 
 					if (ideabiz.getSubscribedDays() == 1) {
 						subscriptionPaymentDto.setIdeabizDays("Daily");
@@ -331,8 +337,7 @@ public class SubscriptionPaymentServiceImpl implements SubscriptionPaymentServic
 		return null;
 	}
 
-	private SubscriptionPaymentDto getSubscriptionPaymentDto2(SubscriptionPayments subscriptionPayments,
-			Viewers viewer,
+	private SubscriptionPaymentDto getSubscriptionPaymentDto2(SubscriptionPayments subscriptionPayments, Viewers viewer,
 			ViewerTrialPeriodAssociation viewerTrialPeriodAssociation) {
 		SubscriptionPaymentDto dto = new SubscriptionPaymentDto();
 		dto.setPackageId(subscriptionPayments.getPackageID());
@@ -348,6 +353,30 @@ public class SubscriptionPaymentServiceImpl implements SubscriptionPaymentServic
 		}
 
 		return dto;
+	}
+
+	@Override
+	public boolean updateViewerSubscription(Integer viewerId, SubscriptionType mobitelAddToBill, Date date,
+			String mobileNo) {
+		ViewerSubscription viewerSubscription = viewerSubscriptionRepository.findOneByViewers(viewerId);
+		if(viewerSubscription == null) {
+			viewerSubscription = new ViewerSubscription();
+			viewerSubscription.setDate(new Date());
+			viewerSubscription.setViewers(viewerId);
+		}
+		viewerSubscription.setSubscriptionType(mobitelAddToBill);
+		viewerSubscriptionRepository.save(viewerSubscription);
+
+		return true;
+	}
+
+	@Override
+	public boolean updateStatus(Integer subscriptionPaymentId) {
+		SubscriptionPayments subscriptionPayments = subscriptionPaymentRepository
+				.findOneBySubscriptionPaymentID(subscriptionPaymentId);
+		subscriptionPayments.setStatus(2);
+		subscriptionPaymentRepository.save(subscriptionPayments);
+		return true;
 	}
 
 }

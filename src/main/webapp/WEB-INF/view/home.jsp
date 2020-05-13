@@ -43,6 +43,12 @@
 						if(data.trialVerify == true){
 							console.log("trial");	
 						}
+					}).fail(function (resp){
+						console.log("error");
+						console.log(resp);
+						if(resp.status == '404'){
+							window.location.replace(baseURL + "/error-page/1");
+						}
 					});
 		}
 	</script>

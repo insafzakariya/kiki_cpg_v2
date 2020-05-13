@@ -15,8 +15,6 @@ public interface MobitelWsClientService {
 
 	public String createMsisdnForDataBundle(String number);
 
-	public String activateDataBundle(String mobileNo, int viewerId, String activationStatus);
-
 	public void testMobitelConnection();
 
 	public void logInToMobitelESMS(String userName, String password);
@@ -24,4 +22,5 @@ public interface MobitelWsClientService {
 	public int sendSms(String aliasMsg, String mobileNo, String message);
 
 	public void logOutFromMobitelESMS();
+
 }

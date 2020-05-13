@@ -72,3 +72,12 @@ body {
 			text-align: center;
 		}
 	}
+	
+	.hide{
+		display: none;
+	}
+	
+	.error-field{
+		margin-top: 15px;
+		padding : 5px;
+	}

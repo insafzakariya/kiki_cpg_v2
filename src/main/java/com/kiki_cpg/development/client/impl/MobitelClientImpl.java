@@ -1,9 +1,26 @@
 package com.kiki_cpg.development.client.impl;
 
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
+import java.util.Base64;
+import java.util.Date;
+import java.util.Random;
 
+import javax.xml.namespace.QName;
+import javax.xml.soap.MessageFactory;
+import javax.xml.soap.SOAPBody;
+import javax.xml.soap.SOAPConnection;
+import javax.xml.soap.SOAPConnectionFactory;
+import javax.xml.soap.SOAPElement;
+import javax.xml.soap.SOAPEnvelope;
+import javax.xml.soap.SOAPException;
+import javax.xml.soap.SOAPHeader;
+import javax.xml.soap.SOAPHeaderElement;
+import javax.xml.soap.SOAPMessage;
+import javax.xml.soap.SOAPPart;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -13,12 +30,15 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
+import org.w3c.dom.NodeList;
 
 import com.google.gson.JsonObject;
 import com.kiki_cpg.development.client.MobitelClient;
 
 @Component
 public class MobitelClientImpl implements MobitelClient{
+	
+	final static Logger logger = LoggerFactory.getLogger(MobitelClientImpl.class);
 
 	@Override
 	public ResponseEntity<?> createAccessCode() throws Exception{
@@ -66,6 +86,145 @@ public class MobitelClientImpl implements MobitelClient{
 		HttpEntity<String> req = new HttpEntity<String>(jsObj.toString(), headers);
 		ResponseEntity<?> res = restTemplate.exchange(uri1, HttpMethod.POST, req, Object.class);
 		return res;
+	}
+
+	@Override
+	public Integer updateOneCCTool(boolean isSubscribe, String mobileNumber, Date activatedDate, Date deactivatedDate) throws SOAPException, Exception {
+		SOAPConnectionFactory soapConnectionFactory = SOAPConnectionFactory.newInstance();
+		SOAPConnection soapConnection = soapConnectionFactory.createConnection();
+
+		// Send SOAP Message to SOAP Server
+		String url = "https://apphub.mobitel.lk/services/Subscriber";
+		SOAPMessage soapResponse = soapConnection.call(createSOAPRequest(isSubscribe, mobileNumber, activatedDate, deactivatedDate), url);
+
+		SOAPBody body = soapResponse.getSOAPBody();
+		int code = 0;
+		NodeList returnList = body.getElementsByTagName("ns2:vasSubscriptionLogResponse");
+		for (int k = 0; k < returnList.getLength(); k++) {
+			NodeList innerResultList1 = returnList.item(k).getChildNodes();
+			for (int l = 0; l < innerResultList1.getLength(); l++) {
+				NodeList innerResultList2 = innerResultList1.item(l).getChildNodes();
+				for (int m = 0; m < innerResultList2.getLength(); m++) {
+					if (innerResultList2.item(m).getNodeName()
+							.equalsIgnoreCase("responseCode")) {
+						code = Integer.valueOf(innerResultList2.item(m)
+								.getTextContent().trim());
+					}
+				}
+			}
+		}
+		logger.info("response code = "+code);
+		soapConnection.close();
+		return code;
+	}
+	
+	public SOAPMessage createSOAPRequest(boolean isSubscribe, String mobileNumber, Date activatedDate, Date deactivatedDate) throws Exception {
+		MessageFactory messageFactory = MessageFactory.newInstance();
+		SOAPMessage soapMessage = messageFactory.createMessage();
+		SOAPPart soapPart = soapMessage.getSOAPPart();
+
+		// SOAP Envelope
+		SOAPEnvelope envelope = soapPart.getEnvelope();
+		//envelope.addNamespaceDeclaration("example", serverURI);
+
+        /*
+        Constructed SOAP Request Message:
+        <SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:example="http://ws.cdyne.com/">
+            <SOAP-ENV:Header/>
+            <SOAP-ENV:Body>
+                <example:VerifyEmail>
+                    <example:email>mutantninja@gmail.com</example:email>
+                    <example:LicenseKey>123</example:LicenseKey>
+                </example:VerifyEmail>
+            </SOAP-ENV:Body>
+        </SOAP-ENV:Envelope>
+         */
+
+		// SOAP Body
+		SOAPBody soapBody = envelope.getBody();
+
+		QName bodyName = new QName("http://customer/","vasSubscriptionLog","m");
+		SOAPElement soapBodyElem = soapBody.addBodyElement(bodyName);
+
+		SOAPElement serviceSubscription = soapBodyElem.addChildElement(new QName("serviceSubscription"));
+		SOAPElement mobNumber = serviceSubscription.addChildElement(new QName("mobileNo"));
+		mobNumber.addTextNode(mobileNumber); //0703300399
+		SOAPElement requstType = serviceSubscription.addChildElement(new QName("requstType"));
+		String subscriptionMode = "SUBSCRIBED";
+		if(!isSubscribe){
+			subscriptionMode = "UNSUBSCRIBED";
+		}
+
+		requstType.addTextNode(subscriptionMode);
+		SOAPElement serviceName = serviceSubscription.addChildElement(new QName("serviceName"));
+		serviceName.addTextNode("MobitelAddToBill");
+		SOAPElement vendorCode = serviceSubscription.addChildElement(new QName("vendorCode"));
+		vendorCode.addTextNode("sUSUilatV3");
+		SOAPElement vendorName = serviceSubscription.addChildElement(new QName("vendorName"));
+		vendorName.addTextNode("KiKi");
+		SimpleDateFormat dateFormater = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		SOAPElement actDate = serviceSubscription.addChildElement(new QName("activatedDate"));
+		actDate.addTextNode(dateFormater.format(activatedDate));
+		if(deactivatedDate != null){
+			SOAPElement deactDate = serviceSubscription.addChildElement(new QName("deActivatedDate"));
+			deactDate.addTextNode(dateFormater.format(deactivatedDate));
+		}
+
+
+		SOAPHeader header = soapMessage.getSOAPHeader();
+		QName confirmation = new QName("http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd","Security", "wsse");         //SOAPHeaderElement confirmationHeader;
+
+		SOAPHeaderElement security =
+				header.addHeaderElement(confirmation);
+		security.addAttribute(new QName("xmlns:wsu"), "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd");
+		security.setMustUnderstand(true);
+
+		SOAPElement usernameToken =
+				security.addChildElement("UsernameToken", "wsse");
+		usernameToken.addAttribute(new QName("wsu:Id"), "UsernameToken-12349873");
+		SOAPElement username =
+				usernameToken.addChildElement("Username", "wsse");
+		username.addTextNode("susuilaTV");
+
+		SOAPElement password =
+				usernameToken.addChildElement("Password", "wsse");
+		password.setAttribute("Type", "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText");
+		password.addTextNode("susui7@tv#");
+
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+		String dateVal = formatter.format(new Date());
+		String nonce = Base64.getEncoder().encodeToString(getSaltString().getBytes("utf-8"));
+
+		SOAPElement encode =
+				usernameToken.addChildElement("Nonce", "wsse");
+		encode.setAttribute("EncodingType", "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-soap-message-security-1.0#Base64Binary");
+		encode.addTextNode(nonce);
+
+
+
+		SOAPElement createDate =
+				usernameToken.addChildElement("Created", "wsu");
+		createDate.addTextNode(dateVal);
+
+		soapMessage.saveChanges();
+
+        /* Print the request message */
+		logger.info("Soap message = "+soapMessage);
+
+		return soapMessage;
+	}
+	
+	public static String getSaltString() {
+		String SALTCHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+		StringBuilder salt = new StringBuilder();
+		Random rnd = new Random();
+		while (salt.length() < 10) { // length of the random string.
+			int index = (int) (rnd.nextFloat() * SALTCHARS.length());
+			salt.append(SALTCHARS.charAt(index));
+		}
+		String saltStr = salt.toString();
+		return saltStr;
+
 	}
 
 }

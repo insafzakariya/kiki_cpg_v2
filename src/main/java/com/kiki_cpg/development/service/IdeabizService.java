@@ -40,7 +40,7 @@ public interface IdeabizService {
 
 	ViewerUnsubcriptionDto getViewerUnsubcriptionDto(String mobileNo, Integer viewerId);
 
-	public boolean processUnsubscribe(SubscriptionPayments subscriptionPayment);
+	public boolean processUnsubscribe(SubscriptionPaymentDto subscriptionPayment);
 
 	public HashMap<String, String> pinSubcription(String mobile_no, String subscriptionPaymentId, String day) throws Exception;
 

@@ -220,6 +220,25 @@ public class IdeabizServiceImpl implements IdeabizService {
 				message = "ALREADY SUBSCRIBED";
 				paymentLogService.createPaymentLog("Dialog", "-", dialogOtpDto.getTransactionOperationStatus(),
 						subscriptionPaymentDto.getViewerId(), mobileNo, dialogOtpDto.getResult());
+				
+				processUnsubscribe(subscriptionPaymentDto);
+
+				message = "SUBSCRIBED";
+
+				Ideabiz ideabiz = getIdeabiz(subscriptionPaymentDto.getViewerId(), mobileNo,
+						dialogOtpConfirmDto.getDay());
+				if (ideabizRepository.save(ideabiz) != null) {
+					int invoiceId = proceedPayment(viewers, dialogOtpConfirmDto.getDay(), "Ideabiz", amount);
+					invoiceService.updatePolicyExpireIdeaBiz(invoiceId, subscriptionPaymentDto.getViewerId());
+					ViewerUnsubcriptionDto dto = getViewerUnsubcriptionDto(mobileNo, viewers.getViewerId());
+					viewerUnsubcriptionService.addViewerUnsubcription(dto);
+				} else {
+					message = "SUBSCRIBED SAVE ERROR";
+					paymentLogService.createPaymentLog("Dialog", "-", dialogOtpDto.getTransactionOperationStatus(),
+							subscriptionPaymentDto.getViewerId(), mobileNo, dialogOtpDto.getResult());
+
+					System.out.println("ALREADY SUBSCRIBED");
+				}
 
 				System.out.println("ALREADY SUBSCRIBED");
 			}
@@ -270,9 +289,9 @@ public class IdeabizServiceImpl implements IdeabizService {
 	}
 
 	@Override
-	public boolean processUnsubscribe(SubscriptionPayments subscriptionPayment) {
-		Viewers viewers = viewerService.getViewerByid(subscriptionPayment.getViewerID());
-		Ideabiz ideabiz = findOneByViwerIdAndSubscribe(subscriptionPayment.getViewerID(), 1);
+	public boolean processUnsubscribe(SubscriptionPaymentDto subscriptionPayment) {
+		Viewers viewers = viewerService.getViewerByid(subscriptionPayment.getViewerId());
+		Ideabiz ideabiz = findOneByViwerIdAndSubscribe(subscriptionPayment.getViewerId(), 1);
 
 		String access_token = create_access_token();
 

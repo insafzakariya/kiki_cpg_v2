@@ -66,18 +66,18 @@ public class MobitelWsClientServiceImpl implements MobitelWsClientService {
 	OTPService otpService;
 
 	@Autowired
-	private MobitelClient mobitelClient;
+	private MobitelService mobitelService;
 
 	// Payment Proceed
-	private Integer viewer_id = null;
-	private Integer invoiceId = null;
-	private Double chargeAmounts = null;
-	private String cron_start_time = null;
-	private String paymentStatus = null;
-	private String cronType = null;
-	private String responseMsg = null;
-	private String serverResponse = null;
-	private Date responseDateAndTime = null;
+	//private Integer viewer_id = null;
+	//private Integer invoiceId = null;
+	//private Double chargeAmounts = null;
+	//private String cron_start_time = null;
+	//private String paymentStatus = null;
+	//private String cronType = null;
+	//private String responseMsg = null;
+	//private String serverResponse = null;
+	//private Date responseDateAndTime = null;
 	Integer transactionId = 460000;
 	private List<ViewerSubscription> viewerSubscriptions = new ArrayList<>();
 	private List<ViewerSubscription> viewerSubscriptionList = new ArrayList<>();
@@ -119,13 +119,12 @@ public class MobitelWsClientServiceImpl implements MobitelWsClientService {
 				if (isTrialPeriodActivated(viewer.getViewerId())) {
 					continue;
 				}
-				viewer_id = viewer.getViewerId();
-				cron_start_time = startTime;
-				cronType = "Mobitel";
+				//String cron_start_time = startTime;
+				//String cronType = "Mobitel";
 
 				String msisdn = viewer.getMobileNumber();
 				msisdn = createMsisdnForDataBundle(msisdn);
-				String resultCode = activateDataBundle(msisdn, viewer.getViewerId(), "1");
+				String resultCode = mobitelService.activateDataBundle(msisdn, viewer.getViewerId(), "1");
 				paymentLogService.createPaymentLog("Mobitel", resultCode.toString(), "-", viewer.getViewerId(),
 						viewer.getMobileNumber(), "");
 				transactioncount = transactioncount + 1;
@@ -195,78 +194,6 @@ public class MobitelWsClientServiceImpl implements MobitelWsClientService {
 		return null;
 	}
 
-	@Override
-	public String activateDataBundle(String mobileNo, int viewerId, String activationStatus) {
-		try {
-
-			ResponseEntity<?> res = mobitelClient.createAccessCode();
-			String returnValue = "0002";
-
-			int lastTransaciontId = 0;
-			try {
-				LinkedHashMap<String, String> response = (LinkedHashMap<String, String>) res.getBody();
-				lastTransaciontId = merchantAccountRepository.getLastTransactionId();
-
-				while (returnValue.equals("0002")) {
-					ResponseEntity<?> resp = mobitelClient.mobitelManage(response.get("access_token"), activationStatus,
-							mobileNo, lastTransaciontId);
-					LinkedHashMap<String, String> response2 = (LinkedHashMap<String, String>) resp.getBody();
-					returnValue = response2.get("resultCode");
-				}
-
-			} catch (Exception e) {
-				logger.info("activation unsuccessful error occurred with transaction id  " + lastTransaciontId
-						+ "Exception = " + e);
-				logger.info(e.getMessage());
-			}
-			double amount = 5;
-			//TransactionType transactionType = TransactionType.ACTIVATE;
-			if (activationStatus.equals("2")) {
-				//transactionType = TransactionType.DEACTIVATE;
-				amount = 0;
-			}
-			if (returnValue.equals("1000")) { // add record to merchant account table
-				System.out.println("add record to merchant account table ");
-				MerchantAccount merchantAccount = new MerchantAccount();
-				merchantAccount.setId(0);
-				merchantAccount.setServiceId("KIKI");
-				merchantAccount.setTransactionId(lastTransaciontId);
-				merchantAccount.setAmount(amount);
-				merchantAccount.setDate(new Date());
-				merchantAccount.setViewerId(viewerId);
-				merchantAccount.setSuccess(true);
-				merchantAccount.setTransactionType(TransactionType.ACTIVATE);
-				merchantAccountRepository.save(merchantAccount);
-				paymentStatus = "Susccess";
-				responseMsg = "Activation Successful";
-				// merchantAccountRepository.addMerchantAccountDetails("KiKi",lastTransaciontId,
-				// new Date(), amount, viewerId, true, transactionType);
-			} else {
-				logger.info("activation unsuccessful error occurred with transaction id " + lastTransaciontId);
-				System.out.println("Activation Unsuccessful Error Occurred With Transaction Id " + lastTransaciontId);
-				logger.info("viewer id " + viewerId);
-				MerchantAccount merchantAccount = new MerchantAccount();
-				merchantAccount.setId(0);
-				merchantAccount.setServiceId("KiKi");
-				merchantAccount.setTransactionId(lastTransaciontId);
-				merchantAccount.setAmount(amount);
-				merchantAccount.setDate(new Date());
-				merchantAccount.setViewerId(viewerId);
-				merchantAccount.setSuccess(false);
-				merchantAccount.setTransactionType(TransactionType.DEACTIVATE);
-				merchantAccountRepository.save(merchantAccount);
-				paymentStatus = "Fail";
-				responseMsg = "Activation Unsuccessful Error Occurred With Transaction Id";
-				// merchantAccountModel.addMerchantAccountDetails("KiKi",lastTransaciontId, new
-				// Date(), amount, viewerId, false, transactionType);
-			}
-
-			return returnValue;
-		} catch (Exception e) {
-			// TODO: handle exception
-		}
-		return null;
-	}
 
 	@Override
 	public void testMobitelConnection() {

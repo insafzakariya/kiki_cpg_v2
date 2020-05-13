@@ -76,13 +76,55 @@ $("#dviu").click(function () {
 	var data = {
 			token : generalData.tokenHash
 	}
-	$.post(baseURL + "/unsubscribed/ideabiz_unsubscribe", data, function (resp, error) {
-		if(resp == true){
-			window.location.replace(baseURL + "/unsubscribed");
-		} else{
-			window.location.replace(baseURL + "/unsubscribed");
+	$.ajax({
+		type : "post",
+		contentType : "application/json",
+		dataType : 'json',
+		url : baseURL + "/unsubscribed/ideabiz_unsubscribe",
+		data : JSON.stringify(data),
+		success : function(resp) {
+			console.log(resp);
+			if(resp.status == 'success'){
+				window.location.replace(baseURL + "/unsubscribed");
+			} else{
+				window.location.replace(baseURL + "/error-page");
+			}
+			
+		},
+		error : function(e) {
+			console.log(e);
+			window.location.replace(baseURL + "/error-page");
 		}
 	});
+});
+
+$("#mobitel").click(function () {
+	
+	var generalData = JSON.parse(sessionStorage.getItem("generalData"));
+	var data = {
+			token : generalData.tokenHash
+	}
+	$.ajax({
+		type : "post",
+		contentType : "application/json",
+		dataType : 'json',
+		url : baseURL + "/unsubscribed/mobitel_unsubscribe",
+		data : JSON.stringify(data),
+		success : function(resp) {
+			console.log(resp);
+			if(resp.status == 'success'){
+				window.location.replace(baseURL + "/unsubscribed");
+			} else{
+				window.location.replace(baseURL + "/error-page");
+			}
+			
+		},
+		error : function(e) {
+			console.log(e);
+			window.location.replace(baseURL + "/error-page");
+		}
+	});
+		
 });
 /*var ideabiz= '${ideabiz_subscribed}';;
 var mobitel= '${mobitel_subscribed}';;

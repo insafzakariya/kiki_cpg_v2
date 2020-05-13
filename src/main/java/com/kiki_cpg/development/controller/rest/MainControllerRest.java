@@ -36,10 +36,14 @@ public class MainControllerRest {
 
 	@GetMapping("/initialize")
 	public ResponseEntity<Object> homePage(HttpServletRequest request) throws IOException {
+		System.out.println("called");
 
 		HttpSession session = request.getSession();
 		
 		String paymentToken = (String) session.getAttribute("paymentToken");
+		
+		System.out.println(paymentToken);
+		
 		String type = (String) session.getAttribute("type");
 		
 		logger.info("susilawebpay application started.");
@@ -56,7 +60,7 @@ public class MainControllerRest {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			return new ResponseEntity<Object>("404", HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<Object>("500", HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
 	}

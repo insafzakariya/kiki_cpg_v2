@@ -24,7 +24,10 @@
 					class="inputs" data-maxlength="6" data-id="d1">
 			</div>
 			<button class="form_submit" id="btn_otp_approve">ACTIVATE</button>
-			</input>
+			
+			<div class="error-field">
+              <div id="error" class="hide errorField" style="color:red"><p id="error-p"></p></div>
+            </div>
 
 
 		</div>
@@ -42,6 +45,11 @@
 	<script src="<c:url value='/static/js/globle.js'/>"
 		type="text/javascript"></script>
 	<script type="text/javascript">
+	
+	$("#d1").keyup(function(){
+		$("#error").addClass("hide");
+	});
+	
 	$('#btn_otp_approve')
 	.click(
 			function() {
@@ -72,29 +80,22 @@
 									var myJSON = JSON.stringify(data);
 									var myJSON = JSON.parse(myJSON);
 									if (myJSON['PIN-SUBMIT'] == 'FAIL') {
-										alert(myJSON['MESSAGE']);
+										$("#error-p").text((myJSON['MESSAGE']));
+										$("#error").removeClass("hide");
 									} else {
-										if (myJSON['MESSAGE'] == 'ALREADY SUBSCRIBED') {
-											already_subscribed(
-													myJSON['SYSTEM-TOKEN'],
-													data_st);
-											;
-										} else {
-											var url = baseURL +  +"/thanks_ideabiz";
-											window.location.replace(url);
-										}
-
+										var url = baseURL +  +"/thanks_ideabiz";
+										window.location.replace(url);
 									}
 								},
 								error : function(e) {
-									console
-											.log(
-													'An error occurred while updating payment transaction : ',
-													e);
+									$("#error-p").text('An error occurred while updating payment transaction : ' + e);
+									console.log('An error occurred while updating payment transaction : ',e);
+									$("#error").removeClass("hide");
 								}
 							});
 				} else {
-					alert("invalied OTP");
+					$("#error-p").text('Invalied OTP');
+					$("#error").removeClass("hide");
 				}
 
 			});
