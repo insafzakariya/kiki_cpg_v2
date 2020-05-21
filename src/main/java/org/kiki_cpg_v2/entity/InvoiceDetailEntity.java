@@ -5,7 +5,7 @@ import java.util.Date;
 
 @Entity
 @Table(name = "invoice_details")
-public class InvoiceDetails {
+public class InvoiceDetailEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id")

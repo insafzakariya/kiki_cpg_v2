@@ -22,8 +22,9 @@ public class ViewerPackageEntity {
     @Column(name = "ModifiedOn")
     private Date modifiedOn;
     
-    @Column(name = "PackageID")
-    private Integer packageID;
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "PackageID")
+    private PackageEntity packageEntity;
 
     @OneToMany(mappedBy = "viewerPackageEntity", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<ViewerPolicyEntity> viewerPolicyEntities = new ArrayList<>();
@@ -60,12 +61,12 @@ public class ViewerPackageEntity {
 		this.modifiedOn = modifiedOn;
 	}
 
-	public Integer getPackageID() {
-		return packageID;
+	public PackageEntity getPackageEntity() {
+		return packageEntity;
 	}
 
-	public void setPackageID(Integer packageID) {
-		this.packageID = packageID;
+	public void setPackageEntity(PackageEntity packageEntity) {
+		this.packageEntity = packageEntity;
 	}
 
 	public List<ViewerPolicyEntity> getViewerPolicyEntities() {

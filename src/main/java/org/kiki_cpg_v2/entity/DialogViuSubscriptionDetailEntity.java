@@ -11,7 +11,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "dialog_viu_subscription_details")
-public class DialogViuSubscriptionDetailsEntity {
+public class DialogViuSubscriptionDetailEntity {
 
 	@Id
 	@Column(name = "Id")
