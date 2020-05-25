@@ -1,0 +1,53 @@
+.stv-radio-button {
+	position: absolute !important;
+	left: -9999em !important;
+	top: -9999em !important;
+}
+
+.stv-radio-button+label {
+	padding: .5em 1em !important;
+	cursor: pointer !important;
+	border: 1px solid #707070 !important;
+	color: #fff !important;
+	background-color: #707070 !important;
+}
+
+*, *:before, *:after {
+	box-sizing: inherit !important;
+}
+
+.stv-radio-button:checked+label {
+	background-color: #ffffff !important;
+	color: #000 !important;
+}
+
+.row>label {
+	width: 70% !important;
+}
+
+.button-primary-flat {
+	background-color: #00999D !important;
+	border-color: #00999D !important;
+	color: #FFF !important;
+}
+
+.logo {
+	width: 72px !important;
+	height: 72px !important;
+	border: 2px solid #ffffff !important;
+	background-size: cover !important;
+	margin: auto !important;
+}
+
+@media ( min-width :340px) {
+	.col-sm-4 {
+		width: 33.33333333% !important;
+	}
+	.col-sm-8 {
+		width: 66.66666666% !important;
+	}
+}
+
+p {
+	margin: 0 0 0px !important ;
+}

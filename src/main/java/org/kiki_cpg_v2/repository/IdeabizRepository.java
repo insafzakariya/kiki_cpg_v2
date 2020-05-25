@@ -5,4 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface IdeabizRepository extends JpaRepository<IdeabizEntity, Integer> {
 
+	IdeabizEntity findOneByViwerIdAndSubscribe(Integer viewerID, Integer active);
+
 }

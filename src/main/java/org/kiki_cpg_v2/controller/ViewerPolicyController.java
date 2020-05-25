@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @CrossOrigin(origins = "*")
-@RequestMapping("/rest/package")
+@RequestMapping("/rest/viewerpolicy")
 public class ViewerPolicyController {
 
 	@Autowired

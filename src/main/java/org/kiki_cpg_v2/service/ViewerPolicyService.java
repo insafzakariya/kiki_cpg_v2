@@ -6,4 +6,6 @@ public interface ViewerPolicyService {
 
 	String updateViewerPolicy(ViewerPolicyUpdateRequestDto viewerPolicyUpdateRequestDto);
 
+	ViewerPolicyUpdateRequestDto getViewerPolicyUpdateRequestDto(Integer viewerId, Integer packageId);
+
 }
