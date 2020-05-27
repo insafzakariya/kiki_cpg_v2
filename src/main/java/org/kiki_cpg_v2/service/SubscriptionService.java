@@ -7,4 +7,6 @@ public interface SubscriptionService {
 	
 	SubscriptionPaymentDto getSubscriptionPaymentDtoByToken(String token, String type) throws Exception;
 
+	boolean validateSubscriptionPayment(Integer subscriptionPaymentId) throws Exception;
+
 }

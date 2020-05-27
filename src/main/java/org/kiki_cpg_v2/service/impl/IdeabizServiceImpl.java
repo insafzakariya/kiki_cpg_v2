@@ -10,7 +10,6 @@ import org.kiki_cpg_v2.dto.DialogPaymentConfirmDto;
 import org.kiki_cpg_v2.dto.request.DialogOtpConfirmDto;
 import org.kiki_cpg_v2.entity.IdeabizEntity;
 import org.kiki_cpg_v2.entity.InvoiceEntity;
-import org.kiki_cpg_v2.entity.ViewerEntity;
 import org.kiki_cpg_v2.repository.IdeabizRepository;
 import org.kiki_cpg_v2.service.IdeabizService;
 import org.kiki_cpg_v2.service.InvoiceService;
@@ -68,8 +67,7 @@ public class IdeabizServiceImpl implements IdeabizService {
 			if (dialogOtpDto.getStatusCode().equals("SUCCESS")) {
 				String mobileNo = dialogOtpDto.getMsisdn();
 				mobileNo = mobileNo.replace("tel:", "");
-				ViewerEntity viewerEntity = viewerService.updateViewerMobileNumber(mobileNo,
-						dialogOtpConfirmDto.getViewerId());
+				viewerService.updateViewerMobileNumber(mobileNo, dialogOtpConfirmDto.getViewerId());
 
 				if (dialogOtpDto.getStatus().equals("SUBSCRIBED")) {
 
@@ -98,15 +96,72 @@ public class IdeabizServiceImpl implements IdeabizService {
 					paymentLogService.createPaymentLog("Dialog", "-", dialogOtpDto.getTransactionOperationStatus(),
 							dialogOtpConfirmDto.getViewerId(), mobileNo, dialogOtpDto.getResult());
 
+					if (processUnsubscriptionIdeabiz(accessToken, dialogOtpConfirmDto.getViewerId(), mobileNo, false)) {
+						IdeabizEntity ideabizEntity = getIdeabizEntity(dialogOtpConfirmDto.getViewerId(), mobileNo,
+								dialogOtpConfirmDto.getDay());
+						message = "SUBSCRIBED";
+						if (ideabizRepository.save(ideabizEntity) != null) {
+							String resp = processIdeabizPayment(dialogOtpConfirmDto.getServerRef(),
+									dialogOtpConfirmDto.getViewerId(), dialogOtpConfirmDto.getDay(), mobileNo, amount);
+							if (resp.equalsIgnoreCase("Success")) {
+							}
+						} else {
+							message = "SUBSCRIBED SAVE ERROR";
+							paymentLogService.createPaymentLog("Dialog", "-",
+									dialogOtpDto.getTransactionOperationStatus(), dialogOtpConfirmDto.getViewerId(),
+									mobileNo, dialogOtpDto.getResult());
+							System.out.println("ALREADY SUBSCRIBED");
+						}
+					}
+
 				}
 
 			} else {
 				paymentLogService.createPaymentLog("Dialog", "-", dialogOtpDto.getMessage(),
 						dialogOtpConfirmDto.getViewerId(), dialogOtpDto.getMsisdn(), dialogOtpDto.getResult());
 			}
+
+			DialogPaymentConfirmDto confirmDto = new DialogPaymentConfirmDto();
+			confirmDto.setStatusCode(dialogOtpDto.getStatusCode());
+			confirmDto.setServerRef(dialogOtpDto.getServerRef());
+			confirmDto.setStatus(dialogOtpDto.getStatus());
+			confirmDto.setServiceId(dialogOtpDto.getServiceId());
+			confirmDto.setAccessCode(accessToken);
+			confirmDto.setMsisdn(dialogOtpDto.getMsisdn());
+			confirmDto.setMessage(message);
+
+			return confirmDto;
+
 		}
 
 		return null;
+	}
+
+	@Override
+	public boolean processUnsubscriptionIdeabiz(String accessToken, Integer viewerId, String mobileNo,
+			boolean unsubscribeFromDialog) throws Exception {
+		
+		if(accessToken == null) {
+			accessToken = dialogClient.createAccessToken();
+		}
+		
+		IdeabizEntity ideabizEntity = ideabizRepository.findOneByViwerIdAndSubscribe(viewerId, AppConstant.ACTIVE);
+		if (ideabizEntity != null) {
+			ideabizEntity.setSubscribe(AppConstant.INACTIVE);
+
+			if (unsubscribeFromDialog) {
+				dialogClient.unsubscribe(accessToken, viewerId, ideabizEntity.getSubscribedDays(), mobileNo);
+			}
+			if (ideabizRepository.save(ideabizEntity) != null) {
+				if (viewerUnsubscriptionService.unubscribe(mobileNo, viewerId, "UNSUBCRIBE", "Dialog")) {
+					return true;
+				}
+			}
+		} else {
+			return true;
+		}
+
+		return false;
 	}
 
 	@Override

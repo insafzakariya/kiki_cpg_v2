@@ -5,4 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ViewerUnsubcriptionRepository extends JpaRepository<ViewerUnsubcriptionEntity, Integer>{
 
+	ViewerUnsubcriptionEntity findByViewerIdAndMobileNumberAndSubcriptionTypeAndServiceProvider(Integer viewerId,
+			String mobileNo, String string, String serviceProvider);
+
 }

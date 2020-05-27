@@ -77,14 +77,17 @@
                         url: "/susilawebpay/rest/ideabiz/pin_subscription_confirm",
                         data: JSON.stringify(data_st),
                         success: function (data) {
+
+                            console.log(data);
+
                             x.style.display = "none";
                             var myJSON = JSON.stringify(data);
                             var myJSON = JSON.parse(myJSON);
-                            if (myJSON['PIN-SUBMIT'] == 'FAIL') {
-                                $("#error-p").text((myJSON['MESSAGE']));
+                            if (data.statusCode == 'FAIL') {
+                                $("#error-p").text(data.message);
                                 $("#error").removeClass("hide");
                             } else {
-                                var url = baseURL + +"/thanks_ideabiz";
+                                var url = baseURL +"/thanks/4";
                                 window.location.replace(url);
                             }
                         },

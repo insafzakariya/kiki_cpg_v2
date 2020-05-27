@@ -10,4 +10,7 @@ public interface SubscriptionPaymentRepository extends JpaRepository<Subscriptio
 	SubscriptionPaymentEntity findOneByTokenHashAndCreatedDateLessThanEqualAndExpireDateGreaterThanEqualAndStatus(
 			String token, Date createDate, Date expireDate, Integer status);
 
+	SubscriptionPaymentEntity findOneByIdAndCreatedDateLessThanEqualAndExpireDateGreaterThanEqualAndStatus(
+			Integer subscriptionPaymentId, Date curDate, Date curDate2, Integer active);
+
 }

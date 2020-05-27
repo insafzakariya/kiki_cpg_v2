@@ -147,7 +147,7 @@
 
         $('#button5').click(function () {
             sessionStorage.setItem('paymentId', $('#button5').val());
-            window.location.replace(baseURL + "/screch-card");
+            window.location.replace(baseURL + "/scratch-card");
         });
 
         </script>    

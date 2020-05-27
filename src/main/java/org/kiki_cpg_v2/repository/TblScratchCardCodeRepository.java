@@ -5,4 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface TblScratchCardCodeRepository extends JpaRepository<TblScratchCardCodeEntity, Integer>{
 
+	TblScratchCardCodeEntity findOneByCardCodeAndCardStatus(String code, Integer active);
+
 }

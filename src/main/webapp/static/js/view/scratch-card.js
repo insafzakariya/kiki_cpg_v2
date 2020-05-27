@@ -32,21 +32,33 @@ function resetErorFields(){
 }
 
 function scratchCardPayment(){
-    var data = {};
-    data.card_code = $("#inputScratchCard").val();
-    if(data.card_code == "" || typeof data.card_code == 'undefined'){
+	
+	var cardCode = $("#inputScratchCard").val();
+	if(cardCode == "" || typeof cardCode == 'undefined'){
         $("#cardError").removeClass("hide");
         return;
-    }
+    } 
+	
+	
+    var data = {
+    		code : cardCode,
+    		viewerId : sessionStorage.getItem('viewerId'),
+    		subscriptionPaymentId : sessionStorage.getItem('subscriptionPaymentId'),
+    		mobileNo : sessionStorage.getItem('mobile')
+    };
+    
+    
     $.ajax({
         type : "post",
-        //  contentType: "application/json",
-        url : baseURL + "/scratchcard/scratchCardPayment",
+        contentType: "application/json",
+        url : baseURL + "/rest/scratchcard/payment",
         data: data,
         success: function (data) {
         	console.log(data);
-            if(data == "Success"){
-            	window.location.replace(baseURL + "/success/6");
+            if(data == "success"){
+            	window.location.replace(baseURL + "/thanks/6");
+            } else{
+            	window.location.replace(baseURL + "/error/" + data);
             }
         },
         error: function(e){

@@ -18,4 +18,6 @@ public interface IdeabizService {
 
 	IdeabizEntity updateIdeabizPolicyExpDate(Integer viewerId, Date valiedDate, Date createDate) throws Exception;
 
+	boolean processUnsubscriptionIdeabiz(String accessToken, Integer viewerId, String mobileNo, boolean unsubscribeFromDialog) throws Exception;
+
 }

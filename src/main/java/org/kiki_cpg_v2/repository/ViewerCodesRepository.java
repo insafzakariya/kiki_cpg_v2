@@ -5,4 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ViewerCodesRepository extends JpaRepository<ViewerCodesEntity, Integer>{
 
+	ViewerCodesEntity findOneByViewerIdAndScratchCardIdAndStatus(Integer viewerId, Integer scratchCardId, Integer status);
+
 }

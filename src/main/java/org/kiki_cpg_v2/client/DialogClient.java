@@ -5,20 +5,21 @@ import org.kiki_cpg_v2.dto.request.DialogOtpConfirmDto;
 
 public interface DialogClient {
 
-	String dialogPaymentConfirm(String serverRef, String mobileNo, Double amount, Integer subscribedDays,
-			int viwerId);
+	String dialogPaymentConfirm(String serverRef, String mobileNo, Double amount, Integer subscribedDays, int viwerId) throws Exception;
 
 	String createAccessToken() throws Exception;
 
 	String genarateAuthorizationCode() throws Exception;
-	
+
 	DialogOtpDto sendOtp(String mobileNo, Integer day) throws Exception;
-	
-	DialogOtpDto pinSubscriptionConfirm(DialogOtpConfirmDto dialogOtpConfirmDto, Double amount, String accessToken) throws Exception;
 
-	
+	DialogOtpDto pinSubscriptionConfirm(DialogOtpConfirmDto dialogOtpConfirmDto, Double amount, String accessToken)
+			throws Exception;
 
-	/*JSONObject unsubscribe(String access_token, Viewers viewers, Integer day);
+	String unsubscribe(String access_token, Integer viewerId, Integer day, String mobileNo) throws Exception;
 
-	JSONObject pinSubscription(String mobile_no, String subscriptionPaymentId, String day, String accessToken) throws Exception;*/
+	/*
+	 * JSONObject pinSubscription(String mobile_no, String subscriptionPaymentId,
+	 * String day, String accessToken) throws Exception;
+	 */
 }

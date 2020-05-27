@@ -108,4 +108,15 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 		return dto;
 	}
 
+	@Override
+	public boolean validateSubscriptionPayment(Integer subscriptionPaymentId) throws Exception {
+		Date curDate = new Date();
+		SubscriptionPaymentEntity subscriptionPaymentEntity = subscriptionPaymentRepository
+				.findOneByIdAndCreatedDateLessThanEqualAndExpireDateGreaterThanEqualAndStatus(subscriptionPaymentId, curDate, curDate, AppConstant.ACTIVE);
+		if(subscriptionPaymentEntity != null) {
+			return true;
+		}
+		return false;
+	}
+
 }
