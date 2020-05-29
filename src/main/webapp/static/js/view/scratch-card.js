@@ -52,13 +52,14 @@ function scratchCardPayment(){
         type : "post",
         contentType: "application/json",
         url : baseURL + "/rest/scratchcard/payment",
-        data: data,
-        success: function (data) {
-        	console.log(data);
-            if(data == "success"){
+        dataType: 'json',
+        data: JSON.stringify(data),
+        success: function (resp) {
+        	console.log(resp);
+            if(resp.status == "success"){
             	window.location.replace(baseURL + "/thanks/6");
             } else{
-            	window.location.replace(baseURL + "/error/" + data);
+            	window.location.replace(baseURL + "/error-page?message=" + resp.status);
             }
         },
         error: function(e){

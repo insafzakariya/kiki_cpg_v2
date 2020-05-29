@@ -19,7 +19,7 @@
 	<body class="background-img">
 		<div class="preloader">
 			<div class="loader_img">
-				<img src="img/loader.gif" alt="loading..." height="64" width="64">
+				<img src="<c:url value='/static/img/loader.gif' />" alt="loading..." height="64" width="64">
 			</div>
 		</div>
 		<div class="container">
@@ -68,6 +68,6 @@
 		<script src="<c:url value='/static/js/lockscreen2.js'/>"></script>
 		<script src="<c:url value='/static/vendors/iCheck/js/icheck.js'/>"></script>
 		<script src="<c:url value='/static/js/globle.js'/>" type="text/javascript"></script>
-		<script src="<c:url value='/static/js/view/scratchcard.js' />"></script>
+		<script src="<c:url value='/static/js/view/scratch-card.js' />"></script>
 	</body>
 </html>

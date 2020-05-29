@@ -8,4 +8,6 @@ public interface ViewerSubscriptionRepository extends JpaRepository<ViewerSubscr
 
 	ViewerSubscriptionEntity findOneBySubscriptionTypeAndViewers(SubscriptionType mobitelAddToBill, Integer viewerID);
 
+	ViewerSubscriptionEntity findOneByViewers(Integer viewerid);
+
 }

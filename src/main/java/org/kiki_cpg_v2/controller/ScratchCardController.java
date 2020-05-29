@@ -1,5 +1,6 @@
 package org.kiki_cpg_v2.controller;
 
+import org.kiki_cpg_v2.dto.ResponseMapDto;
 import org.kiki_cpg_v2.dto.ScratchCardPaymentDto;
 import org.kiki_cpg_v2.service.ScratchCardService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,10 +23,14 @@ public class ScratchCardController {
 	@PostMapping(value = { "/payment" })
 	public ResponseEntity<Object> validateAndUseCode(@RequestBody ScratchCardPaymentDto scratchCardPaymentDto) {
 
+		ResponseMapDto dto = new ResponseMapDto();
+		
 		String resp;
 		try {
 			resp = scratchCardService.setPayment(scratchCardPaymentDto);
-			return new ResponseEntity<Object>(resp, HttpStatus.OK);
+			System.out.println(resp);
+			dto.setStatus(resp);
+			return new ResponseEntity<Object>(dto, HttpStatus.OK);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return new ResponseEntity<Object>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);

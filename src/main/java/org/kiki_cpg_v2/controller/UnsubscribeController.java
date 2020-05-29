@@ -3,6 +3,7 @@ package org.kiki_cpg_v2.controller;
 import org.kiki_cpg_v2.dto.ResponseMapDto;
 import org.kiki_cpg_v2.dto.UnsubscribeDto;
 import org.kiki_cpg_v2.service.IdeabizService;
+import org.kiki_cpg_v2.service.MobitelService;
 import org.kiki_cpg_v2.service.SubscriptionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,10 +25,13 @@ public class UnsubscribeController {
 
 	@Autowired
 	private IdeabizService ideabizService;
+	
+	@Autowired
+	private MobitelService mobitelService;
 
 	@PostMapping(produces = "application/json")
 	@ResponseBody
-	public ResponseEntity<Object> ideabiz_unsubscribe(@RequestBody UnsubscribeDto unsubscribeDto) {
+	public ResponseEntity<Object> unsubscribe(@RequestBody UnsubscribeDto unsubscribeDto) {
 		System.out.println(unsubscribeDto.toString());
 		try {
 			boolean res = false;
@@ -49,7 +53,11 @@ public class UnsubscribeController {
 				}
 
 				if (unsubscribeDto.getType() == 5) {
-
+					res = mobitelService.processUnsubscriptionMobitel(unsubscribeDto.getViewerid(),
+							unsubscribeDto.getMobile());
+					if (res) {
+						responseMapDto.setStatus("success");
+					}
 				}
 
 			}

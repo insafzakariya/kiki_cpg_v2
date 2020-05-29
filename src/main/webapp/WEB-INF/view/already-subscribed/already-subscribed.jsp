@@ -87,16 +87,16 @@
 					data : JSON.stringify(data),
 					success : function(resp) {
 						console.log(resp);
-						/*if(resp.status == 'success'){
+						if(resp.status == 'success'){
 							window.location.replace(baseURL +"/thanks/10");
 						} else{
-							window.location.replace(baseURL + "/error-page");
-						}*/
+							window.location.replace(baseURL + "/error-page?message="+ resp.status );
+						}
 						
 					},
 					error : function(e) {
 						console.log(e);
-						window.location.replace(baseURL + "/error-page");
+						window.location.replace(baseURL + "/error-page?message=" + e);
 					}
 				});
 			});
@@ -120,13 +120,13 @@
 						if(resp.status == 'success'){
 							window.location.replace(baseURL +"/thanks/10");
 						} else{
-							window.location.replace(baseURL + "/error-page");
+							window.location.replace(baseURL + "/error-page?message=" + resp.status );
 						}
 						
 					},
 					error : function(e) {
 						console.log(e);
-						window.location.replace(baseURL + "/error-page");
+						window.location.replace(baseURL + "/error-page?message="+ e);
 					}
 				});
 			});
