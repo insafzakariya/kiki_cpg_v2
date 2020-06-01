@@ -7,6 +7,7 @@ import org.kiki_cpg_v2.dto.DialogOtpDto;
 import org.kiki_cpg_v2.dto.DialogPaymentConfirmDto;
 import org.kiki_cpg_v2.dto.request.DialogOtpConfirmDto;
 import org.kiki_cpg_v2.service.IdeabizService;
+import org.kiki_cpg_v2.service.SubscriptionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +31,9 @@ public class IdeabizController {
 	@Autowired
 	private IdeabizService ideabizService;
 	
+	@Autowired
+	private SubscriptionService subscriptionService;
+	
 	@GetMapping("/otp/send/{mobile_no}/{day}")
 	public ResponseEntity<Object> sentOtp(@PathVariable String mobile_no, @PathVariable Integer day) {
 
@@ -51,7 +55,14 @@ public class IdeabizController {
 			HttpServletRequest request) {
 		System.out.println(dialogOtpConfirmDto.toString());
 		try {
-			DialogPaymentConfirmDto dialogPaymentConfirmDto =ideabizService.pinSubscriptionConfirm(dialogOtpConfirmDto);
+			boolean isValied = subscriptionService.validateSubscriptionPayment(dialogOtpConfirmDto.getSubscriptionPaymentId());
+			DialogPaymentConfirmDto dialogPaymentConfirmDto = null;
+			if(isValied) {
+				 dialogPaymentConfirmDto =ideabizService.pinSubscriptionConfirm(dialogOtpConfirmDto);	
+			} else {
+				dialogPaymentConfirmDto = new DialogPaymentConfirmDto();
+				dialogPaymentConfirmDto.setMessage("Subscription Token Expired");
+			}
 			return new ResponseEntity<Object>(dialogPaymentConfirmDto, HttpStatus.OK);
 		} catch (Exception e) {
 			e.printStackTrace();

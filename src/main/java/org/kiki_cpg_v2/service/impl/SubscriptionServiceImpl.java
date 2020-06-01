@@ -119,4 +119,17 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 		return false;
 	}
 
+	@Override
+	public boolean updateStatus(Integer subscriptionPaymentId) {
+		SubscriptionPaymentEntity entity = subscriptionPaymentRepository
+				.findById(subscriptionPaymentId).get();
+		if(entity != null) {
+			entity.setStatus(2);
+			subscriptionPaymentRepository.save(entity);
+			return true;
+		}
+		return false;
+		
+	}
+
 }

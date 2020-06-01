@@ -9,4 +9,6 @@ public interface SubscriptionService {
 
 	boolean validateSubscriptionPayment(Integer subscriptionPaymentId) throws Exception;
 
+	boolean updateStatus(Integer subscriptionPaymentId);
+
 }

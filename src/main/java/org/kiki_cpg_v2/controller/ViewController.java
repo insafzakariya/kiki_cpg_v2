@@ -85,6 +85,8 @@ public class ViewController {
 	@GetMapping("/error-page")
 	public ModelAndView error(@RequestParam(value = "message", required = false, defaultValue = "") String message) {
 
+		System.out.println("Error Message : " + message);
+		
 		ModelAndView view = new ModelAndView("error/error");
 		view.addObject("message", message);
 		return view;

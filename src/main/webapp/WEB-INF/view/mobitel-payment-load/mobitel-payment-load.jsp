@@ -29,18 +29,23 @@
 		<script src="<c:url value='/static/js/globle.js'/>" type="text/javascript"></script>
 		<script type="text/javascript">
 			function pay() {
-				/*console.log("load");
-				var generalData = JSON.parse(sessionStorage.getItem("generalData"));
+				console.log("load");
+				
 	
-				console.log(generalData);
-				var mobile = sessionStorage.getItem("mobile")
+				var mobile = sessionStorage.getItem("mobile");
+				var subscriptionPaymentId = sessionStorage.getItem("subscriptionPaymentId");
+				var day = sessionStorage.getItem("day");
+				var viewerId = sessionStorage.getItem("viewerId");
+				
 				console.log(mobile);
 				var data = {
-					viewerId : generalData.viewerId,
+					viewerId : viewerId,
 					activationStatus : 1,
-					mobileNo : mobile
+					mobileNo : mobile,
+					subscriptionPaymentId : subscriptionPaymentId,
+					days : day
 				}
-				console.log(data);*/
+				console.log(data);
 	
 				/*$.post(baseURL + "/mobitel/payment", data,
 						function(result) {
@@ -61,7 +66,7 @@
 					window.location.replace(baseURL + "/error-page");
 				});*/
 	
-				/*$.ajax({
+				$.ajax({
 					type : "post",
 					contentType : "application/json",
 					dataType : 'json',
@@ -71,18 +76,18 @@
 						console.log(resp);
 						if(resp.status == 'success'){
 							console.log("success");
-							window.location.replace(baseURL + "/success/5");
+							window.location.replace(baseURL + "/thanks/5");
 						} else{
 							console.log("error");
 							$("#loader").addClass("hide");
 							$("#mobitelConnectionError").removeClass("hide");
-							window.location.replace(baseURL + "/error-page?message" + resp.status);
+							window.location.replace(baseURL + "/error-page?message=" + resp.status);
 						}
 					},
 					error : function(e) {
 						console.log(e);
 					}
-				});*/
+				});
 			}
 		</script>
 	</body>

@@ -33,7 +33,7 @@ public class ViewServiceImpl implements ViewService{
 			}
 		} else {
 			modelAndView.setViewName("error/error");
-			modelAndView.addObject("errorMessage", "Subscription Token Expired");
+			modelAndView.addObject("message", "Subscription Token Expired");
 		}
 		
 		return modelAndView;
