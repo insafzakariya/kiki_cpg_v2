@@ -59,7 +59,8 @@
                     var mobile_no = $('#mobile_no').val();
                     console.log(mobile_no);
                     console.log(mobile_no.length);
-                    if (mobile_no == null || mobile_no.length != 12) {
+                    if (mobile_no == null || mobile_no.length < 9) {
+                    	console.log("incorrect");
                         $("#numbernotvalied").removeClass("hide");
                         return;
                     }

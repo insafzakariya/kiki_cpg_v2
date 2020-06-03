@@ -21,4 +21,8 @@ public interface MobitelService {
 
 	String proceedPayment(Integer viewerId, Integer subscribedDays, String mobileNo, Integer subscriptionPaymentId);
 
+
+	boolean deactivePreviousViewersByMobile(String mobileNo, Integer viewerId, boolean isTransfer,
+			Integer subscriptionPaymentId, Integer subscribedDays);
+
 }

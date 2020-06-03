@@ -77,6 +77,12 @@
 						if(resp.status == 'success'){
 							console.log("success");
 							window.location.replace(baseURL + "/thanks/5");
+						} else if(resp.status == 'transfered'){
+							console.log("transfered");
+							window.location.replace(baseURL + "/thanks/11");
+						}else if(resp.status == 'Activated'){
+							console.log("Activated");
+							window.location.replace(baseURL + "/thanks/12");
 						} else{
 							console.log("error");
 							$("#loader").addClass("hide");

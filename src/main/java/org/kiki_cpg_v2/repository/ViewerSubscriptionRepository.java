@@ -10,4 +10,6 @@ public interface ViewerSubscriptionRepository extends JpaRepository<ViewerSubscr
 
 	ViewerSubscriptionEntity findOneByViewers(Integer viewerid);
 
+	ViewerSubscriptionEntity findOneByViewersAndSubscriptionType(Integer viewerId, SubscriptionType mobitelAddToBill);
+
 }

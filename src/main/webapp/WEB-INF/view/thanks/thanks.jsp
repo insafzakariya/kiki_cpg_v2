@@ -51,6 +51,25 @@
 				</div>
            	</c:when>
            	
+           	<c:when test="${type eq 11}">
+            	<div class="main_container">
+					<div class="header_container">
+						<img src="<c:url value='/static/assets/images/smile.png'/>">
+						<h5 class="header">You have sucessfully Transfered.</h5>
+					</div>
+					
+				</div>
+           	</c:when>
+           	<c:when test="${type eq 12}">
+            	<div class="main_container">
+					<div class="header_container">
+						<img src="<c:url value='/static/assets/images/smile.png'/>">
+						<h5 class="header">Your account Activated Successfully</h5>
+					</div>
+					
+				</div>
+           	</c:when>
+           	
 		</c:choose>
 		
 		<div class="body_container">

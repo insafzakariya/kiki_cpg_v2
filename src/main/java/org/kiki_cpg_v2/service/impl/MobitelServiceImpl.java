@@ -2,14 +2,17 @@ package org.kiki_cpg_v2.service.impl;
 
 import java.util.Date;
 import java.util.LinkedHashMap;
+import java.util.List;
 
 import org.kiki_cpg_v2.client.MobitelClient;
 import org.kiki_cpg_v2.dto.request.ViewerPolicyUpdateRequestDto;
 import org.kiki_cpg_v2.entity.MerchantAccountEntity;
+import org.kiki_cpg_v2.entity.ViewerEntity;
 import org.kiki_cpg_v2.entity.ViewerSubscriptionEntity;
 import org.kiki_cpg_v2.enums.SubscriptionType;
 import org.kiki_cpg_v2.enums.TransactionType;
 import org.kiki_cpg_v2.repository.MerchantAccountRepository;
+import org.kiki_cpg_v2.repository.ViewerRepository;
 import org.kiki_cpg_v2.repository.ViewerSubscriptionRepository;
 import org.kiki_cpg_v2.service.MobitelService;
 import org.kiki_cpg_v2.service.PaymentLogService;
@@ -23,44 +26,46 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class MobitelServiceImpl implements MobitelService{
-	
+public class MobitelServiceImpl implements MobitelService {
+
 	final static Logger logger = LoggerFactory.getLogger(MobitelServiceImpl.class);
-	
+
+	@Autowired
+	private ViewerRepository viewerRepository;
+
 	@Autowired
 	private ViewerPolicyService viewerPolicyService;
 
 	@Autowired
 	private ViewerSubscriptionRepository viewerSubscriptionRepository;
-	
+
 	@Autowired
 	private PaymentLogService paymentLogService;
 
 	@Autowired
 	private AppUtility appUtility;
-	
+
 	@Autowired
 	private MerchantAccountRepository merchantAccountRepository;
-	
+
 	@Autowired
 	private MobitelClient mobitelClient;
-	
+
 	@Autowired
 	private ViewerService viewerService;
-	
+
 	@Autowired
 	private ViewerSubscriptionService viewerSubscriptionService;
-	
+
 	@Autowired
 	private SubscriptionService subscriptionService;
-	
+
 	@Override
 	public boolean processUnsubscriptionMobitel(Integer viewerid, String mobile) {
-		if(updateViewerSubscription(viewerid, SubscriptionType.NONE, new Date(),
-				mobile)) {
+		if (updateViewerSubscription(viewerid, SubscriptionType.NONE, new Date(), mobile)) {
 			return true;
 		}
 		return false;
@@ -69,29 +74,30 @@ public class MobitelServiceImpl implements MobitelService{
 	@Override
 	public boolean updateViewerSubscription(Integer viewerid, SubscriptionType type, Date date, String mobile) {
 		ViewerSubscriptionEntity entity = viewerSubscriptionRepository.findOneByViewers(viewerid);
-		if(entity == null) {
+		if (entity == null) {
 			entity = new ViewerSubscriptionEntity();
 			entity.setDate(new Date());
 			entity.setViewers(viewerid);
 		}
 		entity.setSubscriptionType(type);
-		if(viewerSubscriptionRepository.save(entity)!= null) {
+		if (viewerSubscriptionRepository.save(entity) != null) {
 			return true;
 		}
-		
+
 		return false;
 	}
 
 	@Override
-	public String pay(String mobileNo, Integer viewerId, String activationStatus, Integer subscriptionPaymentId, Integer subscribedDays) throws Exception {
+	@Transactional
+	public String pay(String mobileNo, Integer viewerId, String activationStatus, Integer subscriptionPaymentId,
+			Integer subscribedDays) throws Exception {
 		logger.info("called to pay");
 		String resp = activateDataBundle(mobileNo, viewerId, activationStatus);
 		logger.info("activateDataBundle resp : " + resp);
 		paymentLogService.createPaymentLog("Mobitel", resp, "-", viewerId, mobileNo, "");
-		
-		
+
 		if (resp.equals("1000")) {
-			String paymentResp = proceedPayment(viewerId, 1, mobileNo, subscriptionPaymentId);
+			String paymentResp = proceedPayment(viewerId, subscribedDays, mobileNo, subscriptionPaymentId);
 			if (paymentResp.equalsIgnoreCase("success")) {
 				try {
 					mobitelClient.updateOneCCTool(true, mobileNo, new Date(), null);
@@ -104,8 +110,69 @@ public class MobitelServiceImpl implements MobitelService{
 			}
 		} else if (resp.equals("0006")) {
 			return "Insufficient balance to activate this service";
+		} else if (resp.equals("0005")) {
+			ViewerSubscriptionEntity entity = viewerSubscriptionRepository.findOneByViewers(viewerId);
+			if (entity != null) {
+				if (entity.getSubscriptionType().equals(SubscriptionType.MOBITEL_ADD_TO_BILL)) {
+					return "Already Subscribed";
+				} else {
+					if (deactivePreviousViewersByMobile(mobileNo, viewerId, true, subscriptionPaymentId,
+							subscribedDays)) {
+						if (viewerSubscriptionService.changeStatus(viewerId, SubscriptionType.MOBITEL_ADD_TO_BILL)) {
+							return "Activated";
+						} else {
+							return "Activattion Error";
+						}
+					} else {
+						return "Deactivation Error at Account Transfer.";
+					}
+
+				}
+			} else {
+				if (deactivePreviousViewersByMobile(mobileNo, viewerId, false, subscriptionPaymentId, subscribedDays)) {
+					String paymentResp = proceedPayment(viewerId, subscribedDays, mobileNo, subscriptionPaymentId);
+					if (paymentResp.equals("success")) {
+						return "transfered";
+					} else {
+						return paymentResp;
+					}
+				} else {
+					return "Deactivation Error at Account Transfer.";
+				}
+			}
+
 		}
 		return "error";
+	}
+
+	@Override
+	public boolean deactivePreviousViewersByMobile(String mobileNo, Integer viewerId, boolean isTransfer,
+			Integer subscriptionPaymentId, Integer subscribedDays) {
+		List<ViewerEntity> viewerEntities = viewerRepository.findByIdNotAndMobileNumberEndingWith(viewerId, mobileNo);
+
+		Integer packageId = -1;
+		if (subscribedDays == 1) {
+			packageId = 81;
+
+		} else if (subscribedDays == 7) {
+			packageId = 106;
+		}
+
+		
+		if (viewerEntities != null && !viewerEntities.isEmpty()) {
+			for (ViewerEntity viewerEntity : viewerEntities) {
+				if (viewerSubscriptionService.inavtive(viewerEntity.getId())) {
+					viewerPolicyService.deactivatePolicy(viewerEntity.getId(), viewerId, isTransfer, packageId);
+					if (!viewerPolicyService.checkStatus(viewerId, packageId)) {
+						//proceedPayment(viewerId, subscribedDays, mobileNo, subscriptionPaymentId);
+					}
+
+				}
+			}
+			return true;
+		} else {
+			return true;
+		}
 	}
 
 	@Override
@@ -116,33 +183,34 @@ public class MobitelServiceImpl implements MobitelService{
 
 			Integer packageId = -1;
 			if (subscribedDays == 1) {
-				packageId= 81;
+				packageId = 81;
 
 			} else if (subscribedDays == 7) {
-				packageId= 106;
+				packageId = 106;
 			}
 
 			mobileNo = "0" + appUtility.getNineDigitMobileNumber(mobileNo);
-			
-			if(packageId > 0) {
+
+			if (packageId > 0) {
 				ViewerPolicyUpdateRequestDto dto = new ViewerPolicyUpdateRequestDto();
 				dto.setPackageId(packageId);
 				dto.setViewerId(viewerId);
 				viewerService.updateViewerMobileNumber(mobileNo, viewerId);
-				if(viewerPolicyService.updateViewerPolicy(dto).equalsIgnoreCase("success")) {
-					if(subscriptionService.updateStatus(subscriptionPaymentId)) {
-						if(viewerSubscriptionService.updateViewerSubscription(viewerId, SubscriptionType.MOBITEL_ADD_TO_BILL, new Date(), mobileNo)) {
+				if (viewerPolicyService.updateViewerPolicy(dto).equalsIgnoreCase("success")) {
+					if (subscriptionService.updateStatus(subscriptionPaymentId)) {
+						if (viewerSubscriptionService.updateViewerSubscription(viewerId,
+								SubscriptionType.MOBITEL_ADD_TO_BILL, new Date(), mobileNo)) {
 							resp = "success";
 						} else {
 							resp = "Could not update Viewer Subscription";
 						}
-					}else {
+					} else {
 						resp = "Could Not update session";
 					}
 				} else {
 					resp = "Policy update Error";
 				}
-				
+
 			} else {
 				resp = "Package not found";
 			}
@@ -153,7 +221,7 @@ public class MobitelServiceImpl implements MobitelService{
 		}
 		return resp;
 	}
-	
+
 	@Override
 	public String activateDataBundle(String mobileNo, Integer viewerId, String activationStatus) {
 		mobileNo = "0" + appUtility.getNineDigitMobileNumber(mobileNo);
@@ -190,8 +258,8 @@ public class MobitelServiceImpl implements MobitelService{
 
 					if (returnValue.equals("0002")) {
 						lastTransaciontId = lastTransaciontId + 1;
-						MerchantAccountEntity merchantAccountEntity = getMerchantAccountEntity(lastTransaciontId, amount, transactionType,
-								viewerId, false);
+						MerchantAccountEntity merchantAccountEntity = getMerchantAccountEntity(lastTransaciontId,
+								amount, transactionType, viewerId, false);
 						merchantAccountRepository.save(merchantAccountEntity);
 					}
 
@@ -205,8 +273,8 @@ public class MobitelServiceImpl implements MobitelService{
 
 			if (returnValue.equals("1000")) { // add record to merchant account table
 				logger.info("add record to merchant account table ");
-				MerchantAccountEntity merchantAccountEntity = getMerchantAccountEntity(lastTransaciontId + 1, amount, transactionType,
-						viewerId, true);
+				MerchantAccountEntity merchantAccountEntity = getMerchantAccountEntity(lastTransaciontId + 1, amount,
+						transactionType, viewerId, true);
 
 				merchantAccountRepository.save(merchantAccountEntity);
 				String paymentStatus = "Success";
@@ -216,8 +284,8 @@ public class MobitelServiceImpl implements MobitelService{
 				logger.info("activation unsuccessful error occurred with transaction id " + lastTransaciontId);
 				System.out.println("Activation Unsuccessful Error Occurred With Transaction Id " + lastTransaciontId);
 				logger.info("viewer id " + viewerId);
-				MerchantAccountEntity merchantAccountEntity = getMerchantAccountEntity(lastTransaciontId + 1, amount, transactionType,
-						viewerId, false);
+				MerchantAccountEntity merchantAccountEntity = getMerchantAccountEntity(lastTransaciontId + 1, amount,
+						transactionType, viewerId, false);
 
 				merchantAccountRepository.save(merchantAccountEntity);
 				String paymentStatus = "Fail";
@@ -248,6 +316,4 @@ public class MobitelServiceImpl implements MobitelService{
 		return entity;
 	}
 
-	
-	
 }

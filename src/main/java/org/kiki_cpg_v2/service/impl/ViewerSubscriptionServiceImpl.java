@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class ViewerSubscriptionServiceImpl implements ViewerSubscriptionService {
-	
+
 	@Autowired
 	private ViewerSubscriptionRepository viewerSubscriptionRepository;
 
@@ -19,15 +19,51 @@ public class ViewerSubscriptionServiceImpl implements ViewerSubscriptionService 
 	public boolean updateViewerSubscription(Integer viewerId, SubscriptionType mobitelAddToBill, Date date,
 			String mobileNo) {
 		ViewerSubscriptionEntity entity = viewerSubscriptionRepository.findOneByViewers(viewerId);
-		if(entity == null) {
+		if (entity == null) {
 			entity = new ViewerSubscriptionEntity();
 			entity.setDate(new Date());
 			entity.setViewers(viewerId);
 		}
 		entity.setSubscriptionType(mobitelAddToBill);
-		if(viewerSubscriptionRepository.save(entity)!= null) {
-			return true;	
-		}		
+		if (viewerSubscriptionRepository.save(entity) != null) {
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public boolean isViewerMatched(Integer viewerId) {
+		ViewerSubscriptionEntity entity = viewerSubscriptionRepository.findOneByViewers(viewerId);
+
+		if (entity != null) {
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public boolean inavtive(Integer viewerId) {
+		ViewerSubscriptionEntity entity = viewerSubscriptionRepository.findOneByViewers(viewerId);
+		if (entity != null) {
+			entity.setSubscriptionType(SubscriptionType.NONE);
+			if (viewerSubscriptionRepository.save(entity) != null) {
+				return true;
+			}
+
+		}
+		return false;
+	}
+
+	@Override
+	public boolean changeStatus(Integer viewerId, SubscriptionType mobitelAddToBill) {
+		ViewerSubscriptionEntity entity = viewerSubscriptionRepository.findOneByViewers(viewerId);
+		if (entity != null) {
+			entity.setSubscriptionType(mobitelAddToBill);
+			if (viewerSubscriptionRepository.save(entity) != null) {
+				return true;
+			}
+
+		}
 		return false;
 	}
 

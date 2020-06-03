@@ -8,11 +8,13 @@ import java.util.List;
 import org.kiki_cpg_v2.dto.request.ViewerPolicyUpdateRequestDto;
 import org.kiki_cpg_v2.entity.PackageEntity;
 import org.kiki_cpg_v2.entity.PackagePolicyEntity;
+import org.kiki_cpg_v2.entity.ViewerEntity;
 import org.kiki_cpg_v2.entity.ViewerPackageEntity;
 import org.kiki_cpg_v2.entity.ViewerPolicyEntity;
 import org.kiki_cpg_v2.repository.PackageRepository;
 import org.kiki_cpg_v2.repository.ViewerPackageRepository;
 import org.kiki_cpg_v2.repository.ViewerPolicyRepository;
+import org.kiki_cpg_v2.repository.ViewerRepository;
 import org.kiki_cpg_v2.service.ViewerPolicyService;
 import org.kiki_cpg_v2.util.AppConstant;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,13 +26,12 @@ public class ViewerPolicyServiceImpl implements ViewerPolicyService {
 
 	@Autowired
 	private ViewerPackageRepository viewerPackageRepository;
-	
+
 	@Autowired
 	private ViewerPolicyRepository viewerPolicyRepository;
-	
+
 	@Autowired
 	private PackageRepository packageRepository;
-	
 
 	@Override
 	@Transactional
@@ -40,17 +41,17 @@ public class ViewerPolicyServiceImpl implements ViewerPolicyService {
 				.findFirstByViewerIdAndStatus(viewerPolicyUpdateRequestDto.getViewerId(), AppConstant.ACTIVE);
 
 		if (viewerPackageEntity != null) {
-			
+
 			PackageEntity packageEntity = packageRepository.findById(viewerPackageEntity.getPackageId()).get();
-			
-			if(packageEntity != null) {
+
+			if (packageEntity != null) {
 				if (packageEntity.getId() == viewerPolicyUpdateRequestDto.getPackageId()) {
 
 					List<PackagePolicyEntity> packagePolicyEntities = new ArrayList<>();
-					for (PackagePolicyEntity packagePolicyEntity : packageEntity
-							.getPackagePoliciesEntities()) {
+					for (PackagePolicyEntity packagePolicyEntity : packageEntity.getPackagePoliciesEntities()) {
 						if (packagePolicyEntity.getPolicyEntity().getValidFrom().getTime() <= new Date().getTime()
-								&& packagePolicyEntity.getPolicyEntity().getValidTo().getTime() >= new Date().getTime()) {
+								&& packagePolicyEntity.getPolicyEntity().getValidTo().getTime() >= new Date()
+										.getTime()) {
 							packagePolicyEntities.add(packagePolicyEntity);
 						}
 					}
@@ -74,47 +75,51 @@ public class ViewerPolicyServiceImpl implements ViewerPolicyService {
 
 					List<ViewerPolicyEntity> viewerPolicyEntities = new ArrayList<>();
 					packagePolicyEntities.forEach(e -> {
-						viewerPolicyEntities.add(
-								getViewerPolicyEntity(packageEntity, e, viewerPackageEntity, viewerPolicyUpdateRequestDto.getViewerId()));
+						viewerPolicyEntities.add(getViewerPolicyEntity(packageEntity, e, viewerPackageEntity,
+								viewerPolicyUpdateRequestDto.getViewerId()));
 					});
-					
-					if(viewerPolicyEntities != null && !viewerPolicyEntities.isEmpty()) {
-						if(viewerPolicyRepository.saveAll(viewerPolicyEntities) != null) {
+
+					if (viewerPolicyEntities != null && !viewerPolicyEntities.isEmpty()) {
+						if (viewerPolicyRepository.saveAll(viewerPolicyEntities) != null) {
 							return "success";
 						} else {
 							return "Viewer Policies save fail.";
 						}
 					} else {
-						return "No policies for ViewerPackageEntity id : " + viewerPackageEntity.getId() ;
+						return "No policies for ViewerPackageEntity id : " + viewerPackageEntity.getId();
 					}
 
 				} else {
 					List<ViewerPackageEntity> viewerPackageEntities = viewerPackageRepository
 							.findByViewerIdAndStatus(viewerPolicyUpdateRequestDto.getViewerId(), AppConstant.ACTIVE);
-					viewerPackageEntities.forEach(e-> {
+					viewerPackageEntities.forEach(e -> {
 						e.setStatus(AppConstant.INACTIVE);
 						e.setModifiedOn(new Date());
 					});
-					
-					if(viewerPackageRepository.saveAll(viewerPackageEntities) != null) {
-						PackageEntity packageEntityNew = packageRepository.findById(viewerPolicyUpdateRequestDto.getPackageId()).get();
-						ViewerPackageEntity tempViewerPackageEntity = getViewerPackageEntity(packageEntityNew , viewerPolicyUpdateRequestDto.getViewerId());
-						ViewerPackageEntity newViewerPackageEntity = viewerPackageRepository.save(tempViewerPackageEntity);
+
+					if (viewerPackageRepository.saveAll(viewerPackageEntities) != null) {
+						PackageEntity packageEntityNew = packageRepository
+								.findById(viewerPolicyUpdateRequestDto.getPackageId()).get();
+						ViewerPackageEntity tempViewerPackageEntity = getViewerPackageEntity(packageEntityNew,
+								viewerPolicyUpdateRequestDto.getViewerId());
+						ViewerPackageEntity newViewerPackageEntity = viewerPackageRepository
+								.save(tempViewerPackageEntity);
 						List<ViewerPolicyEntity> viewerPolicyEntities = new ArrayList<>();
-						packageEntityNew.getPackagePoliciesEntities().forEach(e ->{
-							viewerPolicyEntities.add(getViewerPolicyEntity(packageEntityNew, e, newViewerPackageEntity, viewerPolicyUpdateRequestDto.getViewerId()));
+						packageEntityNew.getPackagePoliciesEntities().forEach(e -> {
+							viewerPolicyEntities.add(getViewerPolicyEntity(packageEntityNew, e, newViewerPackageEntity,
+									viewerPolicyUpdateRequestDto.getViewerId()));
 						});
-						
-						if(viewerPolicyEntities != null && !viewerPolicyEntities.isEmpty()) {
-							if(viewerPolicyRepository.saveAll(viewerPolicyEntities) != null) {
+
+						if (viewerPolicyEntities != null && !viewerPolicyEntities.isEmpty()) {
+							if (viewerPolicyRepository.saveAll(viewerPolicyEntities) != null) {
 								return "success";
 							} else {
 								return "Viewer Policies save fail.";
 							}
 						} else {
-							return "No policies for package id : " + packageEntityNew.getId() ;
+							return "No policies for package id : " + packageEntityNew.getId();
 						}
-						
+
 					} else {
 						return "Can't update Exist viewer policies";
 					}
@@ -122,8 +127,6 @@ public class ViewerPolicyServiceImpl implements ViewerPolicyService {
 			} else {
 				return "Package not found for Id : " + viewerPolicyUpdateRequestDto.getViewerId();
 			}
-
-			
 
 		} else {
 			return "Package not found for Id : " + viewerPolicyUpdateRequestDto.getViewerId();
@@ -139,8 +142,8 @@ public class ViewerPolicyServiceImpl implements ViewerPolicyService {
 		return entity;
 	}
 
-	public ViewerPolicyEntity getViewerPolicyEntity(PackageEntity packageEntity, PackagePolicyEntity packagePolicyEntity, ViewerPackageEntity viewerPackageEntity,
-			Integer viewerId) {
+	public ViewerPolicyEntity getViewerPolicyEntity(PackageEntity packageEntity,
+			PackagePolicyEntity packagePolicyEntity, ViewerPackageEntity viewerPackageEntity, Integer viewerId) {
 		ViewerPolicyEntity entity = new ViewerPolicyEntity();
 
 		entity.setPolicyEntity(packagePolicyEntity.getPolicyEntity());
@@ -152,17 +155,101 @@ public class ViewerPolicyServiceImpl implements ViewerPolicyService {
 		c.setTime(new Date());
 		c.add(Calendar.DATE, packageEntity.getAvailableDays());
 		entity.setEndDate(c.getTime());
+		entity.setLastUpdated(new Date());
 		return entity;
 	}
 
 	@Override
 	public ViewerPolicyUpdateRequestDto getViewerPolicyUpdateRequestDto(Integer viewerId, Integer packageId) {
 		ViewerPolicyUpdateRequestDto dto = new ViewerPolicyUpdateRequestDto();
-		
+
 		dto.setPackageId(packageId);
 		dto.setViewerId(viewerId);
-		
+
 		return dto;
+	}
+
+	@Override
+	public String deactivatePolicy(Integer viewerId, Integer newViewerId, boolean isTranfser, Integer packageId) {
+		Date curDate = new Date();
+		List<ViewerPolicyEntity> viewerPolicyEntities = viewerPolicyRepository
+				.findByViewerIdAndStartDateLessThanEqualAndEndDateGreaterThanEqualAndStatus(viewerId, curDate, curDate, AppConstant.ACTIVE);
+		
+		PackageEntity packageEntity = packageRepository.findById(packageId).get();
+		ViewerPackageEntity viewerPackageEntity = viewerPackageRepository.findFirstByViewerIdAndStatus(newViewerId, AppConstant.ACTIVE);
+		System.out.println("viewerPackageEntity : " + viewerPackageEntity.getId());
+		List< Integer > policyIds = new ArrayList<Integer>();
+		if(packageEntity != null) {
+			packageEntity.getPackagePoliciesEntities().forEach(e-> {
+				policyIds.add(e.getPolicyEntity().getId());
+			});
+		}
+		
+		
+		
+		List<ViewerPolicyEntity> newViewerPolicyEntities = null;
+		if (isTranfser) {
+			newViewerPolicyEntities = new ArrayList<ViewerPolicyEntity>();
+		}
+
+		if (viewerPolicyEntities != null && !viewerPolicyEntities.isEmpty()) {
+			for (ViewerPolicyEntity viewerPolicyEntity : viewerPolicyEntities) {
+				if(policyIds.contains(viewerPolicyEntity.getPolicyEntity().getId())) {
+					if (newViewerPolicyEntities != null) {
+						newViewerPolicyEntities.add(getCopyViewerPolicyEntity(viewerPolicyEntity, newViewerId, viewerPackageEntity));
+					}
+					viewerPolicyEntity.setStatus(AppConstant.INACTIVE);
+				}
+			}
+		}
+
+		viewerPolicyRepository.saveAll(viewerPolicyEntities);
+		if(isTranfser) {
+			viewerPolicyRepository.saveAll(newViewerPolicyEntities);
+		}
+
+		return "success";
+	}
+
+	@Override
+	public ViewerPolicyEntity getCopyViewerPolicyEntity(ViewerPolicyEntity viewerPolicyEntity, Integer viewerId, ViewerPackageEntity viewerPackageEntity) {
+		ViewerPolicyEntity entity = new ViewerPolicyEntity();
+		entity.setEndDate(viewerPolicyEntity.getEndDate());
+		entity.setLastUpdated(viewerPolicyEntity.getLastUpdated());
+		entity.setPolicyEntity(viewerPolicyEntity.getPolicyEntity());
+		entity.setStartDate(viewerPolicyEntity.getStartDate());
+		entity.setStatus(viewerPolicyEntity.getStatus());
+		entity.setViewerId(viewerId);
+		entity.setViewerPackageEntity(viewerPackageEntity);
+		return entity;
+	}
+
+	@Override
+	public boolean checkStatus(Integer viewerId, Integer packageId) {
+		Date curDate = new Date();
+		List<ViewerPolicyEntity> viewerPolicyEntities = viewerPolicyRepository.findByViewerIdAndStartDateLessThanEqualAndEndDateGreaterThanEqual(viewerId, curDate, curDate);
+		
+		PackageEntity packageEntity = packageRepository.findById(packageId).get();
+		List< Integer > policyIds = new ArrayList<Integer>();
+		if(packageEntity != null) {
+			packageEntity.getPackagePoliciesEntities().forEach(e-> {
+				policyIds.add(e.getPolicyEntity().getId());
+			});
+		}
+		
+		if(viewerPolicyEntities != null && !viewerPolicyEntities.isEmpty()) {
+			for (ViewerPolicyEntity viewerPolicyEntity : viewerPolicyEntities) {
+				if(policyIds.contains(viewerPolicyEntity.getPolicyEntity().getId()) && viewerPolicyEntity.getStatus() == AppConstant.ACTIVE) {
+					return true;
+				}
+			}
+			
+			
+		}
+		
+		
+		
+		return false;
 	}
 
 }
