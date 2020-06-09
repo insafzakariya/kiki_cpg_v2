@@ -17,12 +17,17 @@ public interface MobitelService {
 	MerchantAccountEntity getMerchantAccountEntity(int lastTransaciontId, double amount,
 			TransactionType transactionType, Integer viewerId, boolean b);
 
-	String activateDataBundle(String mobileNo, Integer viewerId, String activationStatus);
+	String activateDataBundle(String mobileNo, Integer viewerId, String activationStatus, boolean isUpdateCronViewer, Integer cronId);
 
 	String proceedPayment(Integer viewerId, Integer subscribedDays, String mobileNo, Integer subscriptionPaymentId);
 
 
 	boolean deactivePreviousViewersByMobile(String mobileNo, Integer viewerId, boolean isTransfer,
 			Integer subscriptionPaymentId, Integer subscribedDays);
+
+	String cronPay(String mobileNo, Integer viewerId, String activationStatus,
+			Integer subscribedDays, boolean isUpdateCronViewer, Integer cronId) throws Exception;
+
+	String cronProceedPayment(Integer viewerId, Integer subscribedDays, String mobileNo);
 
 }

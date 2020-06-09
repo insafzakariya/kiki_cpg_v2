@@ -5,7 +5,7 @@ import org.kiki_cpg_v2.dto.request.DialogOtpConfirmDto;
 
 public interface DialogClient {
 
-	String dialogPaymentConfirm(String serverRef, String mobileNo, Double amount, Integer subscribedDays, int viwerId) throws Exception;
+	String dialogPaymentConfirm(String serverRef, String mobileNo, Double amount, Integer subscribedDays, int viwerId, boolean isUpdateCronViewer, Integer cronId) throws Exception;
 
 	String createAccessToken() throws Exception;
 

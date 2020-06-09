@@ -24,6 +24,9 @@ public class CronReportEntity {
 
     @Column(name = "serverIp")
     private String serverIp;
+    
+    @Column(name = "cronName")
+    private String cronName;
 
     public Integer getCronId() {
         return cronId;
@@ -71,6 +74,14 @@ public class CronReportEntity {
 
 	public void setEndTime(String endTime) {
 		this.endTime = endTime;
+	}
+
+	public String getCronName() {
+		return cronName;
+	}
+
+	public void setCronName(String cronName) {
+		this.cronName = cronName;
 	}
     
 }

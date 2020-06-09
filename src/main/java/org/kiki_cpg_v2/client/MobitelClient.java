@@ -14,4 +14,12 @@ public interface MobitelClient {
 
 	Integer updateOneCCTool(boolean b, String mobileNo, Date date, Date deactivatedDate) throws SOAPException, Exception;
 
+	void logInToMobitelESMS(String userName, String password);
+
+	Integer sendSms(String aliasMsg, String mobile, String message);
+
+	void logOutFromMobitelESMS();
+
+	void testMobitelConnection();
+
 }

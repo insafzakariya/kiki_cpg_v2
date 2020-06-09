@@ -100,4 +100,12 @@ public class InvoiceServiceImpl implements InvoiceService {
 		return entity;
 	}
 
+	@Override
+	public boolean update(InvoiceEntity invoiceEntity) {
+		if(invoiceRepository.save(invoiceEntity) != null) {
+			return true;
+		}
+		return false;
+	}
+
 }

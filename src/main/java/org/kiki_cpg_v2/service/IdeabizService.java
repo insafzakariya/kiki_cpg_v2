@@ -10,14 +10,17 @@ public interface IdeabizService {
 
 	DialogPaymentConfirmDto pinSubscriptionConfirm(DialogOtpConfirmDto dialogOtpConfirmDto) throws Exception;
 
-	String paymentConfirm(String serverRef, String mobileNo, Double amount, Integer subscribedDays, Integer viewerId) throws Exception;
+	String paymentConfirm(String serverRef, String mobileNo, Double amount, Integer subscribedDays, Integer viewerId, boolean isUpdateCronViewer, Integer cronId) throws Exception;
 
-	String processIdeabizPayment(String serverRef, Integer viewerId, Integer day, String mobileNo, Double amount) throws Exception;
+	String processIdeabizPayment(String serverRef, Integer viewerId, Integer day, String mobileNo, Double amount,
+			boolean unsubscrideEntityUpdate, boolean isUpdateCronViewer, Integer cronId) throws Exception;
 
 	IdeabizEntity getIdeabizEntity(Integer viewerId, String mobileNo, Integer day) throws Exception;
 
 	IdeabizEntity updateIdeabizPolicyExpDate(Integer viewerId, Date valiedDate, Date createDate) throws Exception;
 
 	boolean processUnsubscriptionIdeabiz(String accessToken, Integer viewerId, String mobileNo, boolean unsubscribeFromDialog) throws Exception;
+
+	
 
 }

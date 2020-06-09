@@ -16,4 +16,6 @@ public interface InvoiceService {
 	InvoiceEntity createInvoice(String serviceId, Integer viewerId, Integer subscribed_days, Double amount,
 			String mobileNo, Integer status, List<Date> dates);
 
+	boolean update(InvoiceEntity invoiceEntity);
+
 }

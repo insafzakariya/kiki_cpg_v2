@@ -7,5 +7,4 @@ public interface ViewerUnsubcriptionRepository extends JpaRepository<ViewerUnsub
 
 	ViewerUnsubcriptionEntity findByViewerIdAndMobileNumberAndSubcriptionTypeAndServiceProvider(Integer viewerId,
 			String mobileNo, String string, String serviceProvider);
-
 }

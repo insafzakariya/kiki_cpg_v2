@@ -77,7 +77,7 @@ public class IdeabizServiceImpl implements IdeabizService {
 
 					if (ideabizRepository.save(ideabizEntity) != null) {
 						String resp = processIdeabizPayment(dialogOtpConfirmDto.getServerRef(),
-								dialogOtpConfirmDto.getViewerId(), dialogOtpConfirmDto.getDay(), mobileNo, amount);
+								dialogOtpConfirmDto.getViewerId(), dialogOtpConfirmDto.getDay(), mobileNo, amount, true, false, -1);
 						if (resp.equalsIgnoreCase("Success")) {
 
 						}
@@ -102,7 +102,7 @@ public class IdeabizServiceImpl implements IdeabizService {
 						message = "SUBSCRIBED";
 						if (ideabizRepository.save(ideabizEntity) != null) {
 							String resp = processIdeabizPayment(dialogOtpConfirmDto.getServerRef(),
-									dialogOtpConfirmDto.getViewerId(), dialogOtpConfirmDto.getDay(), mobileNo, amount);
+									dialogOtpConfirmDto.getViewerId(), dialogOtpConfirmDto.getDay(), mobileNo, amount, true, false, -1);
 							if (resp.equalsIgnoreCase("Success")) {
 							}
 						} else {
@@ -140,11 +140,11 @@ public class IdeabizServiceImpl implements IdeabizService {
 	@Override
 	public boolean processUnsubscriptionIdeabiz(String accessToken, Integer viewerId, String mobileNo,
 			boolean unsubscribeFromDialog) throws Exception {
-		
-		if(accessToken == null) {
+
+		if (accessToken == null) {
 			accessToken = dialogClient.createAccessToken();
 		}
-		
+
 		IdeabizEntity ideabizEntity = ideabizRepository.findOneByViwerIdAndSubscribe(viewerId, AppConstant.ACTIVE);
 		if (ideabizEntity != null) {
 			ideabizEntity.setSubscribe(AppConstant.INACTIVE);
@@ -153,7 +153,7 @@ public class IdeabizServiceImpl implements IdeabizService {
 				dialogClient.unsubscribe(accessToken, viewerId, ideabizEntity.getSubscribedDays(), mobileNo);
 			}
 			if (ideabizRepository.save(ideabizEntity) != null) {
-				if (viewerUnsubscriptionService.unubscribe(mobileNo, viewerId, "UNSUBCRIBE", "Dialog")) {
+				if (viewerUnsubscriptionService.unubscribe(mobileNo, viewerId, "UNSUBSCRIBE", "Dialog")) {
 					return true;
 				}
 			}
@@ -165,41 +165,56 @@ public class IdeabizServiceImpl implements IdeabizService {
 	}
 
 	@Override
-	public String processIdeabizPayment(String serverRef, Integer viewerId, Integer day, String mobileNo, Double amount)
+	public String processIdeabizPayment(String serverRef, Integer viewerId, Integer day, String mobileNo, Double amount, boolean unsubscrideEntityUpdate, boolean isUpdateCronViewer, Integer cronId)
 			throws Exception {
-
-		String paid = paymentConfirm(serverRef, mobileNo, amount, day, viewerId);
+		List<Date> dates = appUtility.getDatesBetweenUsingJava7(day);
+		
+		InvoiceEntity invoiceEntity = invoiceService.createInvoice(AppConstant.IDEABIZ, viewerId, day, amount, mobileNo,
+				AppConstant.INACTIVE, dates);
+		
+		if(serverRef == null) {
+			serverRef = invoiceEntity.getId().toString();
+		}
+		
+		String paid = paymentConfirm(serverRef, mobileNo, amount, day, viewerId, isUpdateCronViewer, cronId);
 		System.out.println(paid);
+		
+		
 
 		if (paid.equals("Success")) {
-			List<Date> dates = appUtility.getDatesBetweenUsingJava7(day);
-			InvoiceEntity invoiceEntity = invoiceService.createInvoice(serverRef, viewerId, day, amount, mobileNo,
-					AppConstant.ACTIVE, dates);
-			Integer packageId = -1;
-			if (day == 7) {
-				packageId = 106;
-			} else if (day == 1) {
-				packageId = 81;
-			}
-			if (packageId > 0) {
-				if (viewerPolicyService
-						.updateViewerPolicy(viewerPolicyService.getViewerPolicyUpdateRequestDto(viewerId, packageId))
-						.equalsIgnoreCase("success")) {
-					if (updateIdeabizPolicyExpDate(viewerId, dates.get(dates.size() - 1),
-							invoiceEntity.getCreatedDate()) != null) {
-						if (viewerUnsubscriptionService.save(mobileNo, viewerId, "SUBCRIBE", "Dialog")) {
-							return "Success";
+
+			invoiceEntity.setSuccess(AppConstant.ACTIVE);
+			if (invoiceService.update(invoiceEntity)) {
+
+				Integer packageId = -1;
+				if (day == 7) {
+					packageId = 106;
+				} else if (day == 1) {
+					packageId = 81;
+				}
+				if (packageId > 0) {
+					if (viewerPolicyService
+							.updateViewerPolicy(
+									viewerPolicyService.getViewerPolicyUpdateRequestDto(viewerId, packageId))
+							.equalsIgnoreCase("success")) {
+						if (updateIdeabizPolicyExpDate(viewerId, dates.get(dates.size() - 1),
+								invoiceEntity.getCreatedDate()) != null) {
+							if (viewerUnsubscriptionService.save(mobileNo, viewerId, "SUBSCRIBE", "Dialog", unsubscrideEntityUpdate)) {
+								return "Success";
+							} else {
+								return "Unsubscription save error";
+							}
 						} else {
-							return "Unsubscription save error";
+							return "Policy Expire Update Error";
 						}
 					} else {
-						return "Policy Expire Update Error";
+						return "Viewer Policy Update Error";
 					}
 				} else {
-					return "Viewer Policy Update Error";
+					return "Unidentified Package";
 				}
 			} else {
-				return "Unidentified Package";
+				return "Invoice Not Updated";
 			}
 
 		} else {
@@ -218,8 +233,8 @@ public class IdeabizServiceImpl implements IdeabizService {
 
 	@Override
 	public String paymentConfirm(String serverRef, String mobileNo, Double amount, Integer subscribedDays,
-			Integer viewerId) throws Exception {
-		String paid = dialogClient.dialogPaymentConfirm(serverRef, mobileNo, amount, subscribedDays, viewerId);
+			Integer viewerId, boolean isUpdateCronViewer, Integer cronId) throws Exception {
+		String paid = dialogClient.dialogPaymentConfirm(serverRef, mobileNo, amount, subscribedDays, viewerId, isUpdateCronViewer, cronId);
 		return paid;
 	}
 

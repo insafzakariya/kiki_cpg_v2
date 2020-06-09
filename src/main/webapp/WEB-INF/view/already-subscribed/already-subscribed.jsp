@@ -18,7 +18,7 @@
 		<div class="body_container">
 			<c:choose>
 				<c:when test="${subscriptionType eq 'IDEABIZ'}">
-					<a href="" class="Mcash_wrapper_href" id="dviu">
+					<a  class="Mcash_wrapper_href" id="dviu">
 						<div class="body_frame">
 							<div style="width: 100%; display: inline-block;">
 								<img src="/susilawebpay/static/assets/images/dialog-new.jpg" style="flex: 0 0 20%;">
@@ -28,7 +28,7 @@
 					</a>
 				</c:when>
 				<c:when test="${subscriptionType eq 'MOBITEL'}">
-					<a href="#" class="Mcash_wrapper_href" id="mobitel">
+					<a class="Mcash_wrapper_href" id="mobitel">
 						<div class="body_frame">
 							<div style="width: 100%; display: inline-block;">
 								<img src="/susilawebpay/static/assets/images/mobitel.png" style="flex: 0 0 20%;">
@@ -44,7 +44,7 @@
 			
 			
 			<button type="button" id="btnnewsubscription"  class="form_submit">
-				ADD NEW SUBSCRIPTION5
+				ADD NEW SUBSCRIPTION
 			</button>
 			
 			
@@ -78,6 +78,7 @@
 				}
 				
 				console.log("send Req");
+				console.log(data);
 				
 				$.ajax({
 					type : "post",

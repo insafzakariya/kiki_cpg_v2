@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -35,7 +36,7 @@ public class PaymentMethodEntity{
 	@OneToMany(mappedBy = "paymentMethodEntity", targetEntity = PaymentPolicyEntity.class)
 	private List<PaymentPolicyEntity> paymentPolicyEntities;
 
-	@OneToMany(mappedBy = "paymentMethodEntity", targetEntity = PaymentMethodPlanEntity.class)
+	@OneToMany(mappedBy = "paymentMethodEntity", targetEntity = PaymentMethodPlanEntity.class, fetch = FetchType.EAGER)
 	private List<PaymentMethodPlanEntity> paymentMethodPlanEntities;
 
 	public Integer getId() {
