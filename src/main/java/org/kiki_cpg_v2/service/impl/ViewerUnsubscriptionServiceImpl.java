@@ -23,13 +23,13 @@ public class ViewerUnsubscriptionServiceImpl implements ViewerUnsubscriptionServ
 						serviceProvider);
 		ViewerUnsubcriptionEntity entity = null;
 		if (updateIfExist) {
-			entity = existEntity;
-		} else {
 			if (existEntity != null) {
-				return true;
+				entity = existEntity;
 			} else {
 				entity = new ViewerUnsubcriptionEntity();
 			}
+		} else {
+			return true;
 		}
 
 		entity.setLastUpdatedTime(new Date());

@@ -63,12 +63,12 @@ public class MobitelServiceImpl implements MobitelService {
 
 	@Autowired
 	private SubscriptionService subscriptionService;
-	
+
 	@Autowired
 	private CronViewerRepostService cronViewerRepostService;
 
 	@Override
-	public boolean processUnsubscriptionMobitel(Integer viewerid, String mobile) {
+	public boolean processUnsubscriptionMobitel(Integer viewerid, String mobile) throws Exception {
 		if (updateViewerSubscription(viewerid, SubscriptionType.NONE, new Date(), mobile)) {
 			return true;
 		}
@@ -76,7 +76,8 @@ public class MobitelServiceImpl implements MobitelService {
 	}
 
 	@Override
-	public boolean updateViewerSubscription(Integer viewerid, SubscriptionType type, Date date, String mobile) {
+	public boolean updateViewerSubscription(Integer viewerid, SubscriptionType type, Date date, String mobile)
+			throws Exception {
 		ViewerSubscriptionEntity entity = viewerSubscriptionRepository.findOneByViewers(viewerid);
 		if (entity == null) {
 			entity = new ViewerSubscriptionEntity();
@@ -151,7 +152,7 @@ public class MobitelServiceImpl implements MobitelService {
 
 	@Override
 	public boolean deactivePreviousViewersByMobile(String mobileNo, Integer viewerId, boolean isTransfer,
-			Integer subscriptionPaymentId, Integer subscribedDays) {
+			Integer subscriptionPaymentId, Integer subscribedDays) throws Exception {
 		List<ViewerEntity> viewerEntities = viewerRepository.findByIdNotAndMobileNumberEndingWith(viewerId, mobileNo);
 
 		Integer packageId = -1;
@@ -180,7 +181,7 @@ public class MobitelServiceImpl implements MobitelService {
 
 	@Override
 	public String proceedPayment(Integer viewerId, Integer subscribedDays, String mobileNo,
-			Integer subscriptionPaymentId) {
+			Integer subscriptionPaymentId) throws Exception {
 		String resp = "Fail";
 		try {
 
@@ -225,8 +226,10 @@ public class MobitelServiceImpl implements MobitelService {
 		return resp;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public String activateDataBundle(String mobileNo, Integer viewerId, String activationStatus, boolean isUpdateCronViewer, Integer cronId) {
+	public String activateDataBundle(String mobileNo, Integer viewerId, String activationStatus,
+			boolean isUpdateCronViewer, Integer cronId) throws Exception {
 		mobileNo = "0" + appUtility.getNineDigitMobileNumber(mobileNo);
 		logger.info("called to activate Data");
 		try {
@@ -242,10 +245,9 @@ public class MobitelServiceImpl implements MobitelService {
 			}
 
 			String serverResponse = "";
-			
+
 			int lastTransaciontId = 0;
 			try {
-				@SuppressWarnings("unchecked")
 				LinkedHashMap<String, String> response = (LinkedHashMap<String, String>) res.getBody();
 				logger.info("get access token");
 
@@ -255,7 +257,6 @@ public class MobitelServiceImpl implements MobitelService {
 				while (returnValue.equals("0002")) {
 					ResponseEntity<?> resp = mobitelClient.mobitelManage(response.get("access_token"), activationStatus,
 							mobileNo, lastTransaciontId);
-					@SuppressWarnings("unchecked")
 					LinkedHashMap<String, String> response2 = (LinkedHashMap<String, String>) resp.getBody();
 					serverResponse = String.valueOf((LinkedHashMap<String, String>) resp.getBody());
 					returnValue = response2.get("resultCode");
@@ -300,8 +301,8 @@ public class MobitelServiceImpl implements MobitelService {
 
 				logger.info(paymentStatus + " : " + responseMsg);
 			}
-			
-			if(isUpdateCronViewer) {
+
+			if (isUpdateCronViewer) {
 				cronViewerRepostService.save(viewerId, paymentStatus, amount, responseMsg, serverResponse, cronId);
 			}
 
@@ -314,7 +315,7 @@ public class MobitelServiceImpl implements MobitelService {
 
 	@Override
 	public MerchantAccountEntity getMerchantAccountEntity(int lastTransaciontId, double amount,
-			TransactionType transactionType, Integer viewerId, boolean isSuccess) {
+			TransactionType transactionType, Integer viewerId, boolean isSuccess) throws Exception {
 		MerchantAccountEntity entity = new MerchantAccountEntity();
 		entity.setId(0);
 		entity.setServiceId("KIKI");
@@ -329,8 +330,8 @@ public class MobitelServiceImpl implements MobitelService {
 
 	@Override
 	@Transactional
-	public String cronPay(String mobileNo, Integer viewerId, String activationStatus, Integer subscribedDays, boolean isUpdateCronViewer, Integer cronId)
-			throws Exception {
+	public String cronPay(String mobileNo, Integer viewerId, String activationStatus, Integer subscribedDays,
+			boolean isUpdateCronViewer, Integer cronId) throws Exception {
 
 		logger.info("called to pay");
 		String resp = activateDataBundle(mobileNo, viewerId, activationStatus, isUpdateCronViewer, cronId);
@@ -350,7 +351,13 @@ public class MobitelServiceImpl implements MobitelService {
 			return paymentResp;
 
 		} else {
-			//cronProceedPayment(viewerId, 1, mobileNo);
+			/*try {
+				if (!viewerPolicyService.findViewerPoliceExist(viewerId, 1)) {
+					cronProceedPayment(viewerId, 1, mobileNo);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}*/
 			logger.info("payment is not successful");
 
 			return "payment is not successful";
@@ -358,7 +365,7 @@ public class MobitelServiceImpl implements MobitelService {
 	}
 
 	@Override
-	public String cronProceedPayment(Integer viewerId, Integer packageId, String mobileNo) {
+	public String cronProceedPayment(Integer viewerId, Integer packageId, String mobileNo) throws Exception {
 		String resp = "Fail";
 		try {
 			mobileNo = "0" + appUtility.getNineDigitMobileNumber(mobileNo);

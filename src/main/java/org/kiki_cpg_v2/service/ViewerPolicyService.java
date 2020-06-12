@@ -17,4 +17,6 @@ public interface ViewerPolicyService {
 	ViewerPolicyEntity getCopyViewerPolicyEntity(ViewerPolicyEntity viewerPolicyEntity, Integer viewerId,
 			ViewerPackageEntity viewerPackageEntity);
 
+	boolean findViewerPoliceExist(Integer viewerId, Integer i);
+
 }

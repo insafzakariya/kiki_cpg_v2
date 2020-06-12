@@ -8,26 +8,29 @@ import org.kiki_cpg_v2.enums.TransactionType;
 
 public interface MobitelService {
 
-	boolean processUnsubscriptionMobitel(Integer viewerid, String mobile);
+	boolean processUnsubscriptionMobitel(Integer viewerid, String mobile) throws Exception;
 
-	boolean updateViewerSubscription(Integer viewerid, SubscriptionType none, Date date, String mobile);
+	boolean updateViewerSubscription(Integer viewerid, SubscriptionType none, Date date, String mobile)
+			throws Exception;
 
-	String pay(String mobileNo, Integer viewerId, String activationStatus, Integer subscriptionPaymentId, Integer subscribedDays) throws Exception;
+	String pay(String mobileNo, Integer viewerId, String activationStatus, Integer subscriptionPaymentId,
+			Integer subscribedDays) throws Exception;
 
 	MerchantAccountEntity getMerchantAccountEntity(int lastTransaciontId, double amount,
-			TransactionType transactionType, Integer viewerId, boolean b);
+			TransactionType transactionType, Integer viewerId, boolean b) throws Exception;
 
-	String activateDataBundle(String mobileNo, Integer viewerId, String activationStatus, boolean isUpdateCronViewer, Integer cronId);
+	String activateDataBundle(String mobileNo, Integer viewerId, String activationStatus, boolean isUpdateCronViewer,
+			Integer cronId) throws Exception;
 
-	String proceedPayment(Integer viewerId, Integer subscribedDays, String mobileNo, Integer subscriptionPaymentId);
-
+	String proceedPayment(Integer viewerId, Integer subscribedDays, String mobileNo, Integer subscriptionPaymentId)
+			throws Exception;
 
 	boolean deactivePreviousViewersByMobile(String mobileNo, Integer viewerId, boolean isTransfer,
-			Integer subscriptionPaymentId, Integer subscribedDays);
+			Integer subscriptionPaymentId, Integer subscribedDays) throws Exception;
 
-	String cronPay(String mobileNo, Integer viewerId, String activationStatus,
-			Integer subscribedDays, boolean isUpdateCronViewer, Integer cronId) throws Exception;
+	String cronPay(String mobileNo, Integer viewerId, String activationStatus, Integer subscribedDays,
+			boolean isUpdateCronViewer, Integer cronId) throws Exception;
 
-	String cronProceedPayment(Integer viewerId, Integer subscribedDays, String mobileNo);
+	String cronProceedPayment(Integer viewerId, Integer subscribedDays, String mobileNo) throws Exception;
 
 }

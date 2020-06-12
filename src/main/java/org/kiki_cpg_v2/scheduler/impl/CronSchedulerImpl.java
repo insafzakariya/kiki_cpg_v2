@@ -22,7 +22,7 @@ public class CronSchedulerImpl implements CronScheduler {
 	@Autowired
 	private CronService cronService;
 
-	@Scheduled(cron = "0 31 10 * * *") // 10.30
+	@Scheduled(cron = "0 30 10 * * *") // 10.30
 	public void cronSetup1() {
 		logger.info("Cron Started");
 		System.out.println("Cron Started");

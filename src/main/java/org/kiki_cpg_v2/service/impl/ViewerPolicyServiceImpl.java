@@ -252,4 +252,31 @@ public class ViewerPolicyServiceImpl implements ViewerPolicyService {
 		return false;
 	}
 
+	@Override
+	public boolean findViewerPoliceExist(Integer viewerId, Integer packageId) {
+		Date curDate = new Date();
+		List<ViewerPolicyEntity> viewerPolicyEntities = viewerPolicyRepository
+				.findByViewerIdAndStartDateLessThanEqualAndEndDateGreaterThanEqualAndStatus(viewerId, curDate, curDate, AppConstant.ACTIVE);
+		
+		PackageEntity packageEntity = packageRepository.findById(packageId).get();
+		ViewerPackageEntity viewerPackageEntity = viewerPackageRepository.findFirstByViewerIdAndStatus(viewerId, AppConstant.ACTIVE);
+		System.out.println("viewerPackageEntity : " + viewerPackageEntity.getId());
+		List< Integer > policyIds = new ArrayList<Integer>();
+		if(packageEntity != null) {
+			packageEntity.getPackagePoliciesEntities().forEach(e-> {
+				policyIds.add(e.getPolicyEntity().getId());
+			});
+		}
+		
+		if (viewerPolicyEntities != null && !viewerPolicyEntities.isEmpty()) {
+			for (ViewerPolicyEntity viewerPolicyEntity : viewerPolicyEntities) {
+				if(policyIds.contains(viewerPolicyEntity.getPolicyEntity().getId())) {
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
 }
