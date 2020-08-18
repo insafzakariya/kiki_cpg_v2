@@ -2,6 +2,7 @@ package org.kiki_cpg_v2.controller;
 
 import org.kiki_cpg_v2.dto.ResponseMapDto;
 import org.kiki_cpg_v2.dto.UnsubscribeDto;
+import org.kiki_cpg_v2.service.HNBService;
 import org.kiki_cpg_v2.service.IdeabizService;
 import org.kiki_cpg_v2.service.MobitelService;
 import org.kiki_cpg_v2.service.SubscriptionService;
@@ -28,6 +29,9 @@ public class UnsubscribeController {
 	
 	@Autowired
 	private MobitelService mobitelService;
+	
+	@Autowired
+	private HNBService hnbService;
 
 	@PostMapping(produces = "application/json")
 	@ResponseBody
@@ -59,10 +63,19 @@ public class UnsubscribeController {
 						responseMapDto.setStatus("success");
 					}
 				}
+				
+				if (unsubscribeDto.getType() == 7) {
+					res = hnbService.processUnsubscription(unsubscribeDto.getViewerid(),
+							unsubscribeDto.getMobile());
+					if (res) {
+						responseMapDto.setStatus("success");
+					}
+				}
 
 			}
 			return new ResponseEntity<Object>(responseMapDto, HttpStatus.OK);
 		} catch (Exception e) {
+			e.printStackTrace();
 			return new ResponseEntity<Object>(e.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 

@@ -1,5 +1,8 @@
 package org.kiki_cpg_v2.dto;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class SubscriptionPaymentDto {
 
 	private Integer subscriptionPaymentId;
@@ -9,9 +12,11 @@ public class SubscriptionPaymentDto {
 	private Integer status;
 	private boolean alreadySubscribed = false;
 	private String mobile;
+	private List<String> subscriptionTypeList = new ArrayList<String>();
 	private String subscriptionType;
 	private boolean trialVerify;
 	private String ideabizDays;
+	private String lastSubscribeDay;
 
 	public Integer getSubscriptionPaymentId() {
 		return subscriptionPaymentId;
@@ -69,6 +74,14 @@ public class SubscriptionPaymentDto {
 		this.mobile = mobile;
 	}
 
+	public List<String> getSubscriptionTypeList() {
+		return subscriptionTypeList;
+	}
+
+	public void setSubscriptionTypeList(List<String> subscriptionTypeList) {
+		this.subscriptionTypeList = subscriptionTypeList;
+	}
+
 	public String getSubscriptionType() {
 		return subscriptionType;
 	}
@@ -91,6 +104,14 @@ public class SubscriptionPaymentDto {
 
 	public void setIdeabizDays(String ideabizDays) {
 		this.ideabizDays = ideabizDays;
+	}
+
+	public String getLastSubscribeDay() {
+		return lastSubscribeDay;
+	}
+
+	public void setLastSubscribeDay(String lastSubscribeDay) {
+		this.lastSubscribeDay = lastSubscribeDay;
 	}
 
 }

@@ -26,6 +26,8 @@ public class ViewServiceImpl implements ViewService{
 			if(subscriptionPaymentDto.isAlreadySubscribed()) {
 				modelAndView.setViewName("already-subscribed/already-subscribed");
 				modelAndView.addObject("subscriptionType", subscriptionPaymentDto.getSubscriptionType());
+				modelAndView.addObject("subscriptionTypeList", subscriptionPaymentDto.getSubscriptionTypeList());
+				modelAndView.addObject("lastSubscribeDay", subscriptionPaymentDto.getLastSubscribeDay());
 			} else if(subscriptionPaymentDto.isTrialVerify()) {
 				modelAndView.setViewName("trial/trial");
 			} else {

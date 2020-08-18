@@ -19,7 +19,7 @@ public class ViewerUnsubscriptionServiceImpl implements ViewerUnsubscriptionServ
 			boolean updateIfExist) throws Exception {
 
 		ViewerUnsubcriptionEntity existEntity = viewerUnsubcriptionRepository
-				.findByViewerIdAndMobileNumberAndSubcriptionTypeAndServiceProvider(viewerId, mobileNo, suscriptionType,
+				.findTopOneByViewerIdAndMobileNumberAndSubcriptionTypeAndServiceProvider(viewerId, mobileNo, suscriptionType,
 						serviceProvider);
 		ViewerUnsubcriptionEntity entity = null;
 		if (updateIfExist) {

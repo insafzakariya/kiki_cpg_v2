@@ -19,7 +19,7 @@
             <div class="body_container">
 
                 <div class="main_number_input">
-                    <input type="text" name=""
+                    <input type="text" name="" class="text_border"
                            placeholder="Please enter your mobile number" id="mobile_no">
                 </div>
                 <input class="form_submit" type="button" id="btn_proceed"
@@ -28,7 +28,16 @@
                 <div class="error-field">
                     <div id="dialogIncorrect" class="hide errorField" style="color:red">Mobile number is incorrect (Ex:77******* Or 76*******)</div>
                     <div id="mobitelIncorrect" class="hide errorField" style="color:red">Mobile number is incorrect (Ex:71******* Or 70*******)</div>
+                    <div id="mobileIncorrest" class="hide errorField" style="color:red">Mobile number is incorrect</div>
                     <div id="numbernotvalied" class="hide errorField" style="color:red">Enter valid mobile number to proceed</div>
+                </div>
+
+                <div class="preloader hide" style="padding-top: 10px;"
+                     id="gif-load">
+                    <div class="loader_img">
+                        <img id="imgSrc" src="<c:url value='/static/img/ajax-loader.gif'/>"
+                             alt="loading..." height="64" width="64">
+                    </div>
                 </div>
 
             </div>
@@ -43,7 +52,7 @@
 
     <script type="text/javascript">
         function initialize() {
-            var mobile = sessionStorage.getItem("mobile");
+            var mobile = localStorage.getItem("mobile");
             $("#mobile_no").val(mobile);
         }
 
@@ -51,16 +60,18 @@
             $("#numbernotvalied").addClass("hide");
             $("#mobitelIncorrect").addClass("hide");
             $("#dialogIncorrect").addClass("hide");
-        })
+        });
 
         $("#btn_proceed").click(
+               
                 function () {
-                    var method = sessionStorage.getItem("methodId");
+                     $("#gif-load").removeClass("hide");
+                    var method = localStorage.getItem("methodId");
                     var mobile_no = $('#mobile_no').val();
                     console.log(mobile_no);
                     console.log(mobile_no.length);
                     if (mobile_no == null || mobile_no.length < 9) {
-                    	console.log("incorrect");
+                        console.log("incorrect");
                         $("#numbernotvalied").removeClass("hide");
                         return;
                     }
@@ -70,21 +81,28 @@
                         console.log(status);
                         if (status == "success") {
                             if (method == 4 && resp == "success") {
-                                var day = sessionStorage.getItem("day");
+                                var day = localStorage.getItem("day");
                                 $.get(baseURL + "/rest/ideabiz/otp/send/" + mobile_no + "/" + day, function (resp, status) {
-                                    sessionStorage.setItem('server_ref', resp.serverRef);
+                                    localStorage.setItem('server_ref', resp.serverRef);
                                     window.location.replace(baseURL + "/otp_verification");
                                 });
                             } else if (method == 4 && resp != "success") {
                                 $("#dialogIncorrect").removeClass("hide");
                             } else if (method == 5 && resp == "success") {
-                                var subscriptionPaymentId = sessionStorage.getItem("subscriptionPaymentId");
-                                sessionStorage.setItem("mobile", mobile_no);
-                                var url = "https://services.mobitel.lk/MCCPortal/service/?compId=SusilaTV&reqType=ACTIVE&servId=SUWS&returnUrl=" 
+                                var subscriptionPaymentId = localStorage.getItem("subscriptionPaymentId");
+                                localStorage.setItem("mobile", mobile_no);
+                                var url = "https://services.mobitel.lk/MCCPortal/service/?compId=SusilaTV&reqType=ACTIVE&servId=SUWS&returnUrl="
                                         + baseURL + "/mobitel/mobitelPay&bridgeID=" + subscriptionPaymentId;
                                 window.location.href = url;
                             } else if (method == 5 && resp != "success") {
                                 $("#mobitelIncorrect").removeClass("hide");
+                            } else if (method == 7 && resp == "success") {
+                                var viewerId = localStorage.getItem("viewerId");
+                                $.get(baseURL + "/rest/otp/send/" + viewerId + "/" + mobile_no, function (resp, status) {
+                                    window.location.replace(baseURL + "/otp_verification");
+                                });
+                            } else if (method == 7 && resp != "success") {
+                                $("#mobileIncorrest").removeClass("hide");
                             } else {
 
                             }

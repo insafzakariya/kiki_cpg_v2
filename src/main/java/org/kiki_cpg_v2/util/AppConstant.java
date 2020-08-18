@@ -18,5 +18,6 @@ public class AppConstant {
 	public static final String [] CRON_NOTIFY_MOBILES = {"+94776497074", "+94773799390", "+94779922990", "+94771485821", "+94767072477"};
 	public static final String DIALOG = "DIALOG";
 	public static final String MOBITEL = "MOBITEL";
+	public static final String URL_NOTIFICATION = "http://35.200.234.252:3000/fcm/v1/message";
 
 }

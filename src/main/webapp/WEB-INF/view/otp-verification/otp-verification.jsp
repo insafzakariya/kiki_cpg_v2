@@ -51,10 +51,11 @@
             });
 
             $('#btn_otp_approve').click(function () {
-                var serverRef = sessionStorage.getItem("server_ref");
-                var subscriptionPaymentId = sessionStorage.getItem("subscriptionPaymentId");
-                var day = sessionStorage.getItem("day");
-                var viewerId = sessionStorage.getItem("viewerId");
+                var serverRef = localStorage.getItem("server_ref");
+                var subscriptionPaymentId = localStorage.getItem("subscriptionPaymentId");
+                var day = localStorage.getItem("day");
+                var viewerId = localStorage.getItem("viewerId");
+                var methodId = localStorage.getItem("methodId");
                 var otp = $('#d1').val();
                 var otp_length = otp.toString().length;
 
@@ -70,33 +71,102 @@
                     var x = document.getElementById("gif-load");
                     x.style.display = "block";
 
-                    $.ajax({
-                        type: "post",
-                        contentType: "application/json",
-                        dataType: 'json',
-                        url: "/susilawebpay/rest/ideabiz/pin_subscription_confirm",
-                        data: JSON.stringify(data_st),
-                        success: function (data) {
+                    if (methodId == 4) {
+                        $.ajax({
+                            type: "post",
+                            contentType: "application/json",
+                            dataType: 'json',
+                            url: baseURL + "/rest/ideabiz/pin_subscription_confirm",
+                            data: JSON.stringify(data_st),
+                            success: function (data) {
 
-                            console.log(data);
+                                console.log(data);
 
-                            x.style.display = "none";
-                            var myJSON = JSON.stringify(data);
-                            var myJSON = JSON.parse(myJSON);
-                            if (data.statusCode == 'FAIL') {
-                                $("#error-p").text(data.message);
+                                x.style.display = "none";
+                                var myJSON = JSON.stringify(data);
+                                var myJSON = JSON.parse(myJSON);
+                                if (data.statusCode == 'FAIL') {
+                                    $("#error-p").text(data.message);
+                                    $("#error").removeClass("hide");
+                                } else {
+                                    var url = baseURL + "/thanks/4";
+                                    window.location.replace(url);
+                                }
+                            },
+                            error: function (e) {
+                                $("#error-p").text('An error occurred while updating payment transaction : ' + e);
+                                console.log('An error occurred while updating payment transaction : ', e);
                                 $("#error").removeClass("hide");
-                            } else {
-                                var url = baseURL +"/thanks/4";
-                                window.location.replace(url);
                             }
-                        },
-                        error: function (e) {
-                            $("#error-p").text('An error occurred while updating payment transaction : ' + e);
-                            console.log('An error occurred while updating payment transaction : ', e);
-                            $("#error").removeClass("hide");
-                        }
-                    });
+                        });
+                    } else if (methodId == 7) {
+                        $.ajax({
+                            type: "post",
+                            contentType: "application/json",
+                            dataType: 'json',
+                            url: baseURL + "/rest/otp/confirm",
+                            data: JSON.stringify(data_st),
+                            success: function (data) {
+                                if (data.status == "Success") {
+
+                                    var data_st2 = {
+                                        "mobileNo": localStorage.getItem("mobile"),
+                                        "viewerId": localStorage.getItem("viewerId"),
+                                        "planId": localStorage.getItem("planId")
+                                    };
+
+                                    $.ajax({
+                                        type: "post",
+                                        contentType: "application/json",
+                                        dataType: 'json',
+                                        url: baseURL + "/rest/hnb/begin",
+                                        data: JSON.stringify(data_st2),
+                                        success: function (data) {
+                                            localStorage.setItem('transaction_uuid', data.transactionUUID);
+                                            localStorage.setItem('referance_no', data.referanceNo);
+                                            localStorage.setItem('card_amount', data.amount);
+                                            console.log(data);
+                                            var url = paymentGatewayRedirectURL + "transaction_uuid=" + data.transactionUUID
+                                                    + "&referance=" + data.referanceNo + "&amount=" + data.amount;
+                                            window.location.replace(url);
+
+                                        },
+                                        error: function (e) {
+                                            $("#error-p").text('An error occurred while connecting Payment Gateway');
+                                            console.log('An error occurred while connecting Payment Gateway : ', e);
+                                            $("#error").removeClass("hide");
+                                        }
+                                    });
+
+
+
+
+                                } else {
+                                    $("#error-p").text(data.message);
+                                    $("#error").removeClass("hide");
+                                }
+
+                                /* x.style.display = "none";
+                                 var myJSON = JSON.stringify(data);
+                                 var myJSON = JSON.parse(myJSON);
+                                 if (data.statusCode == 'FAIL') {
+                                 $("#error-p").text(data.message);
+                                 $("#error").removeClass("hide");
+                                 } else {
+                                 var url = baseURL +"/thanks/4";
+                                 window.location.replace(url);
+                                 }*/
+                            },
+                            error: function (e) {
+                                $("#error-p").text('An error occurred while updating payment transaction : ' + e);
+                                console.log('An error occurred while updating payment transaction : ', e);
+                                $("#error").removeClass("hide");
+                            }
+                        });
+                    } else {
+                        $("#error-p").text('Invalied Method');
+                        $("#error").removeClass("hide");
+                    }
                 } else {
                     $("#error-p").text('Invalied OTP');
                     $("#error").removeClass("hide");

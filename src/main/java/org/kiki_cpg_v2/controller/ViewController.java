@@ -3,7 +3,6 @@ package org.kiki_cpg_v2.controller;
 import java.io.IOException;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
 import org.kiki_cpg_v2.service.SubscriptionService;
 import org.kiki_cpg_v2.service.ViewService;
@@ -27,7 +26,7 @@ public class ViewController {
 
 	@Autowired
 	private SubscriptionService subscriptionService;
-	
+
 	@Autowired
 	private ViewService viewService;
 
@@ -86,19 +85,19 @@ public class ViewController {
 	public ModelAndView error(@RequestParam(value = "message", required = false, defaultValue = "") String message) {
 
 		System.out.println("Error Message : " + message);
-		
+
 		ModelAndView view = new ModelAndView("error/error");
 		view.addObject("message", message);
 		return view;
 
 	}
-	
+
 	@RequestMapping(value = "/mobitel/mobitelPay", method = RequestMethod.GET)
 	public ModelAndView mobitelPay(
 			@RequestParam(value = "bridgeId", required = false, defaultValue = "0") int subscriptionID,
 			HttpServletRequest request) throws IOException {
 		ModelAndView modelAndView = new ModelAndView();
-		
+
 		try {
 			if (subscriptionID == 0) {
 				logger.info("bridgeID not available");
@@ -122,7 +121,13 @@ public class ViewController {
 			return modelAndView;
 		}
 
-		
-
 	}
+	
+	@GetMapping("/transaction-verify")
+	public ModelAndView transactionVerify() {
+		ModelAndView view = new ModelAndView("card-transaction-verify/card-transaction-verify");
+		
+		return view;
+	}
+
 }

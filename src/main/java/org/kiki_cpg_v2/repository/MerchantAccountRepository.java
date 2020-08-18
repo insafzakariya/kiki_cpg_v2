@@ -7,4 +7,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface MerchantAccountRepository extends JpaRepository<MerchantAccountEntity, Integer>, MerchantAccountRepositoryCustom{
 
+	/**
+	 * @param b
+	 * @return
+	 */
+	MerchantAccountEntity findFirstByIsSuccessOrderByIdDesc(boolean b);
+
 }

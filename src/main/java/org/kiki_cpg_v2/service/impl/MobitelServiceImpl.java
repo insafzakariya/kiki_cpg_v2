@@ -21,6 +21,7 @@ import org.kiki_cpg_v2.service.SubscriptionService;
 import org.kiki_cpg_v2.service.ViewerPolicyService;
 import org.kiki_cpg_v2.service.ViewerService;
 import org.kiki_cpg_v2.service.ViewerSubscriptionService;
+import org.kiki_cpg_v2.service.ViewerUnsubscriptionService;
 import org.kiki_cpg_v2.util.AppUtility;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,9 +68,17 @@ public class MobitelServiceImpl implements MobitelService {
 	@Autowired
 	private CronViewerRepostService cronViewerRepostService;
 
+	@Autowired
+	private ViewerUnsubscriptionService viewerUnsubscriptionService;
+
 	@Override
 	public boolean processUnsubscriptionMobitel(Integer viewerid, String mobile) throws Exception {
 		if (updateViewerSubscription(viewerid, SubscriptionType.NONE, new Date(), mobile)) {
+			try {
+				viewerUnsubscriptionService.save(mobile, viewerid, "UNSUBSCRIBE", "Mobitel", false);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 			return true;
 		}
 		return false;
@@ -109,6 +118,11 @@ public class MobitelServiceImpl implements MobitelService {
 				} catch (Exception e) {
 					logger.info("updating one cc tool failed");
 				}
+				try {
+					viewerUnsubscriptionService.save(mobileNo, viewerId, "SUBSCRIBE", "Mobitel", false);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 				return "success";
 			} else {
 				return paymentResp;
@@ -124,6 +138,11 @@ public class MobitelServiceImpl implements MobitelService {
 					if (deactivePreviousViewersByMobile(mobileNo, viewerId, true, subscriptionPaymentId,
 							subscribedDays)) {
 						if (viewerSubscriptionService.changeStatus(viewerId, SubscriptionType.MOBITEL_ADD_TO_BILL)) {
+							try {
+								viewerUnsubscriptionService.save(mobileNo, viewerId, "SUBSCRIBE", "Mobitel", false);
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
 							return "Activated";
 						} else {
 							return "Activattion Error";
@@ -137,6 +156,11 @@ public class MobitelServiceImpl implements MobitelService {
 				if (deactivePreviousViewersByMobile(mobileNo, viewerId, false, subscriptionPaymentId, subscribedDays)) {
 					String paymentResp = proceedPayment(viewerId, subscribedDays, mobileNo, subscriptionPaymentId);
 					if (paymentResp.equals("success")) {
+						try {
+							viewerUnsubscriptionService.save(mobileNo, viewerId, "SUBSCRIBE", "Mobitel", false);
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
 						return "transfered";
 					} else {
 						return paymentResp;
@@ -165,15 +189,15 @@ public class MobitelServiceImpl implements MobitelService {
 
 		if (viewerEntities != null && !viewerEntities.isEmpty()) {
 			for (ViewerEntity viewerEntity : viewerEntities) {
-				if (viewerSubscriptionService.inavtive(viewerEntity.getId())) {
+				if (viewerSubscriptionService.inavtive(viewerEntity.getId(), viewerEntity.getMobileNumber())) {
 					viewerPolicyService.deactivatePolicy(viewerEntity.getId(), viewerId, isTransfer, packageId);
 					if (!viewerPolicyService.checkStatus(viewerId, packageId)) {
 						// proceedPayment(viewerId, subscribedDays, mobileNo, subscriptionPaymentId);
 					}
-
 				}
 			}
 			return true;
+
 		} else {
 			return true;
 		}
@@ -351,13 +375,11 @@ public class MobitelServiceImpl implements MobitelService {
 			return paymentResp;
 
 		} else {
-			/*try {
-				if (!viewerPolicyService.findViewerPoliceExist(viewerId, 1)) {
-					cronProceedPayment(viewerId, 1, mobileNo);
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}*/
+			/*
+			 * try { if (!viewerPolicyService.findViewerPoliceExist(viewerId, 1)) {
+			 * cronProceedPayment(viewerId, 1, mobileNo); } } catch (Exception e) {
+			 * e.printStackTrace(); }
+			 */
 			logger.info("payment is not successful");
 
 			return "payment is not successful";

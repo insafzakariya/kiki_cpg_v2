@@ -1,5 +1,6 @@
 package org.kiki_cpg_v2.service.impl;
 
+import java.time.DayOfWeek;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,11 +32,25 @@ public class PaymentMethodServiceImpl implements PaymentMethodService{
 
 	private PaymantPlanDto getPaymantPlanDto(PaymentMethodPlanEntity e, Integer paymentMethodId) {
 		PaymantPlanDto dto = new PaymantPlanDto();
+		dto.setId(e.getId());
 		dto.setName(e.getName());
 		dto.setValue("Rs. " + e.getValue() + " + Tax per day");
+		if(e.getDays() % 30 == 0) {
+			dto.setValue("Rs. " + e.getValue() + " + Tax Monthly");
+		}
+		if(e.getDays() % 180 == 0) {
+			dto.setValue("Rs. " + e.getValue() + " + Tax Biannually");
+		}
+		if(e.getDays() % 365 == 0) {
+			dto.setValue("Rs. " + e.getValue() + " + Tax Annually");
+		}
+		
+		dto.setAmount(e.getValue());
 		dto.setOffer(e.getOffer());
 		dto.setPaymentMethodId(paymentMethodId);
 		dto.setDay(e.getDays());
+		
+		System.out.println(dto.getAmount());
 
 		return dto;
 	}

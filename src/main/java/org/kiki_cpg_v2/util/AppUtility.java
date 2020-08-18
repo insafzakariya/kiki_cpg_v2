@@ -79,4 +79,13 @@ public class AppUtility {
 
 		return endDate;
 	}
+
+	/**
+	 * @param number
+	 * @return
+	 */
+	public boolean getIsMobileNumber(String number) {
+		// TODO Auto-generated method stub
+		return true;
+	}
 }

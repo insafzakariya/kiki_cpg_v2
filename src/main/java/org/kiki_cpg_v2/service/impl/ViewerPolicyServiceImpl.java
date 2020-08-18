@@ -55,23 +55,6 @@ public class ViewerPolicyServiceImpl implements ViewerPolicyService {
 							packagePolicyEntities.add(packagePolicyEntity);
 						}
 					}
-					// This codes useful for update policies with adding remaining dates
-
-					/*
-					 * List<ViewerPolicyEntity> viewerPolicyEntities =
-					 * viewerPackageEntity.getViewerPolicyEntities(); List<ViewerPolicyEntity>
-					 * activeViewerPolicyEntities = new ArrayList<ViewerPolicyEntity>();
-					 * 
-					 * for (ViewerPolicyEntity viewerPolicyEntity : viewerPolicyEntities) {
-					 * if(viewerPolicyEntity.getEndDate().getTime() > new Date().getTime()) {
-					 * if(!activeViewerPolicyEntities.isEmpty()) { boolean isAvailable = false; for
-					 * (ViewerPolicyEntity activeViewerPolicyEntity : activeViewerPolicyEntities) {
-					 * 
-					 * if(activeViewerPolicyEntity.getPolicyEntity().getId() ==
-					 * viewerPolicyEntity.getPolicyEntity().getId()) { isAvailable = true; } }
-					 * if(!isAvailable) { activeViewerPolicyEntities.add(viewerPolicyEntity); } }
-					 * else { activeViewerPolicyEntities.add(viewerPolicyEntity); } } }
-					 */
 
 					List<ViewerPolicyEntity> viewerPolicyEntities = new ArrayList<>();
 					packagePolicyEntities.forEach(e -> {
@@ -98,8 +81,10 @@ public class ViewerPolicyServiceImpl implements ViewerPolicyService {
 					});
 
 					if (viewerPackageRepository.saveAll(viewerPackageEntities) != null) {
+						System.out.println("viewerPolicyUpdateRequestDto.getPackageId() :" + viewerPolicyUpdateRequestDto.getPackageId());
 						PackageEntity packageEntityNew = packageRepository
 								.findById(viewerPolicyUpdateRequestDto.getPackageId()).get();
+						System.out.println(packageEntityNew.getName());
 						ViewerPackageEntity tempViewerPackageEntity = getViewerPackageEntity(packageEntityNew,
 								viewerPolicyUpdateRequestDto.getViewerId());
 						ViewerPackageEntity newViewerPackageEntity = viewerPackageRepository

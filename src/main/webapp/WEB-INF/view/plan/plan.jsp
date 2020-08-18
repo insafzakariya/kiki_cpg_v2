@@ -13,9 +13,14 @@
         <div class="main_container">
             <div class="header_container">
                 <h5 class="header">Choose package</h5>
+                
             </div>
-            <div class="body_container">
-                <div id="package_type_container"></div>
+            <div class="body_container" style="padding: 10px;">
+                <div id="package_type_container">
+                 <div style="background: #24A9A6; height: 2px; margin-bottom: 20px;"></div>
+               
+                
+                </div>
 
             </div>
         </div>
@@ -26,7 +31,7 @@
         <script type="text/javascript">
         function initialize() {
 
-            var paymentId = sessionStorage.getItem('paymentId');
+            var paymentId = localStorage.getItem('paymentId');
 
             $.get(baseURL + "/rest/plan/planlist/" + paymentId, function (data, status) {
                 console.log(status);
@@ -42,6 +47,10 @@
                                 + item.paymentMethodId
                                 + ","
                                 + paymentId
+                                + ","
+                                + item.id
+                                + ","
+                                + item.amount
                                 + ")\" class=\"body_frame\"> "
                                 + "<div style=\"width: 100%; display: inline-block;\">"
                                 + "<img src= \"\" style=\"flex: 0 0 20%;\"> "
@@ -70,10 +79,12 @@
 
         }
 
-        function checkNumber(day, methodId, paymentId) {
-            sessionStorage.setItem('day', day);
-            sessionStorage.setItem('methodId', methodId);
-            sessionStorage.setItem('paymentId', paymentId);
+        function checkNumber(day, methodId, paymentId, planId, amount) {
+            localStorage.setItem('day', day);
+            localStorage.setItem('methodId', methodId);
+            localStorage.setItem('paymentId', paymentId);
+            localStorage.setItem('planId', planId);
+            localStorage.setItem('amount', amount);
 
             window.location.replace(baseURL + "/number_verify");
         }

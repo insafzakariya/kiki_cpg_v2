@@ -10,7 +10,7 @@ public interface ViewerSubscriptionService {
 
 	boolean isViewerMatched(Integer viewerId);
 
-	boolean inavtive(Integer viewerId);
+	boolean inavtive(Integer viewerId, String mobileNo);
 
 	boolean changeStatus(Integer viewerId, SubscriptionType mobitelAddToBill);
 

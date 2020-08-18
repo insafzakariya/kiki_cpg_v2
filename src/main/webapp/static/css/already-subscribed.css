@@ -9,16 +9,18 @@ body {
 	text-align: center;
 }
 
-.topbar_container {
-	text-align: left;
-}
-
 .main_container {
 	margin-top: 35px;
 }
 
+.body_container{
+    margin-left: 15px;
+    margin-right: 15px;
+}
+
 .header_container {
 	text-align: center;
+        border-bottom: solid 2px #24A9A6;
 }
 
 .header_container h5.header {
@@ -27,18 +29,12 @@ body {
 	font-weight: 600;
 }
 
-.header_container p.tagline {
-	color: #ffffff;
-	font-size: 13px;
-}
-
 .body_frame {
 	background-color: #00cc00;
 	height: 55px;
-	padding: 10px;
 	border-radius: 4px;
-	text-align: left;
 	margin-top: 15px;
+        border: 2px solid #24A9A6 !important;
 }
 
 .body_frame:hover {
@@ -56,12 +52,7 @@ body {
 }
 
 .body_frame p {
-	flex: 0 0 70%;
-	display: inline-block;
-	top: 0;
-	bottom: 0;
 	color: #fff;
-	vertical-align: top;
 	font-size: 14px;
 	font-weight: 600;
 	margin-left: 5px;
@@ -96,22 +87,5 @@ body {
 	}
 }
 
-/*radio button styles*/
-input[type="radio"] {
-	position: absolute;
-	visibility: hidden;
-}
-
-input:checked+a div.body_frame {
-	background-color: #ffffff;
-}
-
-input:checked+a p {
-	color: #000000;
-}
-
-.hide {
-	display: none;
-}
-                                                                                                                                                       
+                                                                                                                                                 
   

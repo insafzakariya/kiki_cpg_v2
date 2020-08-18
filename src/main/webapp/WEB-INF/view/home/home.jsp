@@ -20,6 +20,7 @@
         <link rel="stylesheet" type="text/css"
               href="<c:url value='/static/vendors/awesomebootstrapcheckbox/css/awesome-bootstrap-checkbox.css'/>">
         <link href="<c:url value='/static/css/common.css'/>" rel="stylesheet">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         <title>HOME</title>
     </head>
     <body onload="initialize()">
@@ -43,12 +44,38 @@
                             <div id="paymentOptions">
 
                                 <div class="form-box">
+                                <div style="background: #24A9A6; height: 2px; margin-bottom: 20px;"></div>
                                     <form id="paymentMethodForm">
+                                    	<div class="row" style="margin-left: 0px; margin-right: 0px;">
+                                            <input type="radio" class="stv-radio-button"
+                                                   name="optionsRadios" value="7" id="button6" /> <label
+                                                   for="button6">
+                                                <div class="row">
+                                                    <div class="col-md-4 pull-left" style="margin-top: 8px;">
+                                                        <img
+                                                            src="/susilawebpay/static/assets/images/Visa.png"
+                                                            class="img-rounded" alt="Cinque Terre" width="50"
+                                                            >
+                                                            <img
+                                                            src="/susilawebpay/static/assets/images/Master.png"
+                                                            class="img-rounded" alt="Cinque Terre" width="50"
+                                                            >
+                                                    </div>
+                                                    <div class="col-md-5 pull-right">
+                                                        <p>
+                                                            <strong>Card</strong>
+                                                        </p>
+                                                        <p>Add to bill</p>
+                                                    </div>
+                                                </div>
+                                            </label>
+                                        </div>
+                                    
                                         <div class="row" style="margin-left: 0px; margin-right: 0px;">
                                             <input type="radio" class="stv-radio-button"
                                                    name="optionsRadios" value="4" id="button3" /> <label
-                                                   for="button3">
-                                                <div class="row">
+                                                   for="button3" >
+                                                <div class="row" >
                                                     <div class="col-md-4 pull-left">
                                                         <img
                                                             src="/susilawebpay/static/assets/images/dialog-new.jpg"
@@ -70,7 +97,7 @@
                                                    for="button4">
                                                 <div class="row">
                                                     <div class="col-md-4 pull-left">
-                                                        <img src="/susilawebpay/static/img/authors/madd.jpg"
+                                                        <img src="/susilawebpay/static/assets/images/MOBITEL_new.png"
                                                              class="img-rounded" alt="Cinque Terre" width="50"
                                                              height="50">
                                                     </div>
@@ -128,26 +155,31 @@
 
         function initialize() {
             console.log("initialize");
-            sessionStorage.setItem('subscriptionPaymentId', ${subscriptionPaymentDto.getSubscriptionPaymentId()});
-            sessionStorage.setItem('viewerId', ${subscriptionPaymentDto.getViewerId()});
-            sessionStorage.setItem('packageId', ${subscriptionPaymentDto.getPackageId()});
-            sessionStorage.setItem('tokenHash', "${subscriptionPaymentDto.getTokenHash()}");
-            sessionStorage.setItem('mobile', "${subscriptionPaymentDto.getMobile()}");
+            localStorage.setItem('subscriptionPaymentId', ${subscriptionPaymentDto.getSubscriptionPaymentId()});
+            localStorage.setItem('viewerId', ${subscriptionPaymentDto.getViewerId()});
+            localStorage.setItem('packageId', ${subscriptionPaymentDto.getPackageId()});
+            localStorage.setItem('tokenHash', "${subscriptionPaymentDto.getTokenHash()}");
+            localStorage.setItem('mobile', "${subscriptionPaymentDto.getMobile()}");
         }
 
         $('#button3').click(function () {
-            sessionStorage.setItem('paymentId', $('#button3').val());
+            localStorage.setItem('paymentId', $('#button3').val());
             window.location.replace(baseURL + "/plan");
         });
 
         $('#button4').click(function () {
-            sessionStorage.setItem('paymentId', $('#button4').val());
+            localStorage.setItem('paymentId', $('#button4').val());
             window.location.replace(baseURL + "/plan");
         });
 
         $('#button5').click(function () {
-            sessionStorage.setItem('paymentId', $('#button5').val());
+            localStorage.setItem('paymentId', $('#button5').val());
             window.location.replace(baseURL + "/scratch-card");
+        });
+        
+        $('#button6').click(function () {
+            localStorage.setItem('paymentId', $('#button6').val());
+            window.location.replace(baseURL + "/plan");
         });
 
         </script>    
