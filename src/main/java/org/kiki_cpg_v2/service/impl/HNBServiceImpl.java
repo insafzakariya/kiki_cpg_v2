@@ -3,10 +3,15 @@
  */
 package org.kiki_cpg_v2.service.impl;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 import java.util.UUID;
 
 import org.kiki_cpg_v2.dto.PaymentRefDto;
@@ -18,15 +23,24 @@ import org.kiki_cpg_v2.entity.PaymentMethodPlanEntity;
 import org.kiki_cpg_v2.repository.CardDataReository;
 import org.kiki_cpg_v2.repository.CardInvoiceRepository;
 import org.kiki_cpg_v2.repository.PaymentMethodPlanRepository;
+import org.kiki_cpg_v2.service.CronViewerRepostService;
 import org.kiki_cpg_v2.service.HNBService;
+import org.kiki_cpg_v2.service.PackageConfigService;
+import org.kiki_cpg_v2.service.PaymentDetailService;
 import org.kiki_cpg_v2.service.PaymentLogService;
 import org.kiki_cpg_v2.service.ViewerPolicyService;
 import org.kiki_cpg_v2.service.ViewerService;
 import org.kiki_cpg_v2.service.ViewerUnsubscriptionService;
 import org.kiki_cpg_v2.util.AppConstant;
+import org.kiki_cpg_v2.util.AppUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+
+import com.cybersource.ws.client.Client;
+import com.cybersource.ws.client.ClientException;
+import com.cybersource.ws.client.FaultException;
 
 /**
  * @author Anjana Thrishakya
@@ -55,18 +69,33 @@ public class HNBServiceImpl implements HNBService {
 	@Autowired
 	private ViewerUnsubscriptionService viewerUnsubscriptionService;
 
-	@Override
-	public PaymentRefDto beginTransaction(HNBBeginDto hnbBeginDto, boolean isNew) throws Exception {
+	@Autowired
+	private PaymentDetailService paymentDetailService;
 
-		PaymentRefDto paymentRefDto = getPaymentRefDto(hnbBeginDto);
+	@Autowired
+	private PackageConfigService packageConfigService;
+
+	@Autowired
+	private CronViewerRepostService cronViewerRepostService;
+
+	@Autowired
+	private AppUtility appUtility;
+
+	@Override
+	public PaymentRefDto beginTransaction(HNBBeginDto hnbBeginDto, boolean isNew, Integer days, Double value)
+			throws Exception {
+
+		PaymentRefDto paymentRefDto = getPaymentRefDto(hnbBeginDto, days, value);
 
 		CardInvoiceEntity cardInvoiceEntity = getCardInvoiceEntityBegining(hnbBeginDto, paymentRefDto);
 		if (isNew) {
 			CardDataEntity cardDataEntity = getCardDataEntityBegining(hnbBeginDto, paymentRefDto);
-			cardDataReository.save(cardDataEntity);
-		} else {
-			throw new Exception("save error");
-		}
+			if(cardDataReository.save(cardDataEntity)!= null) {
+				
+			}else {
+				throw new Exception("save error");
+			}
+		} 
 
 		if (cardInvoiceRepository.save(cardInvoiceEntity) != null) {
 			return paymentRefDto;
@@ -80,6 +109,7 @@ public class HNBServiceImpl implements HNBService {
 	public CardDataEntity getCardDataEntityBegining(HNBBeginDto hnbBeginDto, PaymentRefDto paymentRefDto)
 			throws Exception {
 		CardDataEntity cardDataEntity = new CardDataEntity();
+		cardDataEntity.setPaymentPlan(hnbBeginDto.getPlanId());
 		cardDataEntity.setViewerId(hnbBeginDto.getViewerId());
 		cardDataEntity.setAmount(paymentRefDto.getAmount());
 		cardDataEntity.setMobile(hnbBeginDto.getMobileNo());
@@ -118,18 +148,27 @@ public class HNBServiceImpl implements HNBService {
 	 * @return
 	 */
 	@Override
-	public PaymentRefDto getPaymentRefDto(HNBBeginDto hnbBeginDto) throws Exception {
+	public PaymentRefDto getPaymentRefDto(HNBBeginDto hnbBeginDto, Integer days, Double value) throws Exception {
 
 		PaymentRefDto dto = new PaymentRefDto();
 
-		PaymentMethodPlanEntity entity = paymentMethodPlanRepository.findById(hnbBeginDto.getPlanId()).get();
+		if (days < 0 && value < 0.0) {
+			PaymentMethodPlanEntity entity = paymentMethodPlanRepository.findById(hnbBeginDto.getPlanId()).get();
+			days = entity.getDays();
+			value = entity.getValue();
+		}
 
 		String ref = hnbBeginDto.getViewerId() + new SimpleDateFormat("yyyyMMddHHmmssZ").format(new Date());
 		ref.replace("+", "");
 		dto.setReferanceNo(ref);
 		dto.setTransactionUUID(UUID.randomUUID().toString());
-		dto.setAmount(entity.getValue());
-		dto.setDays(entity.getDays());
+		dto.setAmount(value);
+		dto.setDays(days);
+
+		String frequency = AppUtility.getHnbFrequency(days);
+		dto.setFrequency(frequency);
+
+		dto.setDate(new SimpleDateFormat("yyyyMMdd").format(appUtility.getbeforeDay(30, new Date())));
 
 		return dto;
 	}
@@ -141,11 +180,11 @@ public class HNBServiceImpl implements HNBService {
 		System.out.println(formData.getFirst("req_transaction_uuid").trim());
 		CardInvoiceEntity cardInvoiceEntity = cardInvoiceRepository
 				.findFirstByTransactionNo(formData.getFirst("req_transaction_uuid").trim());
-		CardDataEntity cardDataEntity = cardDataReository.findFirstByViewerIdAndStatusOrderByIdDesc(cardInvoiceEntity.getViewerId(),
-				AppConstant.ACTIVE);
+		CardDataEntity cardDataEntity = cardDataReository
+				.findFirstByViewerIdAndStatusOrderByIdDesc(cardInvoiceEntity.getViewerId(), AppConstant.ACTIVE);
 		boolean unsubscrideEntityUpdate = false;
 		if (cardInvoiceEntity != null && cardDataEntity != null) {
-			paymentLogService.createPaymentLog("HNB", formData.getFirst("req_transaction_uuid"),
+			paymentLogService.createPaymentLog("HNB", formData.getFirst("req_reference_number"),
 					formData.getFirst("decision"), cardInvoiceEntity.getViewerId(), cardDataEntity.getMobile(),
 					formData.toString());
 
@@ -185,20 +224,23 @@ public class HNBServiceImpl implements HNBService {
 
 				cardInvoiceEntity = getUpdatedCardInvoiceEntity(cardInvoiceEntity, formData);
 				if (cardInvoiceRepository.save(cardInvoiceEntity) != null) {
-					if (packageId > 0) {
-						if (viewerPolicyService
-								.updateViewerPolicy(viewerPolicyService
-										.getViewerPolicyUpdateRequestDto(cardInvoiceEntity.getViewerId(), packageId))
-								.equalsIgnoreCase("success")) {
-							viewerUnsubscriptionService.save(cardDataEntity.getMobile(),
-									cardInvoiceEntity.getViewerId(), "SUBSCRIBE", "Card", unsubscrideEntityUpdate);
+					if (paymentDetailService.save(cardInvoiceEntity.getAmount(), cardDataEntity.getSubscribedDays(),
+							cardDataEntity.getPolicyExpDate(), cardInvoiceEntity.getId(),
+							AppConstant.CARD_HNB) != null) {
+						if (packageId > 0) {
+							if (viewerPolicyService.updateViewerPolicy(viewerPolicyService
+									.getViewerPolicyUpdateRequestDto(cardInvoiceEntity.getViewerId(), packageId))
+									.equalsIgnoreCase("success")) {
+								viewerUnsubscriptionService.save(cardDataEntity.getMobile(),
+										cardInvoiceEntity.getViewerId(), "SUBSCRIBE", "Card", unsubscrideEntityUpdate);
+							}
 						}
 					}
 				}
 
 			}
 		} else {
-			paymentLogService.createPaymentLog("HNB", formData.getFirst("req_transaction_uuid"),
+			paymentLogService.createPaymentLog("HNB", formData.getFirst("req_reference_number"),
 					formData.getFirst("decision"), -1, "-", formData.toString());
 		}
 
@@ -251,16 +293,17 @@ public class HNBServiceImpl implements HNBService {
 
 	@Override
 	public boolean updateViewerSubscription(Integer viewerid, int i, Date date, String mobile) throws Exception {
-		List<CardDataEntity> cardDataEntities = cardDataReository.findByViewerIdAndStatusAndSubscribe(viewerid, AppConstant.ACTIVE, AppConstant.ACTIVE);
-		
+		List<CardDataEntity> cardDataEntities = cardDataReository.findByViewerIdAndStatusAndSubscribe(viewerid,
+				AppConstant.ACTIVE, AppConstant.ACTIVE);
+
 		if (cardDataEntities != null) {
-			
+
 			for (CardDataEntity cardDataEntity : cardDataEntities) {
 				cardDataEntity.setUpdateDate(date);
 				cardDataEntity.setSubscribe(i);
 				cardDataEntity.setStatus(i);
 				cardDataReository.save(cardDataEntity);
-				
+
 			}
 			return true;
 		}
@@ -283,6 +326,99 @@ public class HNBServiceImpl implements HNBService {
 			}
 		}
 		return dto;
+	}
+
+	@Override
+	public String processSimpleOrderPayment(CardDataEntity cardDataEntity, Integer cronId) throws Exception {
+
+		HNBBeginDto hnbBeginDto = new HNBBeginDto();
+		hnbBeginDto.setViewerId(cardDataEntity.getViewerId());
+		hnbBeginDto.setMobileNo(cardDataEntity.getMobile());
+		hnbBeginDto.setPlanId(cardDataEntity.getPaymentPlan());
+
+		PaymentRefDto paymentRefDto = beginTransaction(hnbBeginDto, false, cardDataEntity.getSubscribedDays(),
+				cardDataEntity.getAmount());
+
+		Properties properties = new Properties();
+		try (InputStream is = getClass().getResourceAsStream("/cybs.properties")) {
+			properties.load(is);
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+
+		HashMap<String, String> hashMap = new HashMap<String, String>();
+		hashMap.put("ccAuthService_run", "true");
+		hashMap.put("ccCaptureService_run", "true");
+		hashMap.put("recurringSubscriptionInfo_subscriptionID", cardDataEntity.getPaymentToken());
+		hashMap.put("merchantReferenceCode", paymentRefDto.getReferanceNo());
+		hashMap.put("purchaseTotals_currency", "USD");
+		hashMap.put("purchaseTotals_grandTotalAmount", paymentRefDto.getAmount().toString());
+		hashMap.put("ccAuthService_commerceIndicator", "recurring");
+
+		try {
+			Map<String, String> responseMap = Client.runTransaction(hashMap, properties);
+			if (responseMap.containsKey("merchantReferenceCode")) {
+				paymentLogService.createPaymentLog("HNB", responseMap.get("merchantReferenceCode"),
+						responseMap.get("decision"), cardDataEntity.getViewerId(), cardDataEntity.getMobile(),
+						responseMap.toString());
+				cronViewerRepostService.save(cardDataEntity.getViewerId(),
+						responseMap.containsKey("decision") && responseMap.get("decision").equalsIgnoreCase("ACCEPT")
+								? "Success"
+								: "Fail",
+						cardDataEntity.getAmount(), responseMap.get("decision"), responseMap.toString(), cronId);
+			} else {
+				paymentLogService.createPaymentLog("HNB", "-", responseMap.get("decision"),
+						cardDataEntity.getViewerId(), cardDataEntity.getMobile(), responseMap.toString());
+			}
+
+			if (responseMap.containsKey("decision") && responseMap.get("decision").equalsIgnoreCase("ACCEPT")) {
+				CardInvoiceEntity cardInvoiceEntity = cardInvoiceRepository
+						.findFirstByReferanceNo(paymentRefDto.getReferanceNo());
+
+				if (cardInvoiceEntity != null) {
+					MultiValueMap<String, String> formData = new LinkedMultiValueMap<String, String>();
+					formData.add("decision", responseMap.get("decision"));
+					formData.add("req_transaction_type", "simple order, recurring");
+					formData.add("reason_code", responseMap.get("reasonCode"));
+					cardInvoiceEntity = getUpdatedCardInvoiceEntity(cardInvoiceEntity, formData);
+					cardDataEntity = updateCardDataEntityExpireDate(cardDataEntity);
+
+					if (paymentDetailService.save(cardInvoiceEntity.getAmount(), cardDataEntity.getSubscribedDays(),
+							cardDataEntity.getPolicyExpDate(), cardInvoiceEntity.getId(),
+							AppConstant.CARD_HNB) != null) {
+
+						Integer packageId = packageConfigService.getPackageId(cardDataEntity.getSubscribedDays(),
+								AppConstant.CARD_HNB);
+					
+
+						if (packageId > 0) {
+							if (viewerPolicyService.updateViewerPolicy(viewerPolicyService
+									.getViewerPolicyUpdateRequestDto(cardInvoiceEntity.getViewerId(), packageId))
+									.equalsIgnoreCase("success")) {
+								return "Success";
+							}
+						}
+					}
+
+				}
+			}
+
+		} catch (FaultException e) {
+			e.printStackTrace();
+		} catch (ClientException e) {
+			e.printStackTrace();
+		}
+
+		return "Fail";
+	}
+
+	@Override
+	public CardDataEntity updateCardDataEntityExpireDate(CardDataEntity cardDataEntity) throws Exception {
+		Calendar c = Calendar.getInstance();
+		c.setTime(new Date());
+		c.add(Calendar.DATE, cardDataEntity.getSubscribedDays());
+		cardDataEntity.setPolicyExpDate(c.getTime());
+		return cardDataReository.save(cardDataEntity);
 	}
 
 }

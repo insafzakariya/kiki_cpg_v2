@@ -3,16 +3,20 @@ package org.kiki_cpg_v2.service.impl;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+
+import org.kiki_cpg_v2.entity.CardDataEntity;
 import org.kiki_cpg_v2.entity.CronErrorEntity;
 import org.kiki_cpg_v2.entity.CronReportEntity;
 import org.kiki_cpg_v2.entity.custom.IdeabizViewerCusrtomEntity;
 import org.kiki_cpg_v2.entity.custom.ViewerSubscriptionCustomEntity;
+import org.kiki_cpg_v2.repository.CardDataReository;
 import org.kiki_cpg_v2.repository.CronErrorRepository;
 import org.kiki_cpg_v2.repository.CronMetaDataRepository;
 import org.kiki_cpg_v2.repository.CronReportRepository;
 import org.kiki_cpg_v2.repository.IdeabizRepository;
 import org.kiki_cpg_v2.repository.ViewerSubscriptionRepository;
 import org.kiki_cpg_v2.service.CronService;
+import org.kiki_cpg_v2.service.HNBService;
 import org.kiki_cpg_v2.service.IdeabizService;
 import org.kiki_cpg_v2.service.MobitelService;
 import org.kiki_cpg_v2.service.PaymentMethodService;
@@ -53,6 +57,12 @@ public class CronServiceImpl implements CronService {
 
 	@Autowired
 	private ViewerSubscriptionRepository viewerSubscriptionRepository;
+	
+	@Autowired
+	private CardDataReository cardDataReository;
+	
+	@Autowired
+	private HNBService hnbService;
 
 	@Override
 	public void startDialogCron(String cronName, String ipAddress, String date, String time) {
@@ -246,6 +256,79 @@ public class CronServiceImpl implements CronService {
 			cronErrorRepository.save(entity);
 		} catch (Exception e) {
 			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public void startHnbCron(String cronName, String ipAddress, String date, String time) {
+		logger.info("HNB cron started");
+
+		try {
+			if (cronMetaDataRepository.findOneByCronNameAndStatusAndCronStatus(AppConstant.HNB, AppConstant.ACTIVE,
+					AppConstant.ACTIVE) == null) {
+				smsService.sendSms(AppConstant.CRON_NOTIFY_MOBILES, "HNB Cron not started.");
+				System.out.println("HNB Cron  not started");
+				return;
+			} else {
+				System.out.println("HNB Cron started");
+			}
+
+			smsService.sendSms(AppConstant.CRON_NOTIFY_MOBILES,
+					"HNB Cron " + cronName + " Strated " + date + " " + time);
+			List<CardDataEntity> cardDataEntities = cardDataReository.findByStatusAndSubscribeAndPolicyExpDateLessThanEqual(AppConstant.ACTIVE, AppConstant.ACTIVE, new Date());
+
+			if (cardDataEntities != null) {
+
+				cardDataEntities.forEach(e -> {
+					System.out.println("HNB Viewer Id : " + e.getViewerId());
+					logger.info("HNB Viewer Id : " + e.getViewerId());
+				});
+
+				CronReportEntity cronReportEntity = saveCron(cronName, ipAddress, date, time, "HNB");
+				if (cronReportEntity != null) {
+					smsService.sendSms(AppConstant.CRON_NOTIFY_MOBILES,
+							"HNB Pending Subscribtion Count Is : " + cardDataEntities.size()
+									+ " - Cron Started :" + time + " -Server Ip : " + ipAddress);
+
+					Integer transactionCount = 0;
+
+					for (CardDataEntity cardDataEntity : cardDataEntities) {
+						try {
+							String resp = hnbService.processSimpleOrderPayment(cardDataEntity, cronReportEntity.getCronId());
+							if (resp.equalsIgnoreCase("Success")) {
+								transactionCount += 1;
+							} 
+						} catch (Exception e) {
+							e.printStackTrace();
+							logger.error(e.getLocalizedMessage());
+
+							cronErrorSave(cronReportEntity.getCronId(), e.getMessage(), e.getLocalizedMessage(),
+									"IS crtInv", cardDataEntity.getViewerId());
+						}
+
+					}
+
+					String endTime = new SimpleDateFormat("HH:mm:ss").format(new Date());
+
+					smsService.sendSms(AppConstant.CRON_NOTIFY_MOBILES,
+							"HNB Done Subscribtion Count Is :" + transactionCount + " / "
+									+ cardDataEntities.size() + " -Cron Stoped :" + endTime + " -Server Ip : "
+									+ ipAddress);
+
+					cronReportEntity.setEndTime(endTime);
+					cronReportEntity = saveCron(cronReportEntity);
+
+				}
+			}
+
+			System.out.println("HNB cron complete");
+			logger.info("HNB cron complete");
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			System.out.println("HNB CRON method completed");
+			logger.info("HNB CRON method completed");
 		}
 	}
 

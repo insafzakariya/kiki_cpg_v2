@@ -13,7 +13,25 @@ public class PaymentRefDto {
 	private Double amount;
 	private Integer days;
 	private String status;
+	private String frequency;
+	private String date;
 	
+
+	public String getFrequency() {
+		return frequency;
+	}
+
+	public void setFrequency(String frequency) {
+		this.frequency = frequency;
+	}
+
+	public String getDate() {
+		return date;
+	}
+
+	public void setDate(String date) {
+		this.date = date;
+	}
 
 	public String getStatus() {
 		return status;

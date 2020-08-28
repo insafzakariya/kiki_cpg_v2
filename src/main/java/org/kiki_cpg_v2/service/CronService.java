@@ -14,4 +14,12 @@ public interface CronService {
 
 	void cronErrorSave(Integer cronId, String errorDesc, String errorMsg, String systemPage, Integer viewerId);
 
+	/**
+	 * @param name
+	 * @param ipAddress
+	 * @param date
+	 * @param time
+	 */
+	void startHnbCron(String name, String ipAddress, String date, String time);
+
 }

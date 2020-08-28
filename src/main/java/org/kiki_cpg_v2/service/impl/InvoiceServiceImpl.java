@@ -48,17 +48,17 @@ public class InvoiceServiceImpl implements InvoiceService {
 					, status, date));
 			
 
-			if (invoiceEntity.getId() != null) {
-				
-				List<InvoiceDetailEntity> invoiceDetailEntities = new ArrayList<InvoiceDetailEntity>();
-				
-				dates.forEach(e-> {
-					invoiceDetailEntities.add(getInvoiceDetailEntity(invoiceEntity, date, day_charge, e));
-				});
-
-				invoiceDetailRepository.saveAll(invoiceDetailEntities);
-				
-			}
+//			if (invoiceEntity.getId() != null) {
+//				
+//				List<InvoiceDetailEntity> invoiceDetailEntities = new ArrayList<InvoiceDetailEntity>();
+//				
+//				dates.forEach(e-> {
+//					invoiceDetailEntities.add(getInvoiceDetailEntity(invoiceEntity, date, day_charge, e));
+//				});
+//
+//				invoiceDetailRepository.saveAll(invoiceDetailEntities);
+//				
+//			}
 
 			
 			return invoiceEntity;

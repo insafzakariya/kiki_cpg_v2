@@ -127,7 +127,8 @@
                                             localStorage.setItem('card_amount', data.amount);
                                             console.log(data);
                                             var url = paymentGatewayRedirectURL + "transaction_uuid=" + data.transactionUUID
-                                                    + "&referance=" + data.referanceNo + "&amount=" + data.amount;
+                                                    + "&referance=" + data.referanceNo + "&amount=" + data.amount + "&frequency=" + data.frequency
+                                                    + "&startdate=" + data.date;
                                             window.location.replace(url);
 
                                         },

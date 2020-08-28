@@ -16,7 +16,7 @@ public class AppUtility {
 			return false;
 		}
 		number = "0" + getNineDigitMobileNumber(number);
-		
+
 		String serviceProviderCode = number.substring(0, 3);
 		if (serviceProviderCode.equals("070") || serviceProviderCode.equals("071")) {
 			return true;
@@ -33,7 +33,7 @@ public class AppUtility {
 		if (number == null || number.isEmpty()) {
 			return false;
 		}
-		
+
 		number = "+94" + getNineDigitMobileNumber(number);
 		String serviceProviderCode = number.substring(0, 5);
 		System.out.println(serviceProviderCode);
@@ -42,7 +42,7 @@ public class AppUtility {
 		}
 		return false;
 	}
-	
+
 	public List<Date> getDatesBetweenUsingJava7(Integer days) {
 		Date startDate = new Date();
 
@@ -87,5 +87,29 @@ public class AppUtility {
 	public boolean getIsMobileNumber(String number) {
 		// TODO Auto-generated method stub
 		return true;
+	}
+
+	/**
+	 * @param integer
+	 * @return
+	 */
+	public static String getHnbFrequency(Integer day) {
+		String frequency = "";
+		switch (day) {
+		case 30:
+			frequency = "monthly";
+			break;
+		case 180:
+			frequency = "semi-annually";
+			break;
+		case 365:
+			frequency = "annually";
+			break;
+
+		default:
+			break;
+		}
+		
+		return frequency;
 	}
 }

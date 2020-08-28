@@ -19,4 +19,10 @@ public interface CardInvoiceRepository extends CrudRepository<CardInvoiceEntity,
 	 */
 	CardInvoiceEntity findFirstByTransactionNo(String first);
 
+	/**
+	 * @param referanceNo
+	 * @return
+	 */
+	CardInvoiceEntity findFirstByReferanceNo(String referanceNo);
+
 }

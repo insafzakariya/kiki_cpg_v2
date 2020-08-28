@@ -32,7 +32,7 @@ public class HNBController {
 	public ResponseEntity<Object> beginTransaction(@RequestBody HNBBeginDto hnbBeginDto) {
 		try {
 			System.out.println(hnbBeginDto);
-			PaymentRefDto dto = hnbService.beginTransaction(hnbBeginDto, true);
+			PaymentRefDto dto = hnbService.beginTransaction(hnbBeginDto, true, -1, -1.0);
 			return new ResponseEntity<Object>(dto, HttpStatus.OK);
 		} catch (Exception e) {
 			e.printStackTrace();

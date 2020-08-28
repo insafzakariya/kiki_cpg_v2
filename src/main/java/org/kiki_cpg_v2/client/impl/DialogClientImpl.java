@@ -16,6 +16,7 @@ import org.kiki_cpg_v2.client.DialogClient;
 import org.kiki_cpg_v2.dto.DialogOtpDto;
 import org.kiki_cpg_v2.dto.request.DialogOtpConfirmDto;
 import org.kiki_cpg_v2.service.CronViewerRepostService;
+import org.kiki_cpg_v2.service.IdeabizServiceConfigService;
 import org.kiki_cpg_v2.service.PaymentLogService;
 import org.kiki_cpg_v2.util.AppConstant;
 import org.kiki_cpg_v2.util.AppUtility;
@@ -38,6 +39,9 @@ public class DialogClientImpl implements DialogClient {
 
 	@Autowired
 	private CronViewerRepostService cronViewerRepostService;
+	
+	@Autowired
+	private IdeabizServiceConfigService ideabizServiceConfigService;
 
 	@Override
 	public String dialogPaymentConfirm(String serverRef, String mobileNo, Double amount, Integer subscribedDays,
@@ -143,12 +147,13 @@ public class DialogClientImpl implements DialogClient {
 			post.setHeader("content-type", "application/json");
 			post.setHeader("Authorization", accessToken);
 
-			String serviceID = "";
-			if (subscribedDays == 1) {
+			String serviceID = ideabizServiceConfigService.getServiceId(subscribedDays);
+			
+			/*if (subscribedDays == 1) {
 				serviceID = AppConstant.IDEABIZ_SERVICE_1;
 			} else if (subscribedDays == 7) {
 				serviceID = AppConstant.IDEABIZ_SERVICE_7;
-			}
+			}*/
 
 			String payment_json_string = "{\r\n" + "    \"amountTransaction\": {\r\n" + "        \"clientCorrelator\": "
 					+ "\"" + serverRef + "\",\r\n" + "        \"endUserId\": " + "\"" + "tel:" + mobileNo + "\",\r\n"
@@ -281,11 +286,16 @@ public class DialogClientImpl implements DialogClient {
 			// Body
 			map.put("method", "mobilevisions");
 			map.put("msisdn", mobileNo);
-			if (day == 1) {
-				map.put("serviceID", AppConstant.IDEABIZ_SERVICE_1);
-			} else if (day == 7) {
-				map.put("serviceID", AppConstant.IDEABIZ_SERVICE_7);
-			}
+			
+			String serviceID = ideabizServiceConfigService.getServiceId(day);
+			
+			map.put("serviceID", serviceID);
+			
+//			if (day == 1) {
+//				map.put("serviceID", AppConstant.IDEABIZ_SERVICE_1);
+//			} else if (day == 7) {
+//				map.put("serviceID", AppConstant.IDEABIZ_SERVICE_7);
+//			}
 
 			HttpEntity<?> entity = new HttpEntity<>(map, headers);
 
@@ -330,11 +340,16 @@ public class DialogClientImpl implements DialogClient {
 			// Body
 			map.put("pin", dialogOtpConfirmDto.getPin());
 			map.put("serverRef", dialogOtpConfirmDto.getServerRef());
-			if (dialogOtpConfirmDto.getDay() == 1) {
-				map.put("serviceID", AppConstant.IDEABIZ_SERVICE_1);
-			} else if (dialogOtpConfirmDto.getDay() == 7) {
-				map.put("serviceID", AppConstant.IDEABIZ_SERVICE_7);
-			}
+			
+			String serviceID = ideabizServiceConfigService.getServiceId(dialogOtpConfirmDto.getDay());
+			
+			map.put("serviceID", serviceID);
+			
+//			if (dialogOtpConfirmDto.getDay() == 1) {
+//				map.put("serviceID", AppConstant.IDEABIZ_SERVICE_1);
+//			} else if (dialogOtpConfirmDto.getDay() == 7) {
+//				map.put("serviceID", AppConstant.IDEABIZ_SERVICE_7);
+//			}
 
 			HttpEntity<?> entity = new HttpEntity<>(map, headers);
 
@@ -387,11 +402,16 @@ public class DialogClientImpl implements DialogClient {
 			// Body
 			map.put("method", "WEB");
 			map.put("msisdn", tel);
-			if (day == 1) {
-				map.put("serviceID", AppConstant.IDEABIZ_SERVICE_1);
-			} else if (day == 7) {
-				map.put("serviceID", AppConstant.IDEABIZ_SERVICE_7);
-			}
+			
+			String serviceID = ideabizServiceConfigService.getServiceId(day);
+			
+			map.put("serviceID", serviceID);
+			
+//			if (day == 1) {
+//				map.put("serviceID", AppConstant.IDEABIZ_SERVICE_1);
+//			} else if (day == 7) {
+//				map.put("serviceID", AppConstant.IDEABIZ_SERVICE_7);
+//			}
 
 			HttpEntity<?> entity = new HttpEntity<>(map, headers);
 

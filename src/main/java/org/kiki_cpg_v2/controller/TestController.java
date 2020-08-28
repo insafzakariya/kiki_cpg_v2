@@ -1,6 +1,8 @@
 package org.kiki_cpg_v2.controller;
 
 import org.kiki_cpg_v2.client.DialogClient;
+import org.kiki_cpg_v2.scheduler.CronScheduler;
+import org.kiki_cpg_v2.service.CronService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,12 +16,15 @@ public class TestController {
 	
 	@Autowired
 	private DialogClient dialogClient;
+	
+	@Autowired
+	private CronScheduler cronService;
 
 	@GetMapping
 	public String test() {
 		
 		try {
-			dialogClient.createAccessToken();
+			cronService.cronStart("Test");
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

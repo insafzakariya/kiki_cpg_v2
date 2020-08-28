@@ -5,7 +5,6 @@ import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.kiki_cpg_v2.controller.ViewController;
 import org.kiki_cpg_v2.scheduler.CronScheduler;
 import org.kiki_cpg_v2.service.CronService;
 import org.slf4j.Logger;
@@ -48,7 +47,7 @@ public class CronSchedulerImpl implements CronScheduler {
 			}
 		};
 
-		dialogThread.start();
+		//dialogThread.start();
 
 		Thread mobitelThread = new Thread() {
 			public void run() {
@@ -56,7 +55,17 @@ public class CronSchedulerImpl implements CronScheduler {
 			}
 		};
 
-		mobitelThread.start();
+		//mobitelThread.start();
+		
+		/*Thread hnbThread = new Thread() {
+			public void run() {
+				
+			}
+		};
+
+		hnbThread.start();*/
+		
+		cronService.startHnbCron(name, ipAddress, date, time);
 
 	}
 

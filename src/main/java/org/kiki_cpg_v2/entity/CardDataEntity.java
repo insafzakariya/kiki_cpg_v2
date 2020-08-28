@@ -68,6 +68,9 @@ public class CardDataEntity {
 	
 	@Column(name = "status")
 	private Integer status;
+	
+	@Column(name = "payment_plan_id")
+	private Integer paymentPlan;
 
 	public Integer getId() {
 		return id;
@@ -195,6 +198,14 @@ public class CardDataEntity {
 
 	public void setSubscribe(Integer subscribe) {
 		this.subscribe = subscribe;
+	}
+
+	public Integer getPaymentPlan() {
+		return paymentPlan;
+	}
+
+	public void setPaymentPlan(Integer paymentPlan) {
+		this.paymentPlan = paymentPlan;
 	}
 
 }

@@ -19,17 +19,20 @@ public interface HNBService {
 
 	/**
 	 * @param hnbBeginDto
+	 * @param isNew
+	 * @param days
+	 * @param value
 	 * @return
 	 * @throws Exception
 	 */
-	PaymentRefDto beginTransaction(HNBBeginDto hnbBeginDto, boolean isNew) throws Exception;
+	PaymentRefDto beginTransaction(HNBBeginDto hnbBeginDto, boolean isNew, Integer days, Double value) throws Exception;
 
 	/**
 	 * @param hnbBeginDto
 	 * @return
 	 * @throws Exception
 	 */
-	PaymentRefDto getPaymentRefDto(HNBBeginDto hnbBeginDto) throws Exception;
+	PaymentRefDto getPaymentRefDto(HNBBeginDto hnbBeginDto, Integer days, Double value) throws Exception;
 
 	/**
 	 * @param hnbBeginDto
@@ -92,5 +95,23 @@ public interface HNBService {
 	 * @return
 	 */
 	PaymentRefDto verifyTransaction(HNBVerifyDto hnbVerifyDto) throws Exception;
+
+
+	/**
+	 * @param cardDataEntity
+	 * @param cronId 
+	 * @return
+	 * @throws Exception 
+	 */
+	String processSimpleOrderPayment(CardDataEntity cardDataEntity, Integer cronId) throws Exception;
+
+	/**
+	 * @param cardDataEntity
+	 * @return
+	 * @throws Exception 
+	 */
+	CardDataEntity updateCardDataEntityExpireDate(CardDataEntity cardDataEntity) throws Exception;
+
+	
 
 }
