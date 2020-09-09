@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.kiki_cpg_v2.service.SubscriptionService;
+import org.kiki_cpg_v2.service.SubscriptionPaymentService;
 import org.kiki_cpg_v2.service.ViewService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +25,7 @@ public class ViewController {
 	final static Logger logger = LoggerFactory.getLogger(ViewController.class);
 
 	@Autowired
-	private SubscriptionService subscriptionService;
+	private SubscriptionPaymentService subscriptionService;
 
 	@Autowired
 	private ViewService viewService;

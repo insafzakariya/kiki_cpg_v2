@@ -5,7 +5,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.kiki_cpg_v2.dto.ResponseMapDto;
 import org.kiki_cpg_v2.dto.request.MobitelActivationDto;
 import org.kiki_cpg_v2.service.MobitelService;
-import org.kiki_cpg_v2.service.SubscriptionService;
+import org.kiki_cpg_v2.service.SubscriptionPaymentService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +28,7 @@ public class MobitelController {
 	private MobitelService mobitelService;
 	
 	@Autowired
-	private SubscriptionService subscriptionService;
+	private SubscriptionPaymentService subscriptionService;
 	
 	@PostMapping(value = "/payment")
 	public ResponseEntity<Object> activateDataBundle(@RequestBody MobitelActivationDto mobitelActivationDto, HttpServletRequest request){

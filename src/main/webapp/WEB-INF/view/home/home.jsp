@@ -46,7 +46,7 @@
                                 <div class="form-box">
                                 <div style="background: #24A9A6; height: 2px; margin-bottom: 20px;"></div>
                                     <form id="paymentMethodForm">
-                                    	<div class="row" style="margin-left: 0px; margin-right: 0px;">
+                                    	<!-- <div class="row" style="margin-left: 0px; margin-right: 0px;">
                                             <input type="radio" class="stv-radio-button"
                                                    name="optionsRadios" value="7" id="button6" /> <label
                                                    for="button6">
@@ -60,6 +60,27 @@
                                                             src="/susilawebpay/static/assets/images/Master.png"
                                                             class="img-rounded" alt="Cinque Terre" width="50"
                                                             >
+                                                    </div>
+                                                    <div class="col-md-5 pull-right">
+                                                        <p>
+                                                            <strong>Card</strong>
+                                                        </p>
+                                                        <p>Add to bill</p>
+                                                    </div>
+                                                </div>
+                                            </label>
+                                        </div> -->
+                                    
+                                    	<div class="row" style="margin-left: 0px; margin-right: 0px;">
+                                            <input type="radio" class="stv-radio-button"
+                                                   name="optionsRadios" value="7" id="button6" /> <label
+                                                   for="button6" >
+                                                <div class="row" >
+                                                    <div class="col-md-4 pull-left">
+                                                        <img
+                                                            src="/susilawebpay/static/assets/images/visamaster.jpg"
+                                                            class="img-rounded" alt="Cinque Terre" width="50"
+                                                            height="50">
                                                     </div>
                                                     <div class="col-md-5 pull-right">
                                                         <p>
@@ -104,6 +125,52 @@
                                                     <div class="col-md-5 pull-right">
                                                         <p>
                                                             <strong>Mobitel</strong>
+                                                        </p>
+                                                        <p>
+                                                            <strong>Add to bill</strong>
+                                                        </p>
+                                                    </div>
+                                                </div>
+
+                                            </label>
+                                        </div>
+                                        
+                                        <div class="row" style="margin-left: 0px; margin-right: 0px;">
+                                            <input type="radio" class="stv-radio-button"
+                                                   name="optionsRadios" value="8" id="button7" /> <label
+                                                   for="button7">
+                                                <div class="row">
+                                                    <div class="col-md-4 pull-left">
+                                                        <img src="/susilawebpay/static/assets/images/hutch.jpg"
+                                                             class="img-rounded" alt="Cinque Terre" width="50"
+                                                             height="50">
+                                                    </div>
+                                                    <div class="col-md-5 pull-right">
+                                                        <p>
+                                                            <strong>Hutch</strong>
+                                                        </p>
+                                                        <p>
+                                                            <strong>Add to bill</strong>
+                                                        </p>
+                                                    </div>
+                                                </div>
+
+                                            </label>
+                                        </div>
+                                        
+                                        <div class="row" style="margin-left: 0px; margin-right: 0px;">
+                                            <input type="radio" class="stv-radio-button"
+                                                   name="optionsRadios" value="9" id="button8" /> <label
+                                                   for="button8">
+                                                <div class="row">
+                                                    <div class="col-md-4 pull-left">
+                                                        <img src="/susilawebpay/static/assets/images/Keells.jpg"
+                                                             class="img-rounded" alt="Cinque Terre" width="50"
+                                                             height="50">
+                                                    </div>
+                                                    <div class="col-md-5 pull-right">
+                                                        <p>
+                                                            <strong>Keells</strong>
                                                         </p>
                                                         <p>
                                                             <strong>Add to bill</strong>
@@ -179,6 +246,16 @@
         
         $('#button6').click(function () {
             localStorage.setItem('paymentId', $('#button6').val());
+            window.location.replace(baseURL + "/plan");
+        });
+        
+        $('#button7').click(function () {
+            localStorage.setItem('paymentId', $('#button7').val());
+            window.location.replace(baseURL + "/plan");
+        });
+        
+        $('#button8').click(function () {
+            localStorage.setItem('paymentId', $('#button8').val());
             window.location.replace(baseURL + "/plan");
         });
 

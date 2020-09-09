@@ -1,7 +1,7 @@
 package org.kiki_cpg_v2.service.impl;
 
 import org.kiki_cpg_v2.dto.SubscriptionPaymentDto;
-import org.kiki_cpg_v2.service.SubscriptionService;
+import org.kiki_cpg_v2.service.SubscriptionPaymentService;
 import org.kiki_cpg_v2.service.ViewService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,7 +11,7 @@ import org.springframework.web.servlet.ModelAndView;
 public class ViewServiceImpl implements ViewService{
 
 	@Autowired
-	private SubscriptionService subscriptionService;
+	private SubscriptionPaymentService subscriptionService;
 	
 
 	@Override

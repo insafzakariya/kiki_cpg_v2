@@ -27,6 +27,7 @@
 
                 <div class="error-field">
                     <div id="dialogIncorrect" class="hide errorField" style="color:red">Mobile number is incorrect (Ex:77******* Or 76*******)</div>
+                    <div id="hutchIncorrect" class="hide errorField" style="color:red">Mobile number is incorrect (Ex:78******* Or 72*******)</div>
                     <div id="mobitelIncorrect" class="hide errorField" style="color:red">Mobile number is incorrect (Ex:71******* Or 70*******)</div>
                     <div id="mobileIncorrest" class="hide errorField" style="color:red">Mobile number is incorrect</div>
                     <div id="numbernotvalied" class="hide errorField" style="color:red">Enter valid mobile number to proceed</div>
@@ -60,6 +61,7 @@
             $("#numbernotvalied").addClass("hide");
             $("#mobitelIncorrect").addClass("hide");
             $("#dialogIncorrect").addClass("hide");
+            $("#hutchIncorrect").addClass("hide");
         });
 
         $("#btn_proceed").click(
@@ -102,6 +104,20 @@
                                     window.location.replace(baseURL + "/otp_verification");
                                 });
                             } else if (method == 7 && resp != "success") {
+                                $("#mobileIncorrest").removeClass("hide");
+                            } else if (method == 8 && resp == "success") {
+                                var viewerId = localStorage.getItem("viewerId");
+                                $.get(baseURL + "/rest/otp/send/" + viewerId + "/" + mobile_no, function (resp, status) {
+                                    window.location.replace(baseURL + "/otp_verification");
+                                });
+                            } else if (method == 8 && resp != "success") {
+                                $("#hutchIncorrect").removeClass("hide");
+                            } else if (method == 9 && resp == "success") {
+                                var viewerId = localStorage.getItem("viewerId");
+                                $.get(baseURL + "/rest/otp/send/" + viewerId + "/" + mobile_no, function (resp, status) {
+                                    window.location.replace(baseURL + "/otp_verification");
+                                });
+                            } else if (method == 9 && resp != "success") {
                                 $("#mobileIncorrest").removeClass("hide");
                             } else {
 

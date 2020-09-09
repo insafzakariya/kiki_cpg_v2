@@ -15,7 +15,7 @@ import java.util.Properties;
 import java.util.UUID;
 
 import org.kiki_cpg_v2.dto.PaymentRefDto;
-import org.kiki_cpg_v2.dto.request.HNBBeginDto;
+import org.kiki_cpg_v2.dto.request.TransactionBeginDto;
 import org.kiki_cpg_v2.dto.request.HNBVerifyDto;
 import org.kiki_cpg_v2.entity.CardDataEntity;
 import org.kiki_cpg_v2.entity.CardInvoiceEntity;
@@ -82,7 +82,7 @@ public class HNBServiceImpl implements HNBService {
 	private AppUtility appUtility;
 
 	@Override
-	public PaymentRefDto beginTransaction(HNBBeginDto hnbBeginDto, boolean isNew, Integer days, Double value)
+	public PaymentRefDto beginTransaction(TransactionBeginDto hnbBeginDto, boolean isNew, Integer days, Double value)
 			throws Exception {
 
 		PaymentRefDto paymentRefDto = getPaymentRefDto(hnbBeginDto, days, value);
@@ -106,7 +106,7 @@ public class HNBServiceImpl implements HNBService {
 	}
 
 	@Override
-	public CardDataEntity getCardDataEntityBegining(HNBBeginDto hnbBeginDto, PaymentRefDto paymentRefDto)
+	public CardDataEntity getCardDataEntityBegining(TransactionBeginDto hnbBeginDto, PaymentRefDto paymentRefDto)
 			throws Exception {
 		CardDataEntity cardDataEntity = new CardDataEntity();
 		cardDataEntity.setPaymentPlan(hnbBeginDto.getPlanId());
@@ -129,7 +129,7 @@ public class HNBServiceImpl implements HNBService {
 	 * @return
 	 */
 	@Override
-	public CardInvoiceEntity getCardInvoiceEntityBegining(HNBBeginDto hnbBeginDto, PaymentRefDto paymentRefDto)
+	public CardInvoiceEntity getCardInvoiceEntityBegining(TransactionBeginDto hnbBeginDto, PaymentRefDto paymentRefDto)
 			throws Exception {
 
 		CardInvoiceEntity entity = new CardInvoiceEntity();
@@ -148,12 +148,12 @@ public class HNBServiceImpl implements HNBService {
 	 * @return
 	 */
 	@Override
-	public PaymentRefDto getPaymentRefDto(HNBBeginDto hnbBeginDto, Integer days, Double value) throws Exception {
+	public PaymentRefDto getPaymentRefDto(TransactionBeginDto hnbBeginDto, Integer days, Double value) throws Exception {
 
 		PaymentRefDto dto = new PaymentRefDto();
-
+		PaymentMethodPlanEntity entity = paymentMethodPlanRepository.findById(hnbBeginDto.getPlanId()).get();
 		if (days < 0 && value < 0.0) {
-			PaymentMethodPlanEntity entity = paymentMethodPlanRepository.findById(hnbBeginDto.getPlanId()).get();
+			
 			days = entity.getDays();
 			value = entity.getValue();
 		}
@@ -164,6 +164,7 @@ public class HNBServiceImpl implements HNBService {
 		dto.setTransactionUUID(UUID.randomUUID().toString());
 		dto.setAmount(value);
 		dto.setDays(days);
+		dto.setServiceCode(entity.getServiceCode());
 
 		String frequency = AppUtility.getHnbFrequency(days);
 		dto.setFrequency(frequency);
@@ -331,7 +332,7 @@ public class HNBServiceImpl implements HNBService {
 	@Override
 	public String processSimpleOrderPayment(CardDataEntity cardDataEntity, Integer cronId) throws Exception {
 
-		HNBBeginDto hnbBeginDto = new HNBBeginDto();
+		TransactionBeginDto hnbBeginDto = new TransactionBeginDto();
 		hnbBeginDto.setViewerId(cardDataEntity.getViewerId());
 		hnbBeginDto.setMobileNo(cardDataEntity.getMobile());
 		hnbBeginDto.setPlanId(cardDataEntity.getPaymentPlan());

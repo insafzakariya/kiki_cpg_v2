@@ -9,4 +9,10 @@ public interface ViewerRepository extends JpaRepository<ViewerEntity, Integer> {
 
 	List<ViewerEntity> findByIdNotAndMobileNumberEndingWith(Integer viewerId, String mobileNo);
 
+	/**
+	 * @param string
+	 * @return
+	 */
+	ViewerEntity findFirstByMobileNumberEndingWithOrderByIdDesc(String string) throws Exception;
+
 }

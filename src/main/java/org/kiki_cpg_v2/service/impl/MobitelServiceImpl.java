@@ -17,7 +17,7 @@ import org.kiki_cpg_v2.repository.ViewerSubscriptionRepository;
 import org.kiki_cpg_v2.service.CronViewerRepostService;
 import org.kiki_cpg_v2.service.MobitelService;
 import org.kiki_cpg_v2.service.PaymentLogService;
-import org.kiki_cpg_v2.service.SubscriptionService;
+import org.kiki_cpg_v2.service.SubscriptionPaymentService;
 import org.kiki_cpg_v2.service.ViewerPolicyService;
 import org.kiki_cpg_v2.service.ViewerService;
 import org.kiki_cpg_v2.service.ViewerSubscriptionService;
@@ -63,7 +63,7 @@ public class MobitelServiceImpl implements MobitelService {
 	private ViewerSubscriptionService viewerSubscriptionService;
 
 	@Autowired
-	private SubscriptionService subscriptionService;
+	private SubscriptionPaymentService subscriptionService;
 
 	@Autowired
 	private CronViewerRepostService cronViewerRepostService;

@@ -147,16 +147,75 @@
                                     $("#error").removeClass("hide");
                                 }
 
-                                /* x.style.display = "none";
-                                 var myJSON = JSON.stringify(data);
-                                 var myJSON = JSON.parse(myJSON);
-                                 if (data.statusCode == 'FAIL') {
-                                 $("#error-p").text(data.message);
-                                 $("#error").removeClass("hide");
-                                 } else {
-                                 var url = baseURL +"/thanks/4";
-                                 window.location.replace(url);
-                                 }*/
+                              
+                            },
+                            error: function (e) {
+                                $("#error-p").text('An error occurred while updating payment transaction : ' + e);
+                                console.log('An error occurred while updating payment transaction : ', e);
+                                $("#error").removeClass("hide");
+                            }
+                        });
+                    }  else if (methodId == 8) {
+                        $.ajax({
+                            type: "post",
+                            contentType: "application/json",
+                            dataType: 'json',
+                            url: baseURL + "/rest/otp/confirm",
+                            data: JSON.stringify(data_st),
+                            success: function (data) {
+                                if (data.status == "Success") {
+                                    var data_st2 = {
+                                        "mobileNo": localStorage.getItem("mobile"),
+                                        "viewerId": localStorage.getItem("viewerId"),
+                                        "planId": localStorage.getItem("planId")
+                                    };
+                                    alert("Success");
+                                } else {
+                                    $("#error-p").text(data.message);
+                                    $("#error").removeClass("hide");
+                                }
+                            },
+                            error: function (e) {
+                                $("#error-p").text('An error occurred while updating payment transaction : ' + e);
+                                console.log('An error occurred while updating payment transaction : ', e);
+                                $("#error").removeClass("hide");
+                            }
+                        });
+                    } else if (methodId == 9) {
+                        $.ajax({
+                            type: "post",
+                            contentType: "application/json",
+                            dataType: 'json',
+                            url: baseURL + "/rest/otp/confirm",
+                            data: JSON.stringify(data_st),
+                            success: function (data) {
+                                if (data.status == "Success") {
+                                    var data_st2 = {
+                                        "mobileNo": localStorage.getItem("mobile"),
+                                        "viewerId": localStorage.getItem("viewerId"),
+                                        "planId": localStorage.getItem("planId")
+                                    };
+                                    $.ajax({
+                                        type: "post",
+                                        contentType: "application/json",
+                                        dataType: 'json',
+                                        url: baseURL + "/keells/begin",
+                                        data: JSON.stringify(data_st2),
+                                        success: function (data) {
+                                        	 var url = baseURL + "/thanks/9";
+                                            window.location.replace(url);
+
+                                        },
+                                        error: function (e) {
+                                            $("#error-p").text('An error occurred while connecting Payment Gateway');
+                                            console.log('An error occurred while connecting Payment Gateway : ', e);
+                                            $("#error").removeClass("hide");
+                                        }
+                                    });
+                                } else {
+                                    $("#error-p").text(data.message);
+                                    $("#error").removeClass("hide");
+                                }
                             },
                             error: function (e) {
                                 $("#error-p").text('An error occurred while updating payment transaction : ' + e);

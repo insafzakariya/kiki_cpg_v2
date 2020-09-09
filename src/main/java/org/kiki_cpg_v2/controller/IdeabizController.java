@@ -7,7 +7,7 @@ import org.kiki_cpg_v2.dto.DialogOtpDto;
 import org.kiki_cpg_v2.dto.DialogPaymentConfirmDto;
 import org.kiki_cpg_v2.dto.request.DialogOtpConfirmDto;
 import org.kiki_cpg_v2.service.IdeabizService;
-import org.kiki_cpg_v2.service.SubscriptionService;
+import org.kiki_cpg_v2.service.SubscriptionPaymentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,7 +32,7 @@ public class IdeabizController {
 	private IdeabizService ideabizService;
 	
 	@Autowired
-	private SubscriptionService subscriptionService;
+	private SubscriptionPaymentService subscriptionService;
 	
 	@GetMapping("/otp/send/{mobile_no}/{day}")
 	public ResponseEntity<Object> sentOtp(@PathVariable String mobile_no, @PathVariable Integer day) {

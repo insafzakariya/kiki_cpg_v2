@@ -67,7 +67,6 @@ public class IdeabizServiceImpl implements IdeabizService {
 		Double amount = paymentMethodService.getPaymentPlanAmount(dialogOtpConfirmDto.getDay(), 4);
 
 		String message = "";
-
 		if (amount > 0) {
 			DialogOtpDto dialogOtpDto = dialogClient.pinSubscriptionConfirm(dialogOtpConfirmDto, amount, accessToken);
 			System.out.println(dialogOtpDto.toString());

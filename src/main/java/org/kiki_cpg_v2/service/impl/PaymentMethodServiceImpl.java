@@ -57,10 +57,14 @@ public class PaymentMethodServiceImpl implements PaymentMethodService{
 
 	@Override
 	public Double getPaymentPlanAmount(Integer day, Integer paymentMethodId) {
+
+		System.out.println(paymentMethodId);
+		System.out.println(day);
 		PaymentMethodEntity paymentMethodEntity = paymentMethodRepository.findById(paymentMethodId).get();
 		System.out.println(paymentMethodEntity == null);
 		for (PaymentMethodPlanEntity entity : paymentMethodEntity.getPaymentMethodPlanEntities()) {
-			if(entity.getDays() == day) {
+			System.out.println(entity.getDays().equals(day));
+			if(entity.getDays().equals(day)) {
 				return entity.getValue();
 			}
 		}

@@ -51,6 +51,17 @@
 
                 </div>
             </c:when>
+            
+            <c:when test="${type eq 9}">
+                <div class="main_container">
+                    <div class="header_container">
+                        <img src="<c:url value='/static/assets/images/smile.png'/>">
+                        <h5 class="header">Thank you for activating KIKI</h5>
+                        <p class="tagline">Please top-up your account in an authorized Keells Outlet</p>
+                    </div>
+
+                </div>
+            </c:when>
             <c:when test="${type eq 10}">
                 <div class="main_container">
                     <div class="header_container">

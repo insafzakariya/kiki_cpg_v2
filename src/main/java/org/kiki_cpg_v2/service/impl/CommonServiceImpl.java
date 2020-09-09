@@ -22,8 +22,12 @@ public class CommonServiceImpl implements CommonService{
 			if (appUtility.getIsMobitelNumber(number)) {
 				resp = "success";
 			}
-		} else if (method == 7) {
+		} else if (method == 7 || method == 9) {
 			if (appUtility.getIsMobitelNumber(number) || appUtility.getIsDialogNumber(number) || appUtility.getIsMobileNumber(number)) {
+				resp = "success";
+			}
+		} else if (method == 8) {
+			if (appUtility.getIsHutchNumber(number)) {
 				resp = "success";
 			}
 		}

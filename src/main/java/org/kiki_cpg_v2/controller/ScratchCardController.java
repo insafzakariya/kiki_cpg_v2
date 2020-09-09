@@ -3,7 +3,7 @@ package org.kiki_cpg_v2.controller;
 import org.kiki_cpg_v2.dto.ResponseMapDto;
 import org.kiki_cpg_v2.dto.ScratchCardPaymentDto;
 import org.kiki_cpg_v2.service.ScratchCardService;
-import org.kiki_cpg_v2.service.SubscriptionService;
+import org.kiki_cpg_v2.service.SubscriptionPaymentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +22,7 @@ public class ScratchCardController {
 	private ScratchCardService scratchCardService;
 	
 	@Autowired
-	private SubscriptionService subscriptionService;
+	private SubscriptionPaymentService subscriptionService;
 
 	@PostMapping(value = { "/payment" })
 	public ResponseEntity<Object> validateAndUseCode(@RequestBody ScratchCardPaymentDto scratchCardPaymentDto) {

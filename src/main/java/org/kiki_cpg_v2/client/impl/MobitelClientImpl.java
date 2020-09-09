@@ -253,15 +253,10 @@ public class MobitelClientImpl implements MobitelClient {
 		}
 
 		msg.setSender(alias);
-		/** recipients per SMSMessage is limited to 500 **/
-		// msg.getRecipients().add("0094711234567");
 		msg.getRecipients().add(mobile);
 		try {
-			System.out.println("aaa");
 			SMSManager smsMgr = new SMSManager();
-			System.out.println("bbb");
 			int resultCode = smsMgr.sendMessage(msg);
-			System.out.println("ccc");
 			if (resultCode == 200) {
 				logger.info("sms sent to user successfully");
 				return 200;

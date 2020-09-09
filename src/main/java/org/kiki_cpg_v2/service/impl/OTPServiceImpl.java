@@ -16,7 +16,7 @@ import org.kiki_cpg_v2.repository.CKOTPRepository;
 import org.kiki_cpg_v2.repository.ViewerRepository;
 import org.kiki_cpg_v2.service.OTPService;
 import org.kiki_cpg_v2.service.SmsService;
-import org.kiki_cpg_v2.service.SubscriptionService;
+import org.kiki_cpg_v2.service.SubscriptionPaymentService;
 import org.kiki_cpg_v2.util.AppConstant;
 import org.kiki_cpg_v2.util.AppUtility;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +43,7 @@ public class OTPServiceImpl implements OTPService{
 	private AppUtility appUtility;
 	
 	@Autowired
-	private SubscriptionService subscriptionService;
+	private SubscriptionPaymentService subscriptionService;
 
 	@Override
 	public DialogOtpDto sendOtp(Integer viewer_id, String mobileNo) throws Exception {
@@ -66,6 +66,8 @@ public class OTPServiceImpl implements OTPService{
 			dialogOtpDto.setStatus("fail");
 			dialogOtpDto.setMessage("Viewer Not Found");
 		}
+		
+		System.out.println(dialogOtpDto.toString());
 		
 		return dialogOtpDto;
 		
@@ -97,7 +99,8 @@ public class OTPServiceImpl implements OTPService{
 	public String genarateOTP(String mobile_no) throws Exception {
 		Random rand = new Random();
 		String code = String.format("%06d", rand.nextInt(10000));
-		Integer resultCode = smsService.sendSms(mobile_no, "OTP : " +code);
+		Integer resultCode = smsService.sendSms(mobile_no, "Dear Customer, please use the following OTP " +code + " to complete your kiki verification.");
+		System.out.println("otp : " + code);
 		if (resultCode==200) {
 			return code;
 		}else {

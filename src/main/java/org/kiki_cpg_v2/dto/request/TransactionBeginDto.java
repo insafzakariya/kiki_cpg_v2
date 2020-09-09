@@ -6,7 +6,7 @@ package org.kiki_cpg_v2.dto.request;
 /**
  * @author Anjana Thrishakya
  */
-public class HNBBeginDto {
+public class TransactionBeginDto {
 
 	private String mobileNo;
 	private Integer viewerId;

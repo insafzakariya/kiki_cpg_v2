@@ -6,7 +6,7 @@ package org.kiki_cpg_v2.service;
 import java.util.Date;
 
 import org.kiki_cpg_v2.dto.PaymentRefDto;
-import org.kiki_cpg_v2.dto.request.HNBBeginDto;
+import org.kiki_cpg_v2.dto.request.TransactionBeginDto;
 import org.kiki_cpg_v2.dto.request.HNBVerifyDto;
 import org.kiki_cpg_v2.entity.CardDataEntity;
 import org.kiki_cpg_v2.entity.CardInvoiceEntity;
@@ -25,14 +25,14 @@ public interface HNBService {
 	 * @return
 	 * @throws Exception
 	 */
-	PaymentRefDto beginTransaction(HNBBeginDto hnbBeginDto, boolean isNew, Integer days, Double value) throws Exception;
+	PaymentRefDto beginTransaction(TransactionBeginDto hnbBeginDto, boolean isNew, Integer days, Double value) throws Exception;
 
 	/**
 	 * @param hnbBeginDto
 	 * @return
 	 * @throws Exception
 	 */
-	PaymentRefDto getPaymentRefDto(HNBBeginDto hnbBeginDto, Integer days, Double value) throws Exception;
+	PaymentRefDto getPaymentRefDto(TransactionBeginDto hnbBeginDto, Integer days, Double value) throws Exception;
 
 	/**
 	 * @param hnbBeginDto
@@ -40,7 +40,7 @@ public interface HNBService {
 	 * @return
 	 * @throws Exception
 	 */
-	CardInvoiceEntity getCardInvoiceEntityBegining(HNBBeginDto hnbBeginDto, PaymentRefDto paymentRefDto)
+	CardInvoiceEntity getCardInvoiceEntityBegining(TransactionBeginDto hnbBeginDto, PaymentRefDto paymentRefDto)
 			throws Exception;
 
 	/**
@@ -63,7 +63,7 @@ public interface HNBService {
 	 * @param paymentRefDto
 	 * @return
 	 */
-	CardDataEntity getCardDataEntityBegining(HNBBeginDto hnbBeginDto, PaymentRefDto paymentRefDto) throws Exception;
+	CardDataEntity getCardDataEntityBegining(TransactionBeginDto hnbBeginDto, PaymentRefDto paymentRefDto) throws Exception;
 
 	/**
 	 * @param cardDataEntity

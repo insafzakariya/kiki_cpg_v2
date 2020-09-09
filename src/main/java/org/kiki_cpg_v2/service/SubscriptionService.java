@@ -1,14 +1,30 @@
+/**
+ * @DaSep 9, 2020 @SubscriptionService.java
+ */
 package org.kiki_cpg_v2.service;
 
-import org.kiki_cpg_v2.dto.SubscriptionPaymentDto;
-import org.springframework.web.servlet.ModelAndView;
+import org.kiki_cpg_v2.dto.PaymentRefDto;
+import org.kiki_cpg_v2.dto.request.TransactionBeginDto;
+import org.kiki_cpg_v2.entity.SubscriptionEntity;
 
+/**
+ * @author Anjana Thrishakya
+ */
 public interface SubscriptionService {
-	
-	SubscriptionPaymentDto getSubscriptionPaymentDtoByToken(String token, String type) throws Exception;
 
-	boolean validateSubscriptionPayment(Integer subscriptionPaymentId) throws Exception;
+	/**
+	 * @param transactionBeginDto
+	 * @param paymentRefDto
+	 * @param keells
+	 */
+	SubscriptionEntity getSubsctiptionEntity(TransactionBeginDto transactionBeginDto, PaymentRefDto paymentRefDto, String keells);
 
-	boolean updateStatus(Integer subscriptionPaymentId);
+	/**
+	 * @param transactionBeginDto
+	 * @param i
+	 * @param d
+	 * @return
+	 */
+	PaymentRefDto getPaymentRefDto(TransactionBeginDto transactionBeginDto, int i, double d);
 
 }

@@ -5,7 +5,7 @@ import org.kiki_cpg_v2.dto.UnsubscribeDto;
 import org.kiki_cpg_v2.service.HNBService;
 import org.kiki_cpg_v2.service.IdeabizService;
 import org.kiki_cpg_v2.service.MobitelService;
-import org.kiki_cpg_v2.service.SubscriptionService;
+import org.kiki_cpg_v2.service.SubscriptionPaymentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class UnsubscribeController {
 
 	@Autowired
-	private SubscriptionService subscriptionService;
+	private SubscriptionPaymentService subscriptionService;
 
 	@Autowired
 	private IdeabizService ideabizService;

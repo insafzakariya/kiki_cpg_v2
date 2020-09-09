@@ -20,19 +20,29 @@ public class PaymentMethodPlanEntity {
 
 	@Column(name = "name")
 	private String name;
-	
+
 	@Column(name = "offer")
 	private String offer;
-	
+
 	@Column(name = "value")
 	private Double value;
-	
+
 	@Column(name = "days")
 	private Integer days;
-	
+
 	@ManyToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "payment_method_id", nullable = false)
 	private PaymentMethodEntity paymentMethodEntity;
+
+	private String serviceCode;
+
+	public String getServiceCode() {
+		return serviceCode;
+	}
+
+	public void setServiceCode(String serviceCode) {
+		this.serviceCode = serviceCode;
+	}
 
 	public Integer getId() {
 		return id;
@@ -81,7 +91,5 @@ public class PaymentMethodPlanEntity {
 	public void setPaymentMethodEntity(PaymentMethodEntity paymentMethodEntity) {
 		this.paymentMethodEntity = paymentMethodEntity;
 	}
-
-	
 
 }

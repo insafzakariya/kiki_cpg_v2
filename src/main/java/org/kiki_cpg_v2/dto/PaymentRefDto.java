@@ -15,7 +15,7 @@ public class PaymentRefDto {
 	private String status;
 	private String frequency;
 	private String date;
-	
+	private String serviceCode;
 
 	public String getFrequency() {
 		return frequency;
@@ -71,6 +71,14 @@ public class PaymentRefDto {
 
 	public void setDays(Integer days) {
 		this.days = days;
+	}
+
+	public String getServiceCode() {
+		return serviceCode;
+	}
+
+	public void setServiceCode(String serviceCode) {
+		this.serviceCode = serviceCode;
 	}
 
 }

@@ -6,7 +6,6 @@ package org.kiki_cpg_v2.controller;
 import javax.servlet.http.HttpServletRequest;
 
 import org.kiki_cpg_v2.dto.DialogOtpDto;
-import org.kiki_cpg_v2.dto.DialogPaymentConfirmDto;
 import org.kiki_cpg_v2.dto.request.DialogOtpConfirmDto;
 import org.kiki_cpg_v2.service.OTPService;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -112,4 +112,21 @@ public class AppUtility {
 		
 		return frequency;
 	}
+
+	/**
+	 * @param number
+	 * @return
+	 */
+	public boolean getIsHutchNumber(String number) {
+		if (number == null || number.isEmpty()) {
+			return false;
+		}
+		number = "0" + getNineDigitMobileNumber(number);
+
+		String serviceProviderCode = number.substring(0, 3);
+		if (serviceProviderCode.equals("078") || serviceProviderCode.equals("072")) {
+			return true;
+		}
+		return false;
+	}
 }

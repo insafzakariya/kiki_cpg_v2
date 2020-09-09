@@ -4,7 +4,7 @@
 package org.kiki_cpg_v2.controller;
 
 import org.kiki_cpg_v2.dto.PaymentRefDto;
-import org.kiki_cpg_v2.dto.request.HNBBeginDto;
+import org.kiki_cpg_v2.dto.request.TransactionBeginDto;
 import org.kiki_cpg_v2.dto.request.HNBVerifyDto;
 import org.kiki_cpg_v2.service.HNBService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +29,7 @@ public class HNBController {
 	private HNBService hnbService;
 	
 	@PostMapping("/begin")
-	public ResponseEntity<Object> beginTransaction(@RequestBody HNBBeginDto hnbBeginDto) {
+	public ResponseEntity<Object> beginTransaction(@RequestBody TransactionBeginDto hnbBeginDto) {
 		try {
 			System.out.println(hnbBeginDto);
 			PaymentRefDto dto = hnbService.beginTransaction(hnbBeginDto, true, -1, -1.0);
