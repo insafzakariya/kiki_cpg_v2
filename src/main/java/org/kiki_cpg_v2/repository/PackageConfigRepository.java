@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 /**
  * @author Anjana Thrishakya
  */
-public interface PackageConfigRepository extends JpaRepository<PackageConfigEntity, Integer>{
+public interface PackageConfigRepository extends JpaRepository<PackageConfigEntity, Integer> {
 
 	/**
 	 * @param day
@@ -17,5 +17,10 @@ public interface PackageConfigRepository extends JpaRepository<PackageConfigEnti
 	 * @return
 	 */
 	PackageConfigEntity findFirstByDaysAndType(Integer day, String type) throws Exception;
+
+	/**
+	 * @param type
+	 */
+	PackageConfigEntity findFirstByType(String type) throws Exception;
 
 }
