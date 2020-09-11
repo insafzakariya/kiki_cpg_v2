@@ -81,6 +81,7 @@
                     $.get(baseURL + "/rest/common/verifyNumber/" + method + "/" + mobile_no, function (resp, status) {
                         console.log(resp);
                         console.log(status);
+                        localStorage.setItem("mobile", mobile_no);
                         if (status == "success") {
                             if (method == 4 && resp == "success") {
                                 var day = localStorage.getItem("day");

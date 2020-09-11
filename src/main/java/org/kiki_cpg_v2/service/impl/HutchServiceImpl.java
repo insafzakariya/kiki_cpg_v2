@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import org.apache.commons.lang3.RandomStringUtils;
 import org.kiki_cpg_v2.client.HutchClient;
 import org.kiki_cpg_v2.dto.HutchResponseDto;
 import org.kiki_cpg_v2.dto.PaymentRefDto;
@@ -32,6 +31,9 @@ import org.kiki_cpg_v2.util.AppUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import net.bytebuddy.utility.RandomString;
+
 
 /**
  * @author Anjana Thrishakya
@@ -145,7 +147,7 @@ public class HutchServiceImpl implements HutchService {
 								if (packageId > 0) {
 									if (viewerPolicyService
 											.updateViewerPolicy(viewerPolicyService.getViewerPolicyUpdateRequestDto(
-													subscriptionEntity.getViewerId(), packageId))
+													subscriptionEntity.getViewerId(), packageId), -1)
 											.equalsIgnoreCase("success")) {
 										response.put("ResultCode", "0");
 										response.put("Description", "Success");
@@ -191,7 +193,7 @@ public class HutchServiceImpl implements HutchService {
 	public SubscriptionInvoiceEntity getSubscriptionInvoiceEntity(Map<String, String> requestMap,
 			SubscriptionEntity subscriptionEntity) throws Exception {
 
-		String transactionNo = new SimpleDateFormat("yyMMdd").format(new Date()) + RandomStringUtils.random(6);
+		String transactionNo = new SimpleDateFormat("yyMMdd").format(new Date()) + RandomString.make(6);
 
 		SubscriptionInvoiceEntity invoiceEntity = new SubscriptionInvoiceEntity();
 		invoiceEntity.setAmount(subscriptionEntity.getAmount());
@@ -246,7 +248,7 @@ public class HutchServiceImpl implements HutchService {
 									if (packageId > 0) {
 										if (viewerPolicyService
 												.updateViewerPolicy(viewerPolicyService.getViewerPolicyUpdateRequestDto(
-														subscriptionEntity.getViewerId(), packageId))
+														subscriptionEntity.getViewerId(), packageId), -1)
 												.equalsIgnoreCase("success")) {
 											response.put("ResultCode", "0");
 											response.put("Description", "Success");
@@ -350,7 +352,7 @@ public class HutchServiceImpl implements HutchService {
 	public SubscriptionInvoiceEntity getBeginSubscriptionInvoiceEntity(TransactionBeginDto beginDto,
 			SubscriptionEntity subscriptionEntity, PaymentRefDto paymentRefDto) throws Exception {
 		
-		String transactionNo = new SimpleDateFormat("yyMMdd").format(new Date()) + RandomStringUtils.random(6);
+		String transactionNo = new SimpleDateFormat("yyMMdd").format(new Date()) + RandomString.make(6);
 
 		SubscriptionInvoiceEntity invoiceEntity = new SubscriptionInvoiceEntity();
 		invoiceEntity.setAmount(subscriptionEntity.getAmount());

@@ -230,7 +230,7 @@ public class HNBServiceImpl implements HNBService {
 							AppConstant.CARD_HNB) != null) {
 						if (packageId > 0) {
 							if (viewerPolicyService.updateViewerPolicy(viewerPolicyService
-									.getViewerPolicyUpdateRequestDto(cardInvoiceEntity.getViewerId(), packageId))
+									.getViewerPolicyUpdateRequestDto(cardInvoiceEntity.getViewerId(), packageId), -1)
 									.equalsIgnoreCase("success")) {
 								viewerUnsubscriptionService.save(cardDataEntity.getMobile(),
 										cardInvoiceEntity.getViewerId(), "SUBSCRIBE", "Card", unsubscrideEntityUpdate);
@@ -394,7 +394,7 @@ public class HNBServiceImpl implements HNBService {
 
 						if (packageId > 0) {
 							if (viewerPolicyService.updateViewerPolicy(viewerPolicyService
-									.getViewerPolicyUpdateRequestDto(cardInvoiceEntity.getViewerId(), packageId))
+									.getViewerPolicyUpdateRequestDto(cardInvoiceEntity.getViewerId(), packageId), -1)
 									.equalsIgnoreCase("success")) {
 								return "Success";
 							}

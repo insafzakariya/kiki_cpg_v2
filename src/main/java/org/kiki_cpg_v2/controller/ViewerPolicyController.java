@@ -22,7 +22,7 @@ public class ViewerPolicyController {
 	public ResponseEntity<Object> updateViewerPolicy(ViewerPolicyUpdateRequestDto viewerPolicyUpdateRequestDto) {
 		ResponseEntity<Object> responseEntity = null;
 		try {
-			String resp = viewerPolicyService.updateViewerPolicy(viewerPolicyUpdateRequestDto);
+			String resp = viewerPolicyService.updateViewerPolicy(viewerPolicyUpdateRequestDto, -1);
 			if (resp.equals("success")) {
 				responseEntity = new ResponseEntity<Object>("Success", HttpStatus.OK);
 			} else {

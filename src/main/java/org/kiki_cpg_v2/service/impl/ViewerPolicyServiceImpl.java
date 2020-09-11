@@ -8,13 +8,11 @@ import java.util.List;
 import org.kiki_cpg_v2.dto.request.ViewerPolicyUpdateRequestDto;
 import org.kiki_cpg_v2.entity.PackageEntity;
 import org.kiki_cpg_v2.entity.PackagePolicyEntity;
-import org.kiki_cpg_v2.entity.ViewerEntity;
 import org.kiki_cpg_v2.entity.ViewerPackageEntity;
 import org.kiki_cpg_v2.entity.ViewerPolicyEntity;
 import org.kiki_cpg_v2.repository.PackageRepository;
 import org.kiki_cpg_v2.repository.ViewerPackageRepository;
 import org.kiki_cpg_v2.repository.ViewerPolicyRepository;
-import org.kiki_cpg_v2.repository.ViewerRepository;
 import org.kiki_cpg_v2.service.ViewerPolicyService;
 import org.kiki_cpg_v2.util.AppConstant;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +33,7 @@ public class ViewerPolicyServiceImpl implements ViewerPolicyService {
 
 	@Override
 	@Transactional
-	public String updateViewerPolicy(ViewerPolicyUpdateRequestDto viewerPolicyUpdateRequestDto) {
+	public String updateViewerPolicy(ViewerPolicyUpdateRequestDto viewerPolicyUpdateRequestDto, Integer dateCount) {
 
 		ViewerPackageEntity viewerPackageEntity = viewerPackageRepository
 				.findFirstByViewerIdAndStatus(viewerPolicyUpdateRequestDto.getViewerId(), AppConstant.ACTIVE);
@@ -59,7 +57,7 @@ public class ViewerPolicyServiceImpl implements ViewerPolicyService {
 					List<ViewerPolicyEntity> viewerPolicyEntities = new ArrayList<>();
 					packagePolicyEntities.forEach(e -> {
 						viewerPolicyEntities.add(getViewerPolicyEntity(packageEntity, e, viewerPackageEntity,
-								viewerPolicyUpdateRequestDto.getViewerId()));
+								viewerPolicyUpdateRequestDto.getViewerId(), dateCount));
 					});
 
 					if (viewerPolicyEntities != null && !viewerPolicyEntities.isEmpty()) {
@@ -92,7 +90,7 @@ public class ViewerPolicyServiceImpl implements ViewerPolicyService {
 						List<ViewerPolicyEntity> viewerPolicyEntities = new ArrayList<>();
 						packageEntityNew.getPackagePoliciesEntities().forEach(e -> {
 							viewerPolicyEntities.add(getViewerPolicyEntity(packageEntityNew, e, newViewerPackageEntity,
-									viewerPolicyUpdateRequestDto.getViewerId()));
+									viewerPolicyUpdateRequestDto.getViewerId(),dateCount));
 						});
 
 						if (viewerPolicyEntities != null && !viewerPolicyEntities.isEmpty()) {
@@ -128,7 +126,7 @@ public class ViewerPolicyServiceImpl implements ViewerPolicyService {
 	}
 
 	public ViewerPolicyEntity getViewerPolicyEntity(PackageEntity packageEntity,
-			PackagePolicyEntity packagePolicyEntity, ViewerPackageEntity viewerPackageEntity, Integer viewerId) {
+			PackagePolicyEntity packagePolicyEntity, ViewerPackageEntity viewerPackageEntity, Integer viewerId, Integer dateCount) {
 		ViewerPolicyEntity entity = new ViewerPolicyEntity();
 
 		entity.setPolicyEntity(packagePolicyEntity.getPolicyEntity());
@@ -138,7 +136,12 @@ public class ViewerPolicyServiceImpl implements ViewerPolicyService {
 		entity.setViewerPackageEntity(viewerPackageEntity);
 		Calendar c = Calendar.getInstance();
 		c.setTime(new Date());
-		c.add(Calendar.DATE, packageEntity.getAvailableDays());
+		if(dateCount > 0) {
+			c.add(Calendar.DATE, dateCount);
+		} else {
+			c.add(Calendar.DATE, packageEntity.getAvailableDays());
+		}
+		
 		entity.setEndDate(c.getTime());
 		entity.setLastUpdated(new Date());
 		return entity;

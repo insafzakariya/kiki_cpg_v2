@@ -212,7 +212,7 @@ public class IdeabizServiceImpl implements IdeabizService {
 				if (packageId > 0) {
 					if (viewerPolicyService
 							.updateViewerPolicy(
-									viewerPolicyService.getViewerPolicyUpdateRequestDto(viewerId, packageId))
+									viewerPolicyService.getViewerPolicyUpdateRequestDto(viewerId, packageId), -1)
 							.equalsIgnoreCase("success")) {
 						
 						IdeabizEntity ideabizEntity = updateIdeabizPolicyExpDate(viewerId, dates.get(dates.size() - 1),

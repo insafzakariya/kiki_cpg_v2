@@ -224,7 +224,7 @@ public class MobitelServiceImpl implements MobitelService {
 				dto.setPackageId(packageId);
 				dto.setViewerId(viewerId);
 				viewerService.updateViewerMobileNumber(mobileNo, viewerId);
-				if (viewerPolicyService.updateViewerPolicy(dto).equalsIgnoreCase("success")) {
+				if (viewerPolicyService.updateViewerPolicy(dto, -1).equalsIgnoreCase("success")) {
 					if (subscriptionService.updateStatus(subscriptionPaymentId)) {
 						if (viewerSubscriptionService.updateViewerSubscription(viewerId,
 								SubscriptionType.MOBITEL_ADD_TO_BILL, new Date(), mobileNo)) {
@@ -397,7 +397,7 @@ public class MobitelServiceImpl implements MobitelService {
 				dto.setPackageId(packageId);
 				dto.setViewerId(viewerId);
 				// viewerService.updateViewerMobileNumber(mobileNo, viewerId);
-				if (viewerPolicyService.updateViewerPolicy(dto).equalsIgnoreCase("success")) {
+				if (viewerPolicyService.updateViewerPolicy(dto, -1).equalsIgnoreCase("success")) {
 					resp = "success";
 				} else {
 					resp = "Policy update Error";

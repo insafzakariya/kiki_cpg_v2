@@ -46,7 +46,7 @@ public class ScratchCardServiceImpl implements ScratchCardService {
 					policyUpdateRequestDto.setViewerId(scratchCardPaymentDto.getViewerId());
 					policyUpdateRequestDto.setPackageId(scratchCardCodeEntity.getTblScratchCardEntity().getPackageID());
 
-					resp = viewerPolicyService.updateViewerPolicy(policyUpdateRequestDto);
+					resp = viewerPolicyService.updateViewerPolicy(policyUpdateRequestDto, -1);
 
 				} else {
 					resp = "Could not update the package";

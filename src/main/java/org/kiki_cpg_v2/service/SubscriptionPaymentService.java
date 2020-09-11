@@ -11,4 +11,11 @@ public interface SubscriptionPaymentService {
 
 	boolean updateStatus(Integer subscriptionPaymentId);
 
+	/**
+	 * @param token
+	 * @return
+	 * @throws Exception
+	 */
+	public boolean validateSubscriptionPaymentByToken(String token) throws Exception;
+
 }

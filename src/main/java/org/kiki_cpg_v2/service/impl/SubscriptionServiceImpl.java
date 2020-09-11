@@ -5,18 +5,23 @@ package org.kiki_cpg_v2.service.impl;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Map;
 import java.util.UUID;
 
 import org.kiki_cpg_v2.dto.PaymentRefDto;
 import org.kiki_cpg_v2.dto.request.TransactionBeginDto;
 import org.kiki_cpg_v2.entity.PaymentMethodPlanEntity;
 import org.kiki_cpg_v2.entity.SubscriptionEntity;
+import org.kiki_cpg_v2.entity.SubscriptionInvoiceEntity;
 import org.kiki_cpg_v2.repository.PaymentMethodPlanRepository;
+import org.kiki_cpg_v2.repository.SubscriptionRepository;
 import org.kiki_cpg_v2.service.SubscriptionService;
 import org.kiki_cpg_v2.util.AppConstant;
 import org.kiki_cpg_v2.util.AppUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import net.bytebuddy.utility.RandomString;
 
 /**
  * @author Anjana Thrishakya
@@ -30,15 +35,24 @@ public class SubscriptionServiceImpl implements SubscriptionService{
 	@Autowired
 	private PaymentMethodPlanRepository paymentMethodPlanRepository;
 	
+	@Autowired
+	private SubscriptionRepository subscriptionRepository;
+	
 	@Override
 	public SubscriptionEntity getSubsctiptionEntity(TransactionBeginDto transactionBeginDto,
 			PaymentRefDto paymentRefDto, String type) {
-		SubscriptionEntity entity = new SubscriptionEntity();
+		SubscriptionEntity entity = subscriptionRepository.findFirstByViewerIdAndStatusAndSubscribe(transactionBeginDto.getViewerId(), AppConstant.ACTIVE, AppConstant.ACTIVE);
+		
+		if(entity == null) {
+			entity = new SubscriptionEntity();
+		}
+		
 		entity.setAmount(paymentRefDto.getAmount());
 		entity.setCreateDate(new Date());
 		entity.setMobile("+94" + appUtility.getNineDigitMobileNumber(transactionBeginDto.getMobileNo()));
 		entity.setPaymentPlan(transactionBeginDto.getPlanId());
 		entity.setStatus(AppConstant.ACTIVE);
+		entity.setSubscribe(AppConstant.ACTIVE);
 		entity.setSubscribedDays(paymentRefDto.getDays());
 		entity.setType(type);
 		entity.setViewerId(transactionBeginDto.getViewerId());
@@ -72,4 +86,25 @@ public class SubscriptionServiceImpl implements SubscriptionService{
 		return dto;
 	}
 
+	@Override
+	public SubscriptionInvoiceEntity getSubscriptionInvoiceEntity(String mobile, String transactionType,
+			SubscriptionEntity subscriptionEntity, String type) throws Exception {
+
+		String transactionNo = new SimpleDateFormat("yyMMdd").format(new Date()) + RandomString.make(6);
+
+		SubscriptionInvoiceEntity invoiceEntity = new SubscriptionInvoiceEntity();
+		invoiceEntity.setAmount(subscriptionEntity.getAmount());
+		invoiceEntity.setCreatedDate(new Date());
+		invoiceEntity.setDecision(AppConstant.ACCEPT);
+		invoiceEntity.setMobile("+94" + appUtility.getNineDigitMobileNumber(mobile));
+		invoiceEntity.setReferanceNo(UUID.randomUUID().toString());
+		invoiceEntity.setStatus(AppConstant.ACTIVE);
+		invoiceEntity.setSubscribedDays(subscriptionEntity.getSubscribedDays());
+		invoiceEntity.setSuccess(AppConstant.ACTIVE);
+		invoiceEntity.setTransactionNo(transactionNo);
+		invoiceEntity.setTransactionType(transactionType);
+		invoiceEntity.setViewerId(subscriptionEntity.getViewerId());
+		invoiceEntity.setType(type);
+		return invoiceEntity;
+	}
 }

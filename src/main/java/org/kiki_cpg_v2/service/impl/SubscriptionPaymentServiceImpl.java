@@ -160,6 +160,17 @@ public class SubscriptionPaymentServiceImpl implements SubscriptionPaymentServic
 		}
 		return false;
 	}
+	
+	@Override
+	public boolean validateSubscriptionPaymentByToken(String token) throws Exception {
+		Date curDate = new Date();
+		SubscriptionPaymentEntity subscriptionPaymentEntity = subscriptionPaymentRepository
+				.findFirstByTokenHashAndCreatedDateLessThanEqualAndExpireDateGreaterThanEqualAndStatusOrderByIdDesc(token, curDate, curDate, AppConstant.ACTIVE);
+		if(subscriptionPaymentEntity != null) {
+			return true;
+		}
+		return false;
+	}
 
 	@Override
 	public boolean updateStatus(Integer subscriptionPaymentId) {

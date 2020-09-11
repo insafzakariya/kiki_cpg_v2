@@ -6,7 +6,7 @@ import org.kiki_cpg_v2.entity.ViewerPolicyEntity;
 
 public interface ViewerPolicyService {
 
-	String updateViewerPolicy(ViewerPolicyUpdateRequestDto viewerPolicyUpdateRequestDto);
+	String updateViewerPolicy(ViewerPolicyUpdateRequestDto viewerPolicyUpdateRequestDto, Integer dateCount);
 
 	ViewerPolicyUpdateRequestDto getViewerPolicyUpdateRequestDto(Integer viewerId, Integer packageId);
 
