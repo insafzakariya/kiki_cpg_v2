@@ -127,8 +127,12 @@
 			<version>1</version>
 		</dependency>
 
-
-
+		<!-- cybersource-sdk-java -->
+		<dependency>
+			<groupId>com.cybersource</groupId>
+			<artifactId>cybersource-sdk-java</artifactId>
+			<version>6.2.10</version>
+		</dependency>
 
 	</dependencies>
 

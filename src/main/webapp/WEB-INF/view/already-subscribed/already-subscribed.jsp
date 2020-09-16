@@ -90,6 +90,29 @@
                             </div>
                         </a>
                     </c:when>
+                    <c:when test="${subscriptionType eq 'HUTCH'}">
+                        <a id="hutch">
+
+                            <div class="body_frame">
+                                <div class="row">
+                                    <div class="col-xs-4 col-md-4" >
+                                        <div >
+                                            <img  src="/susilawebpay/static/assets/images/dialog-new.jpg" style="height: 40px; margin-top: 5px;"> 
+                                        </div>
+
+                                    </div>
+                                    <div class="col-xs-8 col-md-8" style="padding-right: 20px;" >
+                                        <p style=" text-align: right; "> Hutch </p>
+                                        <p style=" text-align: right; margin-top: -13px;"> <span style="color: red;"> Click to unsubscribe</span> </p>
+                                        <p style=" text-align: right; margin-top: -15px;"> <span style="margin-top: 20px;">Last Payment: ${lastSubscribeDay}</span> </p>
+                                    </div>
+
+
+                                </div>
+                            </div>
+
+                        </a>
+                    </c:when>
                 </c:choose>
             </c:forEach>
             <button type="button" id="btnnewsubscription" class="form_submit">
@@ -187,6 +210,36 @@ $("#card").click(function () {
         subscriptionPaymentId: localStorage.getItem('subscriptionPaymentId'),
         viewerid: localStorage.getItem('viewerId'),
         type: 7,
+        mobile: localStorage.getItem('mobile')
+    }
+
+    $.ajax({
+        type: "post",
+        contentType: "application/json",
+        dataType: 'json',
+        url: baseURL + "/rest/unsubscribe",
+        data: JSON.stringify(data),
+        success: function (resp) {
+            console.log(resp);
+            if (resp.status == 'success') {
+                window.location.replace(baseURL + "/thanks/10");
+            } else {
+                window.location.replace(baseURL + "/error-page?message=" + resp.status);
+            }
+
+        },
+        error: function (e) {
+            console.log(e);
+            window.location.replace(baseURL + "/error-page?message=" + e);
+        }
+    });
+});
+
+$("#hutch").click(function () {
+    var data = {
+        subscriptionPaymentId: localStorage.getItem('subscriptionPaymentId'),
+        viewerid: localStorage.getItem('viewerId'),
+        type: 8,
         mobile: localStorage.getItem('mobile')
     }
 

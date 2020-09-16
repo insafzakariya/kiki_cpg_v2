@@ -21,4 +21,14 @@ public interface SubscriptionInvoiceRepository extends JpaRepository<Subscriptio
 	SubscriptionInvoiceEntity findByViewerIdAndTypeAndStatusAndSuccess(Integer id, String hutch, Integer active,
 			Integer inactive);
 
+	/**
+	 * @param id
+	 * @param active
+	 * @param active2
+	 * @param hutch
+	 * @return
+	 */
+	SubscriptionInvoiceEntity findFirstByViewerIdAndStatusAndSuccessAndType(Integer id, Integer active, Integer active2,
+			String hutch);
+
 }

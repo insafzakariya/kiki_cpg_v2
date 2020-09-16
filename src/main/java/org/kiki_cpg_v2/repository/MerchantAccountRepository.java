@@ -13,4 +13,11 @@ public interface MerchantAccountRepository extends JpaRepository<MerchantAccount
 	 */
 	MerchantAccountEntity findFirstByIsSuccessOrderByIdDesc(boolean b);
 
+	/**
+	 * @param id
+	 * @param b
+	 * @return
+	 */
+	MerchantAccountEntity findFirstByViewerIdAndIsSuccessOrderByIdDesc(Integer id, boolean b);
+
 }

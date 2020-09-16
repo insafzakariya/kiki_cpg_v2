@@ -146,8 +146,6 @@
                                     $("#error-p").text(data.message);
                                     $("#error").removeClass("hide");
                                 }
-
-                              
                             },
                             error: function (e) {
                                 $("#error-p").text('An error occurred while updating payment transaction : ' + e);
@@ -169,7 +167,33 @@
                                         "viewerId": localStorage.getItem("viewerId"),
                                         "planId": localStorage.getItem("planId")
                                     };
-                                    alert("Success");
+                                    $.ajax({
+                                        type: "post",
+                                        contentType: "application/json",
+                                        dataType: 'json',
+                                        url: baseURL + "/hutch/subscribe",
+                                        data: JSON.stringify(data_st2),
+                                        success: function (data) {
+                                        	if(data.status == "ACCEPT"){
+                                        		var url = baseURL + "/thanks/8";
+                                                window.location.replace(url);
+                                        	} else if(data.status == "DUPLICATE"){
+                                        		 $("#error-p").text('Already Subscribed for this service');
+                                                 $("#error").removeClass("hide");
+                                        	} else{
+                                        		 $("#error-p").text('An error occurred while connecting Payment Gateway');
+                                                 console.log('An error occurred while connecting Payment Gateway : ', e);
+                                                 $("#error").removeClass("hide");
+                                        	}
+                                        	
+
+                                        },
+                                        error: function (e) {
+                                            $("#error-p").text('An error occurred while connecting Payment Gateway');
+                                            console.log('An error occurred while connecting Payment Gateway : ', e);
+                                            $("#error").removeClass("hide");
+                                        }
+                                    });
                                 } else {
                                     $("#error-p").text(data.message);
                                     $("#error").removeClass("hide");
