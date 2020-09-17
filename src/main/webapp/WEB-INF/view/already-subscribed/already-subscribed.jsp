@@ -113,6 +113,31 @@
 
                         </a>
                     </c:when>
+                    
+                    <c:when test="${subscriptionType eq 'KEELLS'}">
+                        <a id="keells">
+
+                            <div class="body_frame">
+                                <div class="row">
+                                    <div class="col-xs-4 col-md-4" >
+                                        <div >
+                                            <img  src="/susilawebpay/static/assets/images/Keells.jpg" style="height: 40px; margin-top: 5px;"> 
+                                        </div>
+
+                                    </div>
+                                    <div class="col-xs-8 col-md-8" style="padding-right: 20px;" >
+                                        <p style=" text-align: right; "> KEELLS </p>
+                                        <br>
+                                        <!-- <p style=" text-align: right; margin-top: -13px;"> <span style="color: red;"> Click to unsubscribe</span> </p> -->
+                                        <p style=" text-align: right; margin-top: -15px;"> <span style="margin-top: 20px;">Last Payment: ${lastSubscribeDay}</span> </p>
+                                    </div>
+
+
+                                </div>
+                            </div>
+
+                        </a>
+                    </c:when>
                 </c:choose>
             </c:forEach>
             <button type="button" id="btnnewsubscription" class="form_submit">

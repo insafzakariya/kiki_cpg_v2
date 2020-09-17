@@ -140,8 +140,15 @@ public class SubscriptionPaymentServiceImpl implements SubscriptionPaymentServic
 				}
 
 				if (customerEntity != null) {
-					subscriptionPaymentDto.getSubscriptionTypeList().add("SCRATCH_CARD");
-					subscriptionPaymentDto.setSubscriptionType("SCRATCH_CARD");
+					SubscriptionInvoiceEntity invoiceEntity = subscriptionInvoiceRepository.findFirstByViewerIdAndStatusAndSuccessAndType(viewerEntity.getId(), AppConstant.ACTIVE, AppConstant.ACTIVE, AppConstant.KEELLS);
+
+					if (invoiceEntity != null) {
+						subscriptionPaymentDto.setLastSubscribeDay(
+								new SimpleDateFormat("yyyy-MM-dd").format(invoiceEntity.getCreatedDate()));
+					}
+					
+					subscriptionPaymentDto.getSubscriptionTypeList().add("KEELLS");
+					subscriptionPaymentDto.setSubscriptionType("KEELLS");
 					subscriptionPaymentDto.setAlreadySubscribed(true);
 				}
 
