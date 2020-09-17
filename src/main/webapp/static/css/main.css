@@ -1,0 +1,150 @@
+@charset "ISO-8859-1";
+
+body {
+    background-color: #1a1a1a;
+    font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 95%;
+    text-align: center;
+}
+
+.topbar_container {
+    text-align: left;
+}
+
+.main_container {
+    margin-top: 35px;
+}
+
+.header_container {
+    text-align: center;
+}
+
+.header_container h5.header {
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.header_container p.tagline {
+    color: #ffffff;
+    font-size: 13px;
+}
+
+.body_frame {
+    background-color: #4d4d4d;
+    height: 55px;
+    padding: 10px;
+    border: 2px solid #24A9A6 !important;
+    border-radius: 5px;
+    text-align: left;
+    margin-top: 15px;
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
+.body_frame:hover {
+    background-color: #ffffff;
+}
+
+.body_frame:hover.body_frame p, .body_frame:hover.body_frame p span {
+    color: #000000;
+}
+
+.body_frame img {
+    position: relative;
+    max-height: 55px;
+    left: 0;
+}
+
+.body_frame p {
+    flex: 0 0 70%;
+    display: inline-block;
+    top: 0;
+    bottom: 0;
+    color: #fff;
+    vertical-align: top;
+    font-size: 14px;
+    font-weight: 600;
+    margin-left: 5px;
+}
+
+.body_frame p span {
+    font-size: 12px;
+    font-weight: 300;
+}
+
+.form_submit {
+    background-color: #009b9f;
+    color: #ffffff;
+    margin-top: 25px;
+    width: 100%;
+    text-align: center;
+    border: none;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    border-radius: 2px;
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.form_submit_select {
+    background-color: #1cb76f;
+    color: #ffffff;
+    margin-top: 25px;
+    width: 100%;
+    text-align: center;
+    border: none;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    border-radius: 2px;
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+@media screen and (min-width: 360px) {
+    body {
+        margin-left: auto;
+        margin-right: auto;
+        max-width: 340px;
+        text-align: center;
+    }
+}
+
+/*radio button styles*/
+input[type="radio"] {
+    position: absolute;
+    visibility: hidden;
+}
+
+input:checked+a div.body_frame {
+    background-color: #ffffff;
+}
+
+input:checked+a p {
+    color: #000000;
+}
+
+.body_container {
+    margin-top: 25px;
+}
+
+.main_number_input input {
+    height: 40px;
+    width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+    left: 0;
+    right: 0;
+    display: inline-block;
+    background-color: rgb(204, 204, 204, 0.3);
+    border: none;
+    opacity: 1;
+    color: #ffffff;
+    font-size: 15px;
+    border-radius: 2px;
+    text-align: center;
+}
