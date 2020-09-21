@@ -3,8 +3,6 @@
  */
 package org.kiki_cpg_v2.repository;
 
-import java.util.List;
-
 import org.kiki_cpg_v2.entity.CardInvoiceEntity;
 import org.springframework.data.repository.CrudRepository;
 
@@ -24,5 +22,7 @@ public interface CardInvoiceRepository extends CrudRepository<CardInvoiceEntity,
 	 * @return
 	 */
 	CardInvoiceEntity findFirstByReferanceNo(String referanceNo);
+
+	CardInvoiceEntity findByIdAndDecision(Integer invoiceId, String accept);
 
 }

@@ -11,6 +11,7 @@ public class DialogPaymentConfirmDto {
 	private String result;
 	private String transactionOperationStatus;
 	private String message;
+	private Integer invoiceId;
 
 	public String getStatusCode() {
 		return statusCode;
@@ -82,6 +83,14 @@ public class DialogPaymentConfirmDto {
 
 	public void setAccessCode(String accessCode) {
 		this.accessCode = accessCode;
+	}
+
+	public Integer getInvoiceId() {
+		return invoiceId;
+	}
+
+	public void setInvoiceId(Integer invoiceId) {
+		this.invoiceId = invoiceId;
 	}
 
 }

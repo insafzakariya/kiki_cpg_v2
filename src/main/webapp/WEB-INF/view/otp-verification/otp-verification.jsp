@@ -70,7 +70,6 @@
 
                     var x = document.getElementById("gif-load");
                     x.style.display = "block";
-
                     if (methodId == 4) {
                         $.ajax({
                             type: "post",
@@ -79,7 +78,6 @@
                             url: baseURL + "/rest/ideabiz/pin_subscription_confirm",
                             data: JSON.stringify(data_st),
                             success: function (data) {
-
                                 console.log(data);
 
                                 x.style.display = "none";
@@ -89,7 +87,8 @@
                                     $("#error-p").text(data.message);
                                     $("#error").removeClass("hide");
                                 } else {
-                                    var url = baseURL + "/thanks/4";
+                                	localStorage.setItem("invoiceId",data.invoiceId);
+                                    var url = baseURL + "/notification-email";
                                     window.location.replace(url);
                                 }
                             },
@@ -138,10 +137,6 @@
                                             $("#error").removeClass("hide");
                                         }
                                     });
-
-
-
-
                                 } else {
                                     $("#error-p").text(data.message);
                                     $("#error").removeClass("hide");
