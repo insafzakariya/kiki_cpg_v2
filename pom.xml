@@ -127,6 +127,13 @@
 			<version>1</version>
 		</dependency>
 
+		<!-- https://mvnrepository.com/artifact/com.cybersource/cybersource-sdk-java -->
+		<dependency>
+			<groupId>com.cybersource</groupId>
+			<artifactId>cybersource-sdk-java</artifactId>
+			<version>6.2.10</version>
+		</dependency>
+
 
 
 
