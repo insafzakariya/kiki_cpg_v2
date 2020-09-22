@@ -58,6 +58,7 @@
                 var methodId = localStorage.getItem("methodId");
                 var otp = $('#d1').val();
                 var otp_length = otp.toString().length;
+                localStorage.removeItem("invoiceId");
 
                 if (otp_length == 6) {
                     var data_st = {
@@ -125,6 +126,7 @@
                                             localStorage.setItem('transaction_uuid', data.transactionUUID);
                                             localStorage.setItem('referance_no', data.referanceNo);
                                             localStorage.setItem('card_amount', data.amount);
+                                            localStorage.setItem('invoiceId', data.cardInvoiceId);
                                             console.log(data);
                                             var url = paymentGatewayRedirectURL + "transaction_uuid=" + data.transactionUUID
                                                     + "&referance=" + data.referanceNo + "&amount=" + data.amount + "&frequency=" + data.frequency
@@ -171,6 +173,7 @@
                                         data: JSON.stringify(data_st2),
                                         success: function (data) {
                                         	if(data.status == "ACCEPT"){
+                                        		localStorage.setItem('invoiceId', data.cardInvoiceId);
                                         		var url = baseURL + "/thanks/8";
                                                 window.location.replace(url);
                                         	} else if(data.status == "DUPLICATE"){
@@ -223,6 +226,7 @@
                                         url: baseURL + "/keells/begin",
                                         data: JSON.stringify(data_st2),
                                         success: function (data) {
+                                    		localStorage.setItem('invoiceId', data.cardInvoiceId);
                                         	 var url = baseURL + "/thanks/9";
                                             window.location.replace(url);
 

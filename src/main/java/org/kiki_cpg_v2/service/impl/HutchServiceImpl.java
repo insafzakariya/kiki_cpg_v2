@@ -317,6 +317,7 @@ public class HutchServiceImpl implements HutchService {
 		if (subscriptionEntity != null) {
 			subscriptionInvoiceEntity = subscriptionInvoiceRepository.save(subscriptionInvoiceEntity);
 			if (subscriptionInvoiceEntity != null) {
+				paymentRefDto.setCardInvoiceId(subscriptionInvoiceEntity.getId());
 				HutchSubscribeDto hutchSubscribeDto = getHutchSubscribeDto(paymentRefDto, subscriptionEntity,
 						subscriptionInvoiceEntity);
 				HutchResponseDto hutchResponseDto = hutchClient.subscribe(hutchSubscribeDto);
