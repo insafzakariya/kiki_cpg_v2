@@ -95,9 +95,11 @@ public class HNBServiceImpl implements HNBService {
 			}else {
 				throw new Exception("save error");
 			}
-		} 
-
-		if (cardInvoiceRepository.save(cardInvoiceEntity) != null) {
+		}
+		
+		cardInvoiceEntity = cardInvoiceRepository.save(cardInvoiceEntity);
+		if (cardInvoiceEntity != null) {
+			paymentRefDto.setCardInvoiceId(cardInvoiceEntity.getId());
 			return paymentRefDto;
 		} else {
 			throw new Exception("save error");

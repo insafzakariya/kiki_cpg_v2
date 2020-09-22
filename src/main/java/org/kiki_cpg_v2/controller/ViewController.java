@@ -130,5 +130,11 @@ public class ViewController {
 		
 		return view;
 	}
+	
+	@GetMapping(value = "/notification-email")
+	public ModelAndView getEmail(HttpServletRequest request) {
+		ModelAndView view = new ModelAndView("email/notification-email");
+		return view;
+	}
 
 }

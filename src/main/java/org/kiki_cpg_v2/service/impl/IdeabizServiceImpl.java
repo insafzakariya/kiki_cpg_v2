@@ -1,6 +1,7 @@
 package org.kiki_cpg_v2.service.impl;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -32,7 +33,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class IdeabizServiceImpl implements IdeabizService {
-	
+
 	final static Logger logger = LoggerFactory.getLogger(IdeabizServiceImpl.class);
 
 	@Autowired
@@ -74,6 +75,7 @@ public class IdeabizServiceImpl implements IdeabizService {
 		Double amount = paymentMethodService.getPaymentPlanAmount(dialogOtpConfirmDto.getDay(), 4);
 
 		String message = "";
+		Integer invoiceNo = null;
 		if (amount > 0) {
 			DialogOtpDto dialogOtpDto = dialogClient.pinSubscriptionConfirm(dialogOtpConfirmDto, amount, accessToken);
 			System.out.println(dialogOtpDto.toString());
@@ -81,7 +83,6 @@ public class IdeabizServiceImpl implements IdeabizService {
 			if (dialogOtpDto.getStatusCode().equals("SUCCESS")) {
 				String mobileNo = dialogOtpDto.getMsisdn();
 				mobileNo = mobileNo.replace("tel:", "");
-				
 
 				if (dialogOtpDto.getStatus().equals("SUBSCRIBED")) {
 
@@ -90,15 +91,21 @@ public class IdeabizServiceImpl implements IdeabizService {
 					message = "SUBSCRIBED";
 
 					if (ideabizRepository.save(ideabizEntity) != null) {
-						
+
 						if (dialogOtpConfirmDto.isTrial()) {
-							viewerService.updateViewerMobileNumberAndTrial(mobileNo, dialogOtpConfirmDto.getViewerId(), false);
+							viewerService.updateViewerMobileNumberAndTrial(mobileNo, dialogOtpConfirmDto.getViewerId(),
+									false);
 							processTrial(dialogOtpConfirmDto.getViewerId(), mobileNo);
 						} else {
 							viewerService.updateViewerMobileNumber(mobileNo, dialogOtpConfirmDto.getViewerId());
-							String resp = processIdeabizPayment(dialogOtpConfirmDto.getServerRef(),
+
+							List resp = processIdeabizPayment(dialogOtpConfirmDto.getServerRef(),
 									dialogOtpConfirmDto.getViewerId(), dialogOtpConfirmDto.getDay(), mobileNo, amount,
 									true, false, -1);
+							System.out.println("Invoice No " + Integer.valueOf(resp.get(0).toString()));
+							invoiceNo = Integer.valueOf(resp.get(0).toString());
+							if (resp.get(1).toString().equalsIgnoreCase("Success")) {
+							}
 						}
 
 					} else {
@@ -121,17 +128,20 @@ public class IdeabizServiceImpl implements IdeabizService {
 						message = "SUBSCRIBED";
 						if (ideabizRepository.save(ideabizEntity) != null) {
 							if (dialogOtpConfirmDto.isTrial()) {
-								viewerService.updateViewerMobileNumberAndTrial(mobileNo, dialogOtpConfirmDto.getViewerId(), false);
+								viewerService.updateViewerMobileNumberAndTrial(mobileNo,
+										dialogOtpConfirmDto.getViewerId(), false);
 								processTrial(dialogOtpConfirmDto.getViewerId(), mobileNo);
 							} else {
 								viewerService.updateViewerMobileNumber(mobileNo, dialogOtpConfirmDto.getViewerId());
-								String resp = processIdeabizPayment(dialogOtpConfirmDto.getServerRef(),
-										dialogOtpConfirmDto.getViewerId(), dialogOtpConfirmDto.getDay(), mobileNo, amount,
-										true, false, -1);
-								if (resp.equalsIgnoreCase("Success")) {
+
+								List<String> resp = processIdeabizPayment(dialogOtpConfirmDto.getServerRef(),
+										dialogOtpConfirmDto.getViewerId(), dialogOtpConfirmDto.getDay(), mobileNo,
+										amount, true, false, -1);
+								invoiceNo = Integer.valueOf(resp.get(0).toString());
+								if (resp.get(1).toString().equalsIgnoreCase("Success")) {
 								}
 							}
-							
+
 						} else {
 							message = "SUBSCRIBED SAVE ERROR";
 							paymentLogService.createPaymentLog("Dialog", "-",
@@ -156,6 +166,7 @@ public class IdeabizServiceImpl implements IdeabizService {
 			confirmDto.setAccessCode(accessToken);
 			confirmDto.setMsisdn(dialogOtpDto.getMsisdn());
 			confirmDto.setMessage(message);
+			confirmDto.setInvoiceId(invoiceNo);
 
 			return confirmDto;
 
@@ -166,47 +177,46 @@ public class IdeabizServiceImpl implements IdeabizService {
 
 	@Override
 	public void processTrial(Integer viewerId, String mobile) throws Exception {
-		
+
 		System.out.println("TRIAL PROCESSING");
-		
+
 		PackageConfigEntity packageConfigEntity = packageConfigService.getFreeTrialPackageId(3, AppConstant.TRIAL);
 		/*
 		 * if (day == 7) { packageId = 106; } else if (day == 1) { packageId = 81; }
 		 * else if (day == 30) { packageId = 110; } else if (day == 90) { packageId =
 		 * 111; }
 		 */
-		if (packageConfigEntity != null && packageConfigEntity.getPackageId()>0) {
+		if (packageConfigEntity != null && packageConfigEntity.getPackageId() > 0) {
 			Integer packageId = packageConfigEntity.getPackageId();
 			if (viewerPolicyService
-					.updateViewerPolicy(
-							viewerPolicyService.getViewerPolicyUpdateRequestDto(viewerId, packageId), packageConfigEntity.getDays())
+					.updateViewerPolicy(viewerPolicyService.getViewerPolicyUpdateRequestDto(viewerId, packageId),
+							packageConfigEntity.getDays())
 					.equalsIgnoreCase("success")) {
 
-				IdeabizEntity ideabizEntity = updateIdeabizPolicyExpDate(viewerId, packageConfigEntity.getDays() ,
+				IdeabizEntity ideabizEntity = updateIdeabizPolicyExpDate(viewerId, packageConfigEntity.getDays(),
 						new Date());
 				if (ideabizEntity != null) {
-						if (viewerUnsubscriptionService.save(mobile, viewerId, "SUBSCRIBE", "Dialog",
-								true)) {
-							
-							logger.info("Viewer Id : " + viewerId + " Success trial");
-							//return "Success";
-						} else {
-							logger.error("Viewer Id : " + viewerId + " Unsubscription save error");
-							//return "Unsubscription save error";
-						}
+					if (viewerUnsubscriptionService.save(mobile, viewerId, "SUBSCRIBE", "Dialog", true)) {
+
+						logger.info("Viewer Id : " + viewerId + " Success trial");
+						// return "Success";
+					} else {
+						logger.error("Viewer Id : " + viewerId + " Unsubscription save error");
+						// return "Unsubscription save error";
+					}
 				} else {
 					logger.error("Viewer Id : " + viewerId + " Policy Expire Update Error");
-					//return "Policy Expire Update Error";
+					// return "Policy Expire Update Error";
 				}
 			} else {
 				logger.error("Viewer Id : " + viewerId + " Viewer Policy Update Error");
-				//return "Viewer Policy Update Error";
+				// return "Viewer Policy Update Error";
 			}
 		} else {
 			logger.error("Viewer Id : " + viewerId + " Unidentified Package");
-			//return "Unidentified Package";
+			// return "Unidentified Package";
 		}
-		
+
 	}
 
 	@Override
@@ -237,15 +247,18 @@ public class IdeabizServiceImpl implements IdeabizService {
 	}
 
 	@Override
-	public String processIdeabizPayment(String serverRef, Integer viewerId, Integer day, String mobileNo, Double amount,
-			boolean unsubscrideEntityUpdate, boolean isUpdateCronViewer, Integer cronId) throws Exception {
+	public List<String> processIdeabizPayment(String serverRef, Integer viewerId, Integer day, String mobileNo,
+			Double amount, boolean unsubscrideEntityUpdate, boolean isUpdateCronViewer, Integer cronId)
+			throws Exception {
 		List<Date> dates = appUtility.getDatesBetweenUsingJava7(day);
+		List<String> responce = new ArrayList<String>();
 
 //		InvoiceEntity invoiceEntity = invoiceService.createInvoice(AppConstant.IDEABIZ, viewerId, day, amount, mobileNo,
 //				AppConstant.INACTIVE, dates);
 
 		InvoiceEntity invoiceEntity = invoiceService.createInvoice(AppConstant.IDEABIZ, viewerId, day, amount, mobileNo,
 				AppConstant.INACTIVE, null);
+		responce.add(invoiceEntity.getId().toString());
 
 		if (serverRef == null) {
 			serverRef = invoiceEntity.getId().toString();
@@ -279,28 +292,36 @@ public class IdeabizServiceImpl implements IdeabizService {
 									invoiceEntity.getId(), AppConstant.DIALOG) != null) {
 								if (viewerUnsubscriptionService.save(mobileNo, viewerId, "SUBSCRIBE", "Dialog",
 										unsubscrideEntityUpdate)) {
-									return "Success";
+									responce.add("Success");
+									return responce;
 								} else {
-									return "Unsubscription save error";
+									responce.add("Unsubscription save error");
+									return responce;
 								}
 							} else {
-								return "Payment Details save error";
+								responce.add("Payment Details save error");
+								return responce;
 							}
 						} else {
-							return "Policy Expire Update Error";
+							responce.add("Policy Expire Update Error");
+							return responce;
 						}
 					} else {
-						return "Viewer Policy Update Error";
+						responce.add("Viewer Policy Update Error");
+						return responce;
 					}
 				} else {
-					return "Unidentified Package";
+					responce.add("Unidentified Package");
+					return responce;
 				}
 			} else {
-				return "Invoice Not Updated";
+				responce.add("Invoice Not Updated");
+				return responce;
 			}
 
 		} else {
-			return "Payment Confirmation Error";
+			responce.add("Payment Confirmation Error");
+			return responce;
 		}
 	}
 

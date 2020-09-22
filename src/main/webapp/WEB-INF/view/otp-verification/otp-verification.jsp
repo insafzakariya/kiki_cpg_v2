@@ -62,6 +62,7 @@
             	var isTrial = localStorage.getItem('isFreeTrial');
                 var otp = $('#d1').val();
                 var otp_length = otp.toString().length;
+                localStorage.removeItem("invoiceId");
 
                 if (otp_length == 6) {
                     var data_st = {
@@ -75,7 +76,6 @@
 
                     var x = document.getElementById("gif-load");
                     x.style.display = "block";
-
                     if (methodId == 4) {
                         $.ajax({
                             type: "post",
@@ -84,7 +84,6 @@
                             url: baseURL + "/rest/ideabiz/pin_subscription_confirm",
                             data: JSON.stringify(data_st),
                             success: function (data) {
-
                                 console.log(data);
 
                                 x.style.display = "none";
@@ -94,6 +93,8 @@
                                     $("#error-p").text(data.message);
                                     $("#error").removeClass("hide");
                                 } else {
+                                	localStorage.setItem("invoiceId",data.invoiceId);
+                                    //var url = baseURL + "/notification-email";
                                     var url = baseURL + "/thanks/4";
                                     window.location.replace(url);
                                 }
@@ -130,6 +131,7 @@
                                             localStorage.setItem('transaction_uuid', data.transactionUUID);
                                             localStorage.setItem('referance_no', data.referanceNo);
                                             localStorage.setItem('card_amount', data.amount);
+                                            localStorage.setItem('invoiceId', data.cardInvoiceId);
                                             console.log(data);
                                             var url = paymentGatewayRedirectURL + "transaction_uuid=" + data.transactionUUID
                                                     + "&referance=" + data.referanceNo + "&amount=" + data.amount + "&frequency=" + data.frequency
@@ -143,10 +145,6 @@
                                             $("#error").removeClass("hide");
                                         }
                                     });
-
-
-
-
                                 } else {
                                     $("#error-p").text(data.message);
                                     $("#error").removeClass("hide");
@@ -180,6 +178,7 @@
                                         data: JSON.stringify(data_st2),
                                         success: function (data) {
                                         	if(data.status == "ACCEPT"){
+                                        		localStorage.setItem('invoiceId', data.cardInvoiceId);
                                         		var url = baseURL + "/thanks/8";
                                                 window.location.replace(url);
                                         	} else if(data.status == "DUPLICATE"){
@@ -232,6 +231,7 @@
                                         url: baseURL + "/keells/begin",
                                         data: JSON.stringify(data_st2),
                                         success: function (data) {
+                                    		localStorage.setItem('invoiceId', data.cardInvoiceId);
                                         	 var url = baseURL + "/thanks/9";
                                             window.location.replace(url);
 
