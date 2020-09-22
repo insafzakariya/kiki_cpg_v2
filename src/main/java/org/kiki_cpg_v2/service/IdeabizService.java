@@ -17,9 +17,16 @@ public interface IdeabizService {
 
 	IdeabizEntity getIdeabizEntity(Integer viewerId, String mobileNo, Integer day) throws Exception;
 
-	IdeabizEntity updateIdeabizPolicyExpDate(Integer viewerId, Date valiedDate, Date createDate) throws Exception;
+	IdeabizEntity updateIdeabizPolicyExpDate(Integer viewerId, Integer valiedDate, Date createDate) throws Exception;
 
 	boolean processUnsubscriptionIdeabiz(String accessToken, Integer viewerId, String mobileNo, boolean unsubscribeFromDialog) throws Exception;
+
+	/**
+	 * @param viewerId
+	 * @param mobile
+	 * @throws Exception
+	 */
+	void processTrial(Integer viewerId, String mobile) throws Exception;
 
 	
 

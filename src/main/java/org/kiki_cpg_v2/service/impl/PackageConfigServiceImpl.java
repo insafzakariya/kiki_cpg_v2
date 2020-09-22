@@ -32,7 +32,7 @@ public class PackageConfigServiceImpl implements PackageConfigService {
 	}
 
 	@Override
-	public PackageConfigEntity getFreeTrialPackageId(Integer subscribedDays, String hutch) throws Exception {
+	public PackageConfigEntity getFreeTrialPackageId(Integer subscribedDays, String trial) throws Exception {
 		PackageConfigEntity entity = packageConfigRepository.findFirstByType(AppConstant.TRIAL);
 		if (entity != null) {
 			return entity;

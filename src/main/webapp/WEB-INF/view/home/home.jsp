@@ -227,6 +227,7 @@
             localStorage.setItem('packageId', ${subscriptionPaymentDto.getPackageId()});
             localStorage.setItem('tokenHash', "${subscriptionPaymentDto.getTokenHash()}");
             localStorage.setItem('mobile', "${subscriptionPaymentDto.getMobile()}");
+            localStorage.setItem('isFreeTrial', "${isFreeTrial}");
         }
 
         $('#button3').click(function () {

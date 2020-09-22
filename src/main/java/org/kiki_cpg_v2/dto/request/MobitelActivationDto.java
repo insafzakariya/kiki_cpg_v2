@@ -7,6 +7,7 @@ public class MobitelActivationDto {
 	private String mobileNo;
 	private Integer subscriptionPaymentId;
 	private Integer days;
+	private boolean trial;
 
 	public Integer getViewerId() {
 		return viewerId;
@@ -46,6 +47,21 @@ public class MobitelActivationDto {
 
 	public void setDays(Integer days) {
 		this.days = days;
+	}
+
+	public boolean isTrial() {
+		return trial;
+	}
+
+	public void setTrial(boolean trial) {
+		this.trial = trial;
+	}
+
+	@Override
+	public String toString() {
+		return "MobitelActivationDto [viewerId=" + viewerId + ", activationStatus=" + activationStatus + ", mobileNo="
+				+ mobileNo + ", subscriptionPaymentId=" + subscriptionPaymentId + ", days=" + days + ", trial=" + trial
+				+ "]";
 	}
 
 }

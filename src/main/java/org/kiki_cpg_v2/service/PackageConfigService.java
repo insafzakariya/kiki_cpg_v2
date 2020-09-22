@@ -24,6 +24,6 @@ public interface PackageConfigService {
 	 * @return
 	 * @throws Exception 
 	 */
-	PackageConfigEntity getFreeTrialPackageId(Integer subscribedDays, String hutch) throws Exception;
+	PackageConfigEntity getFreeTrialPackageId(Integer subscribedDays, String trial) throws Exception;
 
 }

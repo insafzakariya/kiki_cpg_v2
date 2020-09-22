@@ -8,6 +8,20 @@
         <meta name="viewport"
               content="width=device-width, initial-scale=1, shrink-to-fit=no">
         <link rel="stylesheet" type="text/css" href="<c:url value= 'static/css/main.css'/>">
+        <style type="text/css">
+	        ul {
+			  list-style: none;
+			}
+			
+			ul li::before {
+			  content: "\2022";
+			  color: #24A9A6;
+			  font-weight: bold;
+			  display: inline-block; 
+			  width: 1em;
+			  margin-left: -1em;
+			}
+		</style>
     </head>
     <body onload="initialize()">
         <div class="main_container">
@@ -17,9 +31,29 @@
             </div>
             <div class="body_container" style="padding: 10px;">
                 <div id="package_type_container">
-                 <div style="background: #24A9A6; height: 2px; margin-bottom: 20px;"></div>
+                 	<div style="background: #24A9A6; height: 2px; margin-bottom: 20px;"></div>
+               
                
                 
+                </div>
+                <div id="div-trial" class="hide" style="margin-top: 20px;">
+                	
+                	<div id="div-telco" class="hide" style="color: white; text-align: left;">
+                		<ul>
+                			<li>Subscribe to enjoy a 3 days free trial</li>
+                			<li>You wan't be charged until after your trial ends</li>
+                			<li>Cancle anytime</li>
+                		</ul>
+                	</div>
+                	<div id="div-hnb" class="hide">
+                		<span style="color: red; text-align: center;">Please note that free trial for Card Payment is currently unavailable.</span>
+                	</div>
+                	<div id="div-keells" class="hide">
+                		<span style="color: red; text-align: center;">Please note that free trial is not available for Keells pay.</span>
+                	</div>
+                
+                	<div style="background: #24A9A6; height: 2px; margin-bottom: 20px; margin-top: 20px;"></div>
+	               	
                 </div>
 
             </div>
@@ -30,6 +64,21 @@
         type="text/javascript"></script>
         <script type="text/javascript">
         function initialize() {
+        	var isTrial = false;
+        	if(localStorage.getItem('isFreeTrial') == "true") {
+        		$("#div-trial").removeClass("hide");
+        		if(localStorage.getItem('paymentId') == '4' || localStorage.getItem('paymentId') == '5' ||
+        			 localStorage.getItem('paymentId') == '8'){
+        			$("#div-telco").removeClass("hide");
+        			isTrial = true;
+        		}
+        		if(localStorage.getItem('paymentId') == '7'){
+           			$("#div-hnb").removeClass("hide");
+           		}
+        		if(localStorage.getItem('paymentId') == '9'){
+           			$("#div-keells").removeClass("hide");
+           		}
+        	}
 
             var paymentId = localStorage.getItem('paymentId');
 
@@ -66,7 +115,14 @@
                                     + item.offer
                                     + "</span>";
                         }
-                        inner += "</p></div></div>";
+                        inner += "</p>"
+                        
+                        if(isTrial){
+                        	 inner += "<p style=\"float: right; color: #FFD800;\">"+ item.trialText+ 
+                        	 "<br/><span style=\"color: #FFD800; font-size: 0.8em;\">Free Trial</span></p>"
+                        }
+                        
+                        inner +="</div></div>";
 
                     });
                     console.log(inner);

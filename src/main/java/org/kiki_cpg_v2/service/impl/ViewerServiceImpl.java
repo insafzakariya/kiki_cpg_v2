@@ -24,5 +24,13 @@ public class ViewerServiceImpl implements ViewerService{
 		viewerEntity.setMobileNumber("+94" + appUtility.getNineDigitMobileNumber(mobileNo));
 		return viewerRepository.save(viewerEntity);
 	}
+	
+	@Override
+	public ViewerEntity updateViewerMobileNumberAndTrial(String mobileNo, Integer viewerId, boolean trial) {
+		ViewerEntity viewerEntity=viewerRepository.findById(viewerId).get();
+		viewerEntity.setMobileNumber("+94" + appUtility.getNineDigitMobileNumber(mobileNo));
+		viewerEntity.setTrialActivate(trial);
+		return viewerRepository.save(viewerEntity);
+	}
 
 }

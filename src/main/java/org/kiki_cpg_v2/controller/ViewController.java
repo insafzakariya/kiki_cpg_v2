@@ -39,6 +39,7 @@ public class ViewController {
 
 		try {
 			ModelAndView view = viewService.navigateHome(paymentToken, type);
+			view.addObject("isFreeTrial", isFreeTrial);
 			return view;
 		} catch (Exception e) {
 			e.printStackTrace();

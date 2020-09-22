@@ -45,6 +45,7 @@
         <script src="<c:url value='/static/js/globle.js'/>"
         type="text/javascript"></script>
         <script type="text/javascript">
+        
 
             $("#d1").keyup(function () {
                 $("#error").addClass("hide");
@@ -56,6 +57,9 @@
                 var day = localStorage.getItem("day");
                 var viewerId = localStorage.getItem("viewerId");
                 var methodId = localStorage.getItem("methodId");
+                
+
+            	var isTrial = localStorage.getItem('isFreeTrial');
                 var otp = $('#d1').val();
                 var otp_length = otp.toString().length;
 
@@ -65,7 +69,8 @@
                         "serverRef": serverRef,
                         "subscriptionPaymentId": subscriptionPaymentId,
                         "day": day,
-                        "viewerId": viewerId
+                        "viewerId": viewerId,
+                        "trial" : isTrial
                     };
 
                     var x = document.getElementById("gif-load");

@@ -35,6 +35,10 @@ public class PaymentMethodPlanEntity {
 	private PaymentMethodEntity paymentMethodEntity;
 
 	private String serviceCode;
+	
+	private String trialText;
+	
+	private Integer trialDays;
 
 	public String getServiceCode() {
 		return serviceCode;
@@ -90,6 +94,22 @@ public class PaymentMethodPlanEntity {
 
 	public void setPaymentMethodEntity(PaymentMethodEntity paymentMethodEntity) {
 		this.paymentMethodEntity = paymentMethodEntity;
+	}
+
+	public String getTrialText() {
+		return trialText;
+	}
+
+	public void setTrialText(String trialText) {
+		this.trialText = trialText;
+	}
+
+	public Integer getTrialDays() {
+		return trialDays;
+	}
+
+	public void setTrialDays(Integer trialDays) {
+		this.trialDays = trialDays;
 	}
 
 }
