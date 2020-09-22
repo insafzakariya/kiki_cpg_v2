@@ -88,7 +88,8 @@
                                     $("#error").removeClass("hide");
                                 } else {
                                 	localStorage.setItem("invoiceId",data.invoiceId);
-                                    var url = baseURL + "/notification-email";
+                                    //var url = baseURL + "/notification-email";
+                                    var url = baseURL + "/thanks/4";
                                     window.location.replace(url);
                                 }
                             },
