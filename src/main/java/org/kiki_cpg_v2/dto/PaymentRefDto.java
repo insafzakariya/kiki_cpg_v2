@@ -16,6 +16,7 @@ public class PaymentRefDto {
 	private String frequency;
 	private String date;
 	private String serviceCode;
+	private Integer cardInvoiceId;
 
 	public String getFrequency() {
 		return frequency;
@@ -79,6 +80,14 @@ public class PaymentRefDto {
 
 	public void setServiceCode(String serviceCode) {
 		this.serviceCode = serviceCode;
+	}
+
+	public Integer getCardInvoiceId() {
+		return cardInvoiceId;
+	}
+
+	public void setCardInvoiceId(Integer cardInvoiceId) {
+		this.cardInvoiceId = cardInvoiceId;
 	}
 
 }

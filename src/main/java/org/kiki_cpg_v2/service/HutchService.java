@@ -35,13 +35,6 @@ public interface HutchService {
 	 * @return
 	 * @throws Exception
 	 */
-	Map<String, String> deactivation(Map<String, String> requestMap) throws Exception;
-
-	/**
-	 * @param requestMap
-	 * @return
-	 * @throws Exception
-	 */
 	Map<String, String> subscribe(Map<String, String> requestMap) throws Exception;
 
 	/**
@@ -87,5 +80,12 @@ public interface HutchService {
 	 */
 	HutchSubscribeDto getHutchSubscribeDto(PaymentRefDto paymentRefDto, SubscriptionEntity subscriptionEntity,
 			SubscriptionInvoiceEntity subscriptionInvoiceEntity) throws Exception;
+
+	/**
+	 * @param viewerid
+	 * @param mobile
+	 * @return
+	 */
+	boolean processUnsubscription(Integer viewerid, String mobile) throws Exception;
 
 }

@@ -26,7 +26,7 @@ public interface SubscriptionService {
 	 * @param d
 	 * @return
 	 */
-	PaymentRefDto getPaymentRefDto(TransactionBeginDto transactionBeginDto, int i, double d);
+	PaymentRefDto getPaymentRefDto(TransactionBeginDto transactionBeginDto, int days, double value);
 
 	/**
 	 * @param mobile

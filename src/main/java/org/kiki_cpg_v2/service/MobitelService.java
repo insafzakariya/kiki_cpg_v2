@@ -3,6 +3,7 @@ package org.kiki_cpg_v2.service;
 import java.util.Date;
 
 import org.kiki_cpg_v2.entity.MerchantAccountEntity;
+import org.kiki_cpg_v2.entity.SubscriptionEntity;
 import org.kiki_cpg_v2.enums.SubscriptionType;
 import org.kiki_cpg_v2.enums.TransactionType;
 
@@ -14,12 +15,12 @@ public interface MobitelService {
 			throws Exception;
 
 	String pay(String mobileNo, Integer viewerId, String activationStatus, Integer subscriptionPaymentId,
-			Integer subscribedDays) throws Exception;
+			Integer subscribedDays, Integer planId) throws Exception;
 
 	MerchantAccountEntity getMerchantAccountEntity(int lastTransaciontId, double amount,
 			TransactionType transactionType, Integer viewerId, boolean b) throws Exception;
 
-	String activateDataBundle(String mobileNo, Integer viewerId, String activationStatus, boolean isUpdateCronViewer,
+	String activateDataBundle(String mobileNo, SubscriptionEntity subscriptionEntity, boolean isUpdateCronViewer,
 			Integer cronId) throws Exception;
 
 	String proceedPayment(Integer viewerId, Integer subscribedDays, String mobileNo, Integer subscriptionPaymentId)

@@ -17,4 +17,11 @@ public interface HutchClient {
 	 */
 	HutchResponseDto subscribe(HutchSubscribeDto hutchSubscribeDto);
 
+	/**
+	 * @param mobile
+	 * @param serviceCode
+	 * @return
+	 */
+	HutchResponseDto unsubscribe(String mobile, String serviceCode);
+
 }

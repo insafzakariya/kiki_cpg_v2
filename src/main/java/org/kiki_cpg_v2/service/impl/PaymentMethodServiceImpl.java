@@ -49,6 +49,8 @@ public class PaymentMethodServiceImpl implements PaymentMethodService{
 		dto.setOffer(e.getOffer());
 		dto.setPaymentMethodId(paymentMethodId);
 		dto.setDay(e.getDays());
+		dto.setTrialDays(e.getTrialDays());
+		dto.setTrialText(e.getTrialText());
 		
 		System.out.println(dto.getAmount());
 

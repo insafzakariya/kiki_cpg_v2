@@ -103,11 +103,11 @@ public class CronServiceImpl implements CronService {
 						Double amount = paymentMethodService.getPaymentPlanAmount(ideabizViewerCusrtomEntity.getDays(),
 								4);
 						try {
-							String resp = ideabizService.processIdeabizPayment(null,
+							List resp = ideabizService.processIdeabizPayment(null,
 									ideabizViewerCusrtomEntity.getViewerId(), ideabizViewerCusrtomEntity.getDays(),
 									ideabizViewerCusrtomEntity.getMobile(), amount, false, true,
 									cronReportEntity.getCronId());
-							if (resp.equalsIgnoreCase("Success")) {
+							if (resp.get(1).toString().equalsIgnoreCase("Success")) {
 								transactionCount += 1;
 							}
 						} catch (Exception e) {

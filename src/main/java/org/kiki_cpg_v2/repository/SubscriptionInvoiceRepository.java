@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 /**
  * @author Anjana Thrishakya
  */
-public interface SubscriptionInvoiceRepository extends JpaRepository<SubscriptionInvoiceEntity, Integer>{
+public interface SubscriptionInvoiceRepository extends JpaRepository<SubscriptionInvoiceEntity, Integer> {
 
 	/**
 	 * @param id
@@ -20,5 +20,17 @@ public interface SubscriptionInvoiceRepository extends JpaRepository<Subscriptio
 	 */
 	SubscriptionInvoiceEntity findByViewerIdAndTypeAndStatusAndSuccess(Integer id, String hutch, Integer active,
 			Integer inactive);
+
+	/**
+	 * @param id
+	 * @param active
+	 * @param active2
+	 * @param hutch
+	 * @return
+	 */
+	SubscriptionInvoiceEntity findFirstByViewerIdAndStatusAndSuccessAndType(Integer id, Integer active, Integer active2,
+			String hutch);
+
+	SubscriptionInvoiceEntity findByIdAndTypeAndDecision(Integer id, String accept, String hutch);
 
 }

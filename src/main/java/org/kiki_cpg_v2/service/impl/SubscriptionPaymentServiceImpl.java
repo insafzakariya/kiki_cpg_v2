@@ -9,6 +9,8 @@ import org.kiki_cpg_v2.entity.CustomerEntity;
 import org.kiki_cpg_v2.entity.IdeabizEntity;
 import org.kiki_cpg_v2.entity.InvoiceEntity;
 import org.kiki_cpg_v2.entity.MerchantAccountEntity;
+import org.kiki_cpg_v2.entity.SubscriptionEntity;
+import org.kiki_cpg_v2.entity.SubscriptionInvoiceEntity;
 import org.kiki_cpg_v2.entity.SubscriptionPaymentEntity;
 import org.kiki_cpg_v2.entity.ViewerEntity;
 import org.kiki_cpg_v2.entity.ViewerSubscriptionEntity;
@@ -20,7 +22,9 @@ import org.kiki_cpg_v2.repository.CustomerRepository;
 import org.kiki_cpg_v2.repository.IdeabizRepository;
 import org.kiki_cpg_v2.repository.InvoiceRepository;
 import org.kiki_cpg_v2.repository.MerchantAccountRepository;
+import org.kiki_cpg_v2.repository.SubscriptionInvoiceRepository;
 import org.kiki_cpg_v2.repository.SubscriptionPaymentRepository;
+import org.kiki_cpg_v2.repository.SubscriptionRepository;
 import org.kiki_cpg_v2.repository.ViewerRepository;
 import org.kiki_cpg_v2.repository.ViewerSubscriptionRepository;
 import org.kiki_cpg_v2.repository.ViewerTrialPeriodAssociationRepository;
@@ -34,29 +38,35 @@ import org.springframework.transaction.annotation.Transactional;
 public class SubscriptionPaymentServiceImpl implements SubscriptionPaymentService {
 
 	@Autowired
-	private SubscriptionPaymentRepository subscriptionPaymentRepository;
+	private SubscriptionRepository subscriptionRepository;
 	
+	@Autowired
+	private SubscriptionInvoiceRepository subscriptionInvoiceRepository;
+
+	@Autowired
+	private SubscriptionPaymentRepository subscriptionPaymentRepository;
+
 	@Autowired
 	private ViewerTrialPeriodAssociationRepository viewerTrialPeriodAssociationRepository;
-	
+
 	@Autowired
 	private ViewerSubscriptionRepository viewerSubscriptionRepository;
-	
+
 	@Autowired
 	private IdeabizRepository ideabizRepository;
-	
+
 	@Autowired
 	private CustomerRepository customerRepository;
-	
+
 	@Autowired
 	private ViewerRepository viewerRepository;
-	
+
 	@Autowired
 	private InvoiceRepository invoiceRepository;
-	
+
 	@Autowired
 	private CardDataReository cardDataReository;
-	
+
 	@Autowired
 	private MerchantAccountRepository merchantAccountRepository;
 
@@ -65,49 +75,64 @@ public class SubscriptionPaymentServiceImpl implements SubscriptionPaymentServic
 	public SubscriptionPaymentDto getSubscriptionPaymentDtoByToken(String token, String type) throws Exception {
 		Date curDate = new Date();
 		SubscriptionPaymentEntity subscriptionPaymentEntity = subscriptionPaymentRepository
-				.findOneByTokenHashAndCreatedDateLessThanEqualAndExpireDateGreaterThanEqualAndStatus(token, curDate, curDate, AppConstant.ACTIVE);
-		
-		if(subscriptionPaymentEntity != null) {
+				.findOneByTokenHashAndCreatedDateLessThanEqualAndExpireDateGreaterThanEqualAndStatus(token, curDate,
+						curDate, AppConstant.ACTIVE);
+
+		if (subscriptionPaymentEntity != null) {
 			ViewerTrialPeriodAssociationEntity viewerTrialPeriodAssociationEntity = viewerTrialPeriodAssociationRepository
 					.findOneByViewerId(subscriptionPaymentEntity.getViewerID());
-			
+
 			ViewerEntity viewerEntity = viewerRepository.findById(subscriptionPaymentEntity.getViewerID()).get();
-			
-			SubscriptionPaymentDto subscriptionPaymentDto = getSubscriptionPaymentDto(subscriptionPaymentEntity, viewerTrialPeriodAssociationEntity, viewerEntity);
-			
-			if(!type.equalsIgnoreCase("new")) {
-				ViewerSubscriptionEntity viewerSubscriptionEntity = viewerSubscriptionRepository.findOneBySubscriptionTypeAndViewers(
-						SubscriptionType.MOBITEL_ADD_TO_BILL, subscriptionPaymentEntity.getViewerID());
-				IdeabizEntity ideabizEntity = ideabizRepository.findOneByViwerIdAndSubscribe(subscriptionPaymentEntity.getViewerID(), AppConstant.ACTIVE);
-				CustomerEntity customerEntity = customerRepository.findOneByViewerIdAndMobileNoAndStatus(subscriptionPaymentEntity.getViewerID(),
-						viewerEntity.getMobileNumber(), DealerSubscriptionType.activated);
-				CardDataEntity cardDataEntity = cardDataReository.findOneByViewerIdAndStatusAndSubscribeOrderByIdDesc(subscriptionPaymentEntity.getViewerID(), AppConstant.ACTIVE, AppConstant.ACTIVE);
-				
+
+			SubscriptionPaymentDto subscriptionPaymentDto = getSubscriptionPaymentDto(subscriptionPaymentEntity,
+					viewerTrialPeriodAssociationEntity, viewerEntity);
+
+			if (!type.equalsIgnoreCase("new")) {
+				ViewerSubscriptionEntity viewerSubscriptionEntity = viewerSubscriptionRepository
+						.findOneBySubscriptionTypeAndViewers(SubscriptionType.MOBITEL_ADD_TO_BILL,
+								subscriptionPaymentEntity.getViewerID());
+				IdeabizEntity ideabizEntity = ideabizRepository
+						.findOneByViwerIdAndSubscribe(subscriptionPaymentEntity.getViewerID(), AppConstant.ACTIVE);
+				CustomerEntity customerEntity = customerRepository.findOneByViewerIdAndMobileNoAndStatus(
+						subscriptionPaymentEntity.getViewerID(), viewerEntity.getMobileNumber(),
+						DealerSubscriptionType.activated);
+				CardDataEntity cardDataEntity = cardDataReository.findOneByViewerIdAndStatusAndSubscribeOrderByIdDesc(
+						subscriptionPaymentEntity.getViewerID(), AppConstant.ACTIVE, AppConstant.ACTIVE);
+
+				SubscriptionEntity hutchSubscriptionEntity = subscriptionRepository
+						.findFirstByViewerIdAndStatusAndSubscribeAndTypeOrderByIdDesc(
+								subscriptionPaymentEntity.getViewerID(), AppConstant.ACTIVE, AppConstant.ACTIVE,
+								AppConstant.HUTCH);
+
 				if (cardDataEntity != null) {
 					subscriptionPaymentDto.getSubscriptionTypeList().add("CREDIT_CARD");
 					subscriptionPaymentDto.setSubscriptionType("CREDIT_CARD");
 					subscriptionPaymentDto.setAlreadySubscribed(true);
-					subscriptionPaymentDto.setLastSubscribeDay(new SimpleDateFormat("yyyy-MM-dd").format(cardDataEntity.getUpdateDate()));
+					subscriptionPaymentDto.setLastSubscribeDay(
+							new SimpleDateFormat("yyyy-MM-dd").format(cardDataEntity.getUpdateDate()));
 				}
-				
+
 				if (ideabizEntity != null) {
-					InvoiceEntity invoiceEntity = invoiceRepository.findFirstBySuccessOrderByIdDesc(AppConstant.ACTIVE);
-					
-					if(invoiceEntity != null) {
-						subscriptionPaymentDto.setLastSubscribeDay(new SimpleDateFormat("yyyy-MM-dd").format(invoiceEntity.getCreatedDate()));
+					InvoiceEntity invoiceEntity = invoiceRepository.findFirstByViewerIdAndSuccessOrderByIdDesc(viewerEntity.getId(), AppConstant.ACTIVE);
+
+					if (invoiceEntity != null) {
+						subscriptionPaymentDto.setLastSubscribeDay(
+								new SimpleDateFormat("yyyy-MM-dd").format(invoiceEntity.getCreatedDate()));
 					}
-					
+
 					subscriptionPaymentDto.getSubscriptionTypeList().add("IDEABIZ");
 					subscriptionPaymentDto.setSubscriptionType("IDEABIZ");
 					subscriptionPaymentDto.setAlreadySubscribed(true);
-					
-				} 
+
+				}
 
 				if (viewerSubscriptionEntity != null) {
-					MerchantAccountEntity merchantAccountEntity = merchantAccountRepository.findFirstByIsSuccessOrderByIdDesc(true);
-					
-					if(merchantAccountEntity != null) {
-						subscriptionPaymentDto.setLastSubscribeDay(new SimpleDateFormat("yyyy-MM-dd").format(merchantAccountEntity.getDate()));
+					MerchantAccountEntity merchantAccountEntity = merchantAccountRepository
+							.findFirstByViewerIdAndIsSuccessOrderByIdDesc(viewerEntity.getId(), true);
+
+					if (merchantAccountEntity != null) {
+						subscriptionPaymentDto.setLastSubscribeDay(
+								new SimpleDateFormat("yyyy-MM-dd").format(merchantAccountEntity.getDate()));
 					}
 					subscriptionPaymentDto.getSubscriptionTypeList().add("MOBITEL");
 					subscriptionPaymentDto.setSubscriptionType("MOBITEL");
@@ -115,18 +140,36 @@ public class SubscriptionPaymentServiceImpl implements SubscriptionPaymentServic
 				}
 
 				if (customerEntity != null) {
-					subscriptionPaymentDto.getSubscriptionTypeList().add("SCRATCH_CARD");
-					subscriptionPaymentDto.setSubscriptionType("SCRATCH_CARD");
+					SubscriptionInvoiceEntity invoiceEntity = subscriptionInvoiceRepository.findFirstByViewerIdAndStatusAndSuccessAndType(viewerEntity.getId(), AppConstant.ACTIVE, AppConstant.ACTIVE, AppConstant.KEELLS);
+
+					if (invoiceEntity != null) {
+						subscriptionPaymentDto.setLastSubscribeDay(
+								new SimpleDateFormat("yyyy-MM-dd").format(invoiceEntity.getCreatedDate()));
+					}
+					
+					subscriptionPaymentDto.getSubscriptionTypeList().add("KEELLS");
+					subscriptionPaymentDto.setSubscriptionType("KEELLS");
 					subscriptionPaymentDto.setAlreadySubscribed(true);
 				}
-				
-				
-				
-				
+
+				if (hutchSubscriptionEntity != null) {
+
+					SubscriptionInvoiceEntity invoiceEntity = subscriptionInvoiceRepository.findFirstByViewerIdAndStatusAndSuccessAndType(viewerEntity.getId(), AppConstant.ACTIVE, AppConstant.ACTIVE, AppConstant.HUTCH);
+
+					if (invoiceEntity != null) {
+						subscriptionPaymentDto.setLastSubscribeDay(
+								new SimpleDateFormat("yyyy-MM-dd").format(invoiceEntity.getCreatedDate()));
+					}
+
+					subscriptionPaymentDto.getSubscriptionTypeList().add("HUTCH");
+					subscriptionPaymentDto.setSubscriptionType("HUTCH");
+					subscriptionPaymentDto.setAlreadySubscribed(true);
+				}
+
 			}
-			
+
 			return subscriptionPaymentDto;
-			
+
 		} else {
 			return null;
 		}
@@ -154,19 +197,21 @@ public class SubscriptionPaymentServiceImpl implements SubscriptionPaymentServic
 	public boolean validateSubscriptionPayment(Integer subscriptionPaymentId) throws Exception {
 		Date curDate = new Date();
 		SubscriptionPaymentEntity subscriptionPaymentEntity = subscriptionPaymentRepository
-				.findOneByIdAndCreatedDateLessThanEqualAndExpireDateGreaterThanEqualAndStatus(subscriptionPaymentId, curDate, curDate, AppConstant.ACTIVE);
-		if(subscriptionPaymentEntity != null) {
+				.findOneByIdAndCreatedDateLessThanEqualAndExpireDateGreaterThanEqualAndStatus(subscriptionPaymentId,
+						curDate, curDate, AppConstant.ACTIVE);
+		if (subscriptionPaymentEntity != null) {
 			return true;
 		}
 		return false;
 	}
-	
+
 	@Override
 	public boolean validateSubscriptionPaymentByToken(String token) throws Exception {
 		Date curDate = new Date();
 		SubscriptionPaymentEntity subscriptionPaymentEntity = subscriptionPaymentRepository
-				.findFirstByTokenHashAndCreatedDateLessThanEqualAndExpireDateGreaterThanEqualAndStatusOrderByIdDesc(token, curDate, curDate, AppConstant.ACTIVE);
-		if(subscriptionPaymentEntity != null) {
+				.findFirstByTokenHashAndCreatedDateLessThanEqualAndExpireDateGreaterThanEqualAndStatusOrderByIdDesc(
+						token, curDate, curDate, AppConstant.ACTIVE);
+		if (subscriptionPaymentEntity != null) {
 			return true;
 		}
 		return false;
@@ -174,15 +219,14 @@ public class SubscriptionPaymentServiceImpl implements SubscriptionPaymentServic
 
 	@Override
 	public boolean updateStatus(Integer subscriptionPaymentId) {
-		SubscriptionPaymentEntity entity = subscriptionPaymentRepository
-				.findById(subscriptionPaymentId).get();
-		if(entity != null) {
+		SubscriptionPaymentEntity entity = subscriptionPaymentRepository.findById(subscriptionPaymentId).get();
+		if (entity != null) {
 			entity.setStatus(2);
 			subscriptionPaymentRepository.save(entity);
 			return true;
 		}
 		return false;
-		
+
 	}
 
 }

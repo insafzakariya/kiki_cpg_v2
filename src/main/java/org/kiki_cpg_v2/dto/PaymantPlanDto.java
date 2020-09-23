@@ -9,7 +9,9 @@ public class PaymantPlanDto {
 	private Integer day;
 	private Integer paymentMethodId;
 	private Double amount;
-
+	private Integer trialDays;
+	private String trialText;
+	
 	public Integer getId() {
 		return id;
 	}
@@ -64,6 +66,22 @@ public class PaymantPlanDto {
 
 	public void setAmount(Double amount) {
 		this.amount = amount;
+	}
+
+	public Integer getTrialDays() {
+		return trialDays;
+	}
+
+	public void setTrialDays(Integer trialDays) {
+		this.trialDays = trialDays;
+	}
+
+	public String getTrialText() {
+		return trialText;
+	}
+
+	public void setTrialText(String trialText) {
+		this.trialText = trialText;
 	}
 
 }

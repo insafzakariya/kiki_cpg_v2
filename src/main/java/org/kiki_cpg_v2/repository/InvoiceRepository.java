@@ -11,4 +11,13 @@ public interface InvoiceRepository extends JpaRepository<InvoiceEntity, Integer>
 	 */
 	InvoiceEntity findFirstBySuccessOrderByIdDesc(Integer active);
 
+	/**
+	 * @param id
+	 * @param active
+	 * @return
+	 */
+	InvoiceEntity findFirstByViewerIdAndSuccessOrderByIdDesc(Integer id, Integer active);
+
+	InvoiceEntity findByIdAndSuccess(Integer invoiceId, Integer success);
+
 }

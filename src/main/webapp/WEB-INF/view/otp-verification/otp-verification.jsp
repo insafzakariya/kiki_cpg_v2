@@ -45,6 +45,7 @@
         <script src="<c:url value='/static/js/globle.js'/>"
         type="text/javascript"></script>
         <script type="text/javascript">
+        
 
             $("#d1").keyup(function () {
                 $("#error").addClass("hide");
@@ -56,8 +57,12 @@
                 var day = localStorage.getItem("day");
                 var viewerId = localStorage.getItem("viewerId");
                 var methodId = localStorage.getItem("methodId");
+                
+
+            	var isTrial = localStorage.getItem('isFreeTrial');
                 var otp = $('#d1').val();
                 var otp_length = otp.toString().length;
+                localStorage.removeItem("invoiceId");
 
                 if (otp_length == 6) {
                     var data_st = {
@@ -65,12 +70,12 @@
                         "serverRef": serverRef,
                         "subscriptionPaymentId": subscriptionPaymentId,
                         "day": day,
-                        "viewerId": viewerId
+                        "viewerId": viewerId,
+                        "trial" : isTrial
                     };
 
                     var x = document.getElementById("gif-load");
                     x.style.display = "block";
-
                     if (methodId == 4) {
                         $.ajax({
                             type: "post",
@@ -79,7 +84,6 @@
                             url: baseURL + "/rest/ideabiz/pin_subscription_confirm",
                             data: JSON.stringify(data_st),
                             success: function (data) {
-
                                 console.log(data);
 
                                 x.style.display = "none";
@@ -89,6 +93,8 @@
                                     $("#error-p").text(data.message);
                                     $("#error").removeClass("hide");
                                 } else {
+                                	localStorage.setItem("invoiceId",data.invoiceId);
+                                    //var url = baseURL + "/notification-email";
                                     var url = baseURL + "/thanks/4";
                                     window.location.replace(url);
                                 }
@@ -125,6 +131,7 @@
                                             localStorage.setItem('transaction_uuid', data.transactionUUID);
                                             localStorage.setItem('referance_no', data.referanceNo);
                                             localStorage.setItem('card_amount', data.amount);
+                                            localStorage.setItem('invoiceId', data.cardInvoiceId);
                                             console.log(data);
                                             var url = paymentGatewayRedirectURL + "transaction_uuid=" + data.transactionUUID
                                                     + "&referance=" + data.referanceNo + "&amount=" + data.amount + "&frequency=" + data.frequency
@@ -138,16 +145,10 @@
                                             $("#error").removeClass("hide");
                                         }
                                     });
-
-
-
-
                                 } else {
                                     $("#error-p").text(data.message);
                                     $("#error").removeClass("hide");
                                 }
-
-                              
                             },
                             error: function (e) {
                                 $("#error-p").text('An error occurred while updating payment transaction : ' + e);
@@ -169,7 +170,34 @@
                                         "viewerId": localStorage.getItem("viewerId"),
                                         "planId": localStorage.getItem("planId")
                                     };
-                                    alert("Success");
+                                    $.ajax({
+                                        type: "post",
+                                        contentType: "application/json",
+                                        dataType: 'json',
+                                        url: baseURL + "/hutch/subscribe",
+                                        data: JSON.stringify(data_st2),
+                                        success: function (data) {
+                                        	if(data.status == "ACCEPT"){
+                                        		localStorage.setItem('invoiceId', data.cardInvoiceId);
+                                        		var url = baseURL + "/thanks/8";
+                                                window.location.replace(url);
+                                        	} else if(data.status == "DUPLICATE"){
+                                        		 $("#error-p").text('Already Subscribed for this service');
+                                                 $("#error").removeClass("hide");
+                                        	} else{
+                                        		 $("#error-p").text('An error occurred while connecting Payment Gateway');
+                                                 console.log('An error occurred while connecting Payment Gateway : ', e);
+                                                 $("#error").removeClass("hide");
+                                        	}
+                                        	
+
+                                        },
+                                        error: function (e) {
+                                            $("#error-p").text('An error occurred while connecting Payment Gateway');
+                                            console.log('An error occurred while connecting Payment Gateway : ', e);
+                                            $("#error").removeClass("hide");
+                                        }
+                                    });
                                 } else {
                                     $("#error-p").text(data.message);
                                     $("#error").removeClass("hide");
@@ -203,6 +231,7 @@
                                         url: baseURL + "/keells/begin",
                                         data: JSON.stringify(data_st2),
                                         success: function (data) {
+                                    		localStorage.setItem('invoiceId', data.cardInvoiceId);
                                         	 var url = baseURL + "/thanks/9";
                                             window.location.replace(url);
 

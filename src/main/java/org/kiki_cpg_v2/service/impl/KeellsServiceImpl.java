@@ -91,7 +91,9 @@ public class KeellsServiceImpl implements KeellsService {
 		if (subscriptionRepository.save(subscriptionEntity) != null) {
 			CustomerEntity customerEntity = customerService.getCustomerEntity(2, subscriptionEntity.getMobile(),
 					subscriptionEntity.getViewerId());
-			if (customerRepository.save(customerEntity) != null) {
+			customerEntity = customerRepository.save(customerEntity);
+			if(customerEntity  != null) {
+				paymentRefDto.setCardInvoiceId(customerEntity.getId());
 				return paymentRefDto;
 			} else {
 				throw new InternalError("CustomerEntity not Saved");

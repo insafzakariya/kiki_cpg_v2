@@ -39,6 +39,7 @@ public class ViewController {
 
 		try {
 			ModelAndView view = viewService.navigateHome(paymentToken, type);
+			view.addObject("isFreeTrial", isFreeTrial);
 			return view;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -127,6 +128,12 @@ public class ViewController {
 	public ModelAndView transactionVerify() {
 		ModelAndView view = new ModelAndView("card-transaction-verify/card-transaction-verify");
 		
+		return view;
+	}
+	
+	@GetMapping(value = "/notification-email")
+	public ModelAndView getEmail(HttpServletRequest request) {
+		ModelAndView view = new ModelAndView("email/notification-email");
 		return view;
 	}
 

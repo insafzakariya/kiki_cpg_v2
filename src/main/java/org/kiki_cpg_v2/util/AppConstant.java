@@ -1,5 +1,7 @@
 package org.kiki_cpg_v2.util;
 
+import java.net.URI;
+
 public class AppConstant {
 
 //	public static final String IDEABIZ_SERVICE_1 = "bf110848-23ca-4b7d-8a3f-872b59bfd32e";
@@ -24,10 +26,14 @@ public class AppConstant {
 	public static final String URL_NOTIFICATION = "http://35.200.234.252:3000/fcm/v1/message";
 	public static final String HNB = "HNB";
 	public static final String ACCEPT = "ACCEPT";
+	public static final String DECLINE = "DECLINE";
 	public static final String HUTCH = "HUTCH";
 
 	public static final String URL_HUTCH_BASE = "http://192.168.192.51:8581/prc";
 	public static final String URL_HUTCH_SUBSCRIBE = URL_HUTCH_BASE + "/subscribeService";
 	public static final String KEELLS = "KEELLS";
+	public static final String TRIAL = "TRIAL";
+	public static final String DUPLICATE = "DUPLICATE";
+	public static final String URL_HUTCH_UNSUBSCRIBE = URL_HUTCH_BASE + "/deactivation";
 
 }

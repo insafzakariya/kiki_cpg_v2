@@ -8,6 +8,24 @@ package org.kiki_cpg_v2.dto.request;
  */
 public class TransactionBeginDto {
 
+	/**
+	 * 
+	 */
+	public TransactionBeginDto() {
+	}
+
+	/**
+	 * @param mobileNo
+	 * @param viewerId
+	 * @param planId
+	 */
+	public TransactionBeginDto(String mobileNo, Integer viewerId, Integer planId) {
+		super();
+		this.mobileNo = mobileNo;
+		this.viewerId = viewerId;
+		this.planId = planId;
+	}
+
 	private String mobileNo;
 	private Integer viewerId;
 	private Integer planId;

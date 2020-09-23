@@ -1,5 +1,6 @@
 @charset "ISO-8859-1";
 
+
 body {
     background-color: #1a1a1a;
     font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
@@ -147,4 +148,8 @@ input:checked+a p {
     font-size: 15px;
     border-radius: 2px;
     text-align: center;
+}
+
+.hide{
+    display: none;
 }

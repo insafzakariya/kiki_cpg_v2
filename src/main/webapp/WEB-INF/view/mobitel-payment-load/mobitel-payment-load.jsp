@@ -27,7 +27,7 @@
     function pay() {
         console.log("load");
 
-
+        var isTrial = localStorage.getItem('isFreeTrial');
         var mobile = localStorage.getItem("mobile");
         var subscriptionPaymentId = localStorage.getItem("subscriptionPaymentId");
         var day = localStorage.getItem("day");
@@ -39,7 +39,8 @@
             activationStatus: 1,
             mobileNo: mobile,
             subscriptionPaymentId: subscriptionPaymentId,
-            days: day
+            days: day,
+            trial : isTrial
         }
         console.log(data);
 

@@ -18,19 +18,19 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class InvoiceServiceImpl implements InvoiceService {
-	
+
 	@Autowired
 	private InvoiceRepository invoiceRepository;
-	
+
 	@Autowired
 	private InvoiceDetailRepository invoiceDetailRepository;
-	
+
 	@Autowired
 	private AppUtility appUtility;
-	
+
 	@Autowired
 	private CronErrorService cronErrorService;
-	
+
 	private static DecimalFormat df2 = new DecimalFormat(".##");
 
 	@Override
@@ -38,15 +38,12 @@ public class InvoiceServiceImpl implements InvoiceService {
 			String mobileNo, Integer status, List<Date> dates) {
 		try {
 
-			
-
 			Date date = new Date();
 
 			Double day_charge = amount / subscribed_days;
 
-			InvoiceEntity invoiceEntity = invoiceRepository.save(getInvoiceEntity(serviceId, viewerId, mobileNo, subscribed_days, amount
-					, status, date));
-			
+			InvoiceEntity invoiceEntity = invoiceRepository
+					.save(getInvoiceEntity(serviceId, viewerId, mobileNo, subscribed_days, amount, status, date));
 
 //			if (invoiceEntity.getId() != null) {
 //				
@@ -60,14 +57,13 @@ public class InvoiceServiceImpl implements InvoiceService {
 //				
 //			}
 
-			
 			return invoiceEntity;
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			
+
 			cronErrorService.create(viewerId, e.getMessage(), e.getLocalizedMessage(), "IS crtInv");
-			
+
 		}
 		return null;
 	}
@@ -80,7 +76,7 @@ public class InvoiceServiceImpl implements InvoiceService {
 		entity.setAmount(Double.parseDouble(df2.format(day_charge)));
 		entity.setCreatedDate(date);
 		entity.setValiedDate(valiedDate);
-		
+
 		return entity;
 	}
 
@@ -88,7 +84,7 @@ public class InvoiceServiceImpl implements InvoiceService {
 	public InvoiceEntity getInvoiceEntity(String serviceId, Integer viewerId, String mobileNo, Integer subscribed_days,
 			Double amount, Integer status, Date date) {
 		InvoiceEntity entity = new InvoiceEntity();
-		
+
 		entity.setServiceId(serviceId);
 		entity.setViewerId(viewerId);
 		entity.setMobile(mobileNo);
@@ -96,16 +92,21 @@ public class InvoiceServiceImpl implements InvoiceService {
 		entity.setAmount(amount);
 		entity.setSuccess(status);
 		entity.setCreatedDate(date);
-		
+
 		return entity;
 	}
 
 	@Override
 	public boolean update(InvoiceEntity invoiceEntity) {
-		if(invoiceRepository.save(invoiceEntity) != null) {
+		if (invoiceRepository.save(invoiceEntity) != null) {
 			return true;
 		}
 		return false;
+	}
+
+	@Override
+	public InvoiceEntity getInvoiceByIdAndSuccess(Integer invoiceId, Integer success) {
+		return invoiceRepository.findByIdAndSuccess(invoiceId, success);
 	}
 
 }

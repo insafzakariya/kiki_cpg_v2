@@ -3,6 +3,7 @@ package org.kiki_cpg_v2.controller;
 import org.kiki_cpg_v2.dto.ResponseMapDto;
 import org.kiki_cpg_v2.dto.UnsubscribeDto;
 import org.kiki_cpg_v2.service.HNBService;
+import org.kiki_cpg_v2.service.HutchService;
 import org.kiki_cpg_v2.service.IdeabizService;
 import org.kiki_cpg_v2.service.MobitelService;
 import org.kiki_cpg_v2.service.SubscriptionPaymentService;
@@ -32,6 +33,9 @@ public class UnsubscribeController {
 	
 	@Autowired
 	private HNBService hnbService;
+	
+	@Autowired
+	private HutchService hutchService;
 
 	@PostMapping(produces = "application/json")
 	@ResponseBody
@@ -66,6 +70,14 @@ public class UnsubscribeController {
 				
 				if (unsubscribeDto.getType() == 7) {
 					res = hnbService.processUnsubscription(unsubscribeDto.getViewerid(),
+							unsubscribeDto.getMobile());
+					if (res) {
+						responseMapDto.setStatus("success");
+					}
+				}
+				
+				if (unsubscribeDto.getType() == 8) {
+					res = hutchService.processUnsubscription(unsubscribeDto.getViewerid(),
 							unsubscribeDto.getMobile());
 					if (res) {
 						responseMapDto.setStatus("success");
