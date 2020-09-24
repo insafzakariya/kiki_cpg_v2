@@ -138,8 +138,8 @@ public class HutchServiceImpl implements HutchService {
 			if (viewerEntity != null) {
 				paymentLogService.createPaymentLog(AppConstant.HUTCH, "", "", viewerEntity.getId(),
 						requestMap.get("MSISDN"), requestMap.toString());
-				SubscriptionEntity subscriptionEntity = subscriptionRepository.findFirstByViewerIdAndStatusAndSubscribe(
-						viewerEntity.getId(), AppConstant.ACTIVE, AppConstant.ACTIVE);
+				SubscriptionEntity subscriptionEntity = subscriptionRepository.findFirstByViewerIdAndStatusAndSubscribeAndType(
+						viewerEntity.getId(), AppConstant.ACTIVE, AppConstant.ACTIVE, AppConstant.HUTCH);
 
 				if (subscriptionEntity != null) {
 					SubscriptionInvoiceEntity invoiceEntity = getSubscriptionInvoiceEntity(requestMap,

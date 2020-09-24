@@ -14,17 +14,13 @@ public interface MobitelService {
 	boolean updateViewerSubscription(Integer viewerid, SubscriptionType none, Date date, String mobile)
 			throws Exception;
 
-	String pay(String mobileNo, Integer viewerId, String activationStatus, Integer subscriptionPaymentId,
-			Integer subscribedDays, Integer planId) throws Exception;
+	String pay(String mobileNo, Integer viewerId, String activationStatus, Integer subscriptionPaymentId, Integer planId) throws Exception;
 
 	MerchantAccountEntity getMerchantAccountEntity(int lastTransaciontId, double amount,
 			TransactionType transactionType, Integer viewerId, boolean b) throws Exception;
 
 	String activateDataBundle(String mobileNo, SubscriptionEntity subscriptionEntity, boolean isUpdateCronViewer,
 			Integer cronId) throws Exception;
-
-	String proceedPayment(Integer viewerId, Integer subscribedDays, String mobileNo, Integer subscriptionPaymentId)
-			throws Exception;
 
 	boolean deactivePreviousViewersByMobile(String mobileNo, Integer viewerId, boolean isTransfer,
 			Integer subscriptionPaymentId, Integer subscribedDays) throws Exception;
@@ -33,5 +29,8 @@ public interface MobitelService {
 			boolean isUpdateCronViewer, Integer cronId) throws Exception;
 
 	String cronProceedPayment(Integer viewerId, Integer subscribedDays, String mobileNo) throws Exception;
+
+	String proceedPayment(Integer viewerId, Integer subscribedDays, String mobileNo, Integer subscriptionPaymentId,
+			Integer planId, SubscriptionEntity subscriptionEntity) throws Exception;
 
 }

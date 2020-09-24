@@ -37,7 +37,7 @@ public class MobitelController {
 			ResponseMapDto dto = new ResponseMapDto();
 			boolean isValied = subscriptionService.validateSubscriptionPayment(mobitelActivationDto.getSubscriptionPaymentId());
 			if(isValied) {
-				String resp = mobitelService.pay(mobitelActivationDto.getMobileNo(), mobitelActivationDto.getViewerId(), mobitelActivationDto.getActivationStatus(),mobitelActivationDto.getSubscriptionPaymentId(), mobitelActivationDto.getDays(), mobitelActivationDto.getPlanId());
+				String resp = mobitelService.pay(mobitelActivationDto.getMobileNo(), mobitelActivationDto.getViewerId(), mobitelActivationDto.getActivationStatus(),mobitelActivationDto.getSubscriptionPaymentId(), mobitelActivationDto.getPlanId());
 				logger.info("response : " + resp);
 				
 				dto.setStatus(resp);

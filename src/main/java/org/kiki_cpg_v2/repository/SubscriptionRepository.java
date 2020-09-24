@@ -3,6 +3,8 @@
  */
 package org.kiki_cpg_v2.repository;
 
+import java.util.List;
+
 import org.kiki_cpg_v2.entity.SubscriptionEntity;
 import org.kiki_cpg_v2.entity.SubscriptionInvoiceEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -39,6 +41,16 @@ public interface SubscriptionRepository extends JpaRepository<SubscriptionEntity
 	 */
 	SubscriptionEntity findFirstByViewerIdAndStatusAndSubscribeAndType(Integer viewerid, Integer active,
 			Integer active2, String hutch);
+
+	/**
+	 * @param id
+	 * @param active
+	 * @param active2
+	 * @param type
+	 * @return
+	 */
+	List<SubscriptionEntity> findByViewerIdAndStatusAndSubscribeAndType(Integer id, Integer active, Integer active2,
+			String type);
 
 
 }

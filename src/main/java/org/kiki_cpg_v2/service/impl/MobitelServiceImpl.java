@@ -23,6 +23,7 @@ import org.kiki_cpg_v2.repository.ViewerSubscriptionRepository;
 import org.kiki_cpg_v2.service.CronViewerRepostService;
 import org.kiki_cpg_v2.service.IDGeneratorService;
 import org.kiki_cpg_v2.service.MobitelService;
+import org.kiki_cpg_v2.service.PackageConfigService;
 import org.kiki_cpg_v2.service.PaymentLogService;
 import org.kiki_cpg_v2.service.SubscriptionPaymentService;
 import org.kiki_cpg_v2.service.SubscriptionService;
@@ -93,6 +94,9 @@ public class MobitelServiceImpl implements MobitelService {
 	@Autowired
 	private IDGeneratorService idGeneratorService;
 	
+	@Autowired
+	private PackageConfigService packageConfigService;
+	
 	
 
 	@Override
@@ -128,17 +132,18 @@ public class MobitelServiceImpl implements MobitelService {
 	@Override
 	@Transactional
 	public String pay(String mobileNo, Integer viewerId, String activationStatus, Integer subscriptionPaymentId,
-			Integer subscribedDays, Integer planId) throws Exception {
+			 Integer planId) throws Exception {
 		logger.info("called to pay");
 		TransactionBeginDto transactionBeginDto = new TransactionBeginDto(mobileNo, viewerId, planId); 
 		PaymentRefDto paymentRefDto = subscriptionService.getPaymentRefDto(transactionBeginDto, -1, -1);
 		SubscriptionEntity subscriptionEntity = subscriptionService.getSubsctiptionEntity(transactionBeginDto, paymentRefDto, AppConstant.MOBITEL); 
 		subscriptionEntity = subscriptionRepository.save(subscriptionEntity);
+		Integer subscribedDays = paymentRefDto.getDays();
 		if(subscriptionEntity != null) {
 			String resp = activateDataBundle(mobileNo, subscriptionEntity, false, null);
 			logger.info("activateDataBundle resp : " + resp);
 			if (resp.equals("1000")) {
-				String paymentResp = proceedPayment(viewerId, subscribedDays, mobileNo, subscriptionPaymentId);
+				String paymentResp = proceedPayment(viewerId, subscribedDays, mobileNo, subscriptionPaymentId, planId, subscriptionEntity);
 				if (paymentResp.equalsIgnoreCase("success")) {
 					try {
 						mobitelClient.updateOneCCTool(true, mobileNo, new Date(), null);
@@ -158,45 +163,21 @@ public class MobitelServiceImpl implements MobitelService {
 				return "Insufficient balance to activate this service";
 			} else if (resp.equals("0005")) {
 				System.out.println("005");
-				/*ViewerSubscriptionEntity entity = viewerSubscriptionRepository.findOneByViewers(viewerId);
-				if (entity != null) {
-					if (entity.getSubscriptionType().equals(SubscriptionType.MOBITEL_ADD_TO_BILL)) {
-						return "Already Subscribed";
-					} else {
-						if (deactivePreviousViewersByMobile(mobileNo, viewerId, true, subscriptionPaymentId,
-								subscribedDays)) {
-							if (viewerSubscriptionService.changeStatus(viewerId, SubscriptionType.MOBITEL_ADD_TO_BILL)) {
-								try {
-									viewerUnsubscriptionService.save(mobileNo, viewerId, "SUBSCRIBE", "Mobitel", false);
-								} catch (Exception e) {
-									e.printStackTrace();
-								}
-								return "Activated";
-							} else {
-								return "Activattion Error";
-							}
-						} else {
-							return "Deactivation Error at Account Transfer.";
+				if(subscriptionEntity.getPolicyExpDate() == null || subscriptionEntity.getPolicyExpDate().getTime() < new Date().getTime()) {
+					String paymentResp = proceedPayment(viewerId, subscribedDays, mobileNo, subscriptionPaymentId, planId, subscriptionEntity);
+					if (paymentResp.equals("success")) {
+						try {
+							viewerUnsubscriptionService.save(mobileNo, viewerId, "SUBSCRIBE", "Mobitel", false);
+						} catch (Exception e) {
+							e.printStackTrace();
 						}
-
+						return "transfered";
+					} else {
+						return paymentResp;
 					}
 				} else {
-					if (deactivePreviousViewersByMobile(mobileNo, viewerId, false, subscriptionPaymentId, subscribedDays)) {
-						String paymentResp = proceedPayment(viewerId, subscribedDays, mobileNo, subscriptionPaymentId);
-						if (paymentResp.equals("success")) {
-							try {
-								viewerUnsubscriptionService.save(mobileNo, viewerId, "SUBSCRIBE", "Mobitel", false);
-							} catch (Exception e) {
-								e.printStackTrace();
-							}
-							return "transfered";
-						} else {
-							return paymentResp;
-						}
-					} else {
-						return "Deactivation Error at Account Transfer.";
-					}
-				}*/
+					return "Already Subscribed";
+				}
 
 			}
 			return "error";
@@ -211,17 +192,11 @@ public class MobitelServiceImpl implements MobitelService {
 			Integer subscriptionPaymentId, Integer subscribedDays) throws Exception {
 		List<ViewerEntity> viewerEntities = viewerRepository.findByIdNotAndMobileNumberEndingWith(viewerId, mobileNo);
 
-		Integer packageId = -1;
-		if (subscribedDays == 1) {
-			packageId = 81;
-
-		} else if (subscribedDays == 7) {
-			packageId = 106;
-		}
+		Integer packageId = packageConfigService.getPackageId(subscribedDays, AppConstant.MOBITEL);
 
 		if (viewerEntities != null && !viewerEntities.isEmpty()) {
 			for (ViewerEntity viewerEntity : viewerEntities) {
-				if (viewerSubscriptionService.inavtive(viewerEntity.getId(), viewerEntity.getMobileNumber())) {
+				if (subscriptionService.inavtive(viewerEntity.getId(), AppConstant.MOBITEL)) {
 					viewerPolicyService.deactivatePolicy(viewerEntity.getId(), viewerId, isTransfer, packageId);
 					if (!viewerPolicyService.checkStatus(viewerId, packageId)) {
 						// proceedPayment(viewerId, subscribedDays, mobileNo, subscriptionPaymentId);
@@ -237,17 +212,11 @@ public class MobitelServiceImpl implements MobitelService {
 
 	@Override
 	public String proceedPayment(Integer viewerId, Integer subscribedDays, String mobileNo,
-			Integer subscriptionPaymentId) throws Exception {
+			Integer subscriptionPaymentId, Integer planId, SubscriptionEntity subscriptionEntity) throws Exception {
 		String resp = "Fail";
 		try {
 
-			Integer packageId = -1;
-			if (subscribedDays == 1) {
-				packageId = 81;
-
-			} else if (subscribedDays == 7) {
-				packageId = 106;
-			}
+			Integer packageId = packageConfigService.getPackageId(subscribedDays, AppConstant.MOBITEL);
 
 			mobileNo = "0" + appUtility.getNineDigitMobileNumber(mobileNo);
 
@@ -256,10 +225,13 @@ public class MobitelServiceImpl implements MobitelService {
 				dto.setPackageId(packageId);
 				dto.setViewerId(viewerId);
 				viewerService.updateViewerMobileNumber(mobileNo, viewerId);
-				if (viewerPolicyService.updateViewerPolicy(dto, -1).equalsIgnoreCase("success")) {
+				if (viewerPolicyService.updateViewerPolicy(dto, subscribedDays).equalsIgnoreCase("success")) {
 					if (subscriptionPaymentService.updateStatus(subscriptionPaymentId)) {
-						if (viewerSubscriptionService.updateViewerSubscription(viewerId,
-								SubscriptionType.MOBITEL_ADD_TO_BILL, new Date(), mobileNo)) {
+						
+						subscriptionEntity.setPolicyExpDate(appUtility.getbeforeDay(subscribedDays, new Date()));
+						subscriptionEntity.setUpdateDate(new Date());
+						
+						if (subscriptionRepository.save(subscriptionEntity)!= null) {
 							resp = "success";
 						} else {
 							resp = "Could not update Viewer Subscription";

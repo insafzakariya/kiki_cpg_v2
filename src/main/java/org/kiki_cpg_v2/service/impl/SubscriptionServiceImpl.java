@@ -5,6 +5,7 @@ package org.kiki_cpg_v2.service.impl;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -41,7 +42,7 @@ public class SubscriptionServiceImpl implements SubscriptionService{
 	@Override
 	public SubscriptionEntity getSubsctiptionEntity(TransactionBeginDto transactionBeginDto,
 			PaymentRefDto paymentRefDto, String type) {
-		SubscriptionEntity entity = subscriptionRepository.findFirstByViewerIdAndStatusAndSubscribe(transactionBeginDto.getViewerId(), AppConstant.ACTIVE, AppConstant.ACTIVE);
+		SubscriptionEntity entity = subscriptionRepository.findFirstByViewerIdAndStatusAndSubscribeAndType(transactionBeginDto.getViewerId(), AppConstant.ACTIVE, AppConstant.ACTIVE, type);
 		
 		if(entity == null) {
 			entity = new SubscriptionEntity();
@@ -106,5 +107,22 @@ public class SubscriptionServiceImpl implements SubscriptionService{
 		invoiceEntity.setViewerId(subscriptionEntity.getViewerId());
 		invoiceEntity.setType(type);
 		return invoiceEntity;
+	}
+
+	@Override
+	public boolean inavtive(Integer id, String type) throws Exception {
+		List<SubscriptionEntity> entities = subscriptionRepository.findByViewerIdAndStatusAndSubscribeAndType(id, AppConstant.ACTIVE, AppConstant.ACTIVE, type);
+		
+		entities.forEach(e-> {
+			e.setSubscribe(AppConstant.INACTIVE);
+			e.setUpdateDate(new Date());
+		});
+		
+		if(subscriptionRepository.saveAll(entities) != null) {
+			return true;
+		}
+		
+		return false;
+		
 	}
 }

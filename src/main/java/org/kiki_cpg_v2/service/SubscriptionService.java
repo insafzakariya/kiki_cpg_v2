@@ -38,4 +38,11 @@ public interface SubscriptionService {
 	SubscriptionInvoiceEntity getSubscriptionInvoiceEntity(String mobile, String transactionType,
 			SubscriptionEntity subscriptionEntity, String type) throws Exception;
 
+	/**
+	 * @param viewerId
+	 * @param type
+	 * @return
+	 */
+	boolean inavtive(Integer viewerId, String type) throws Exception;
+
 }
