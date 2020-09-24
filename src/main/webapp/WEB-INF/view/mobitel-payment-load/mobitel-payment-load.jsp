@@ -32,6 +32,7 @@
         var subscriptionPaymentId = localStorage.getItem("subscriptionPaymentId");
         var day = localStorage.getItem("day");
         var viewerId = localStorage.getItem("viewerId");
+        var planId = localStorage.getItem("planId");
 
         console.log(mobile);
         var data = {
@@ -40,7 +41,8 @@
             mobileNo: mobile,
             subscriptionPaymentId: subscriptionPaymentId,
             days: day,
-            trial : isTrial
+            trial : isTrial,
+            planId : planId
         }
         console.log(data);
 

@@ -3,7 +3,6 @@ package org.kiki_cpg_v2.service.impl;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Random;
 
 import org.kiki_cpg_v2.client.MobitelClient;
 import org.kiki_cpg_v2.dto.PaymentRefDto;
@@ -16,12 +15,13 @@ import org.kiki_cpg_v2.entity.ViewerEntity;
 import org.kiki_cpg_v2.entity.ViewerSubscriptionEntity;
 import org.kiki_cpg_v2.enums.SubscriptionType;
 import org.kiki_cpg_v2.enums.TransactionType;
-import org.kiki_cpg_v2.repository.MerchantAccountRepository;
+/*import org.kiki_cpg_v2.repository.MerchantAccountRepository;*/
 import org.kiki_cpg_v2.repository.SubscriptionInvoiceRepository;
 import org.kiki_cpg_v2.repository.SubscriptionRepository;
 import org.kiki_cpg_v2.repository.ViewerRepository;
 import org.kiki_cpg_v2.repository.ViewerSubscriptionRepository;
 import org.kiki_cpg_v2.service.CronViewerRepostService;
+import org.kiki_cpg_v2.service.IDGeneratorService;
 import org.kiki_cpg_v2.service.MobitelService;
 import org.kiki_cpg_v2.service.PaymentLogService;
 import org.kiki_cpg_v2.service.SubscriptionPaymentService;
@@ -59,8 +59,9 @@ public class MobitelServiceImpl implements MobitelService {
 	@Autowired
 	private AppUtility appUtility;
 
-	@Autowired
-	private MerchantAccountRepository merchantAccountRepository;
+	/*
+	 * @Autowired private MerchantAccountRepository merchantAccountRepository;
+	 */
 
 	@Autowired
 	private MobitelClient mobitelClient;
@@ -88,6 +89,9 @@ public class MobitelServiceImpl implements MobitelService {
 	
 	@Autowired
 	private SubscriptionInvoiceRepository subscriptionInvoiceRepository;
+	
+	@Autowired
+	private IDGeneratorService idGeneratorService;
 	
 	
 
@@ -133,8 +137,6 @@ public class MobitelServiceImpl implements MobitelService {
 		if(subscriptionEntity != null) {
 			String resp = activateDataBundle(mobileNo, subscriptionEntity, false, null);
 			logger.info("activateDataBundle resp : " + resp);
-			paymentLogService.createPaymentLog("Mobitel", resp, "-", viewerId, mobileNo, "");
-			
 			if (resp.equals("1000")) {
 				String paymentResp = proceedPayment(viewerId, subscribedDays, mobileNo, subscriptionPaymentId);
 				if (paymentResp.equalsIgnoreCase("success")) {
@@ -155,7 +157,8 @@ public class MobitelServiceImpl implements MobitelService {
 			} else if (resp.equals("0006")) {
 				return "Insufficient balance to activate this service";
 			} else if (resp.equals("0005")) {
-				ViewerSubscriptionEntity entity = viewerSubscriptionRepository.findOneByViewers(viewerId);
+				System.out.println("005");
+				/*ViewerSubscriptionEntity entity = viewerSubscriptionRepository.findOneByViewers(viewerId);
 				if (entity != null) {
 					if (entity.getSubscriptionType().equals(SubscriptionType.MOBITEL_ADD_TO_BILL)) {
 						return "Already Subscribed";
@@ -193,7 +196,7 @@ public class MobitelServiceImpl implements MobitelService {
 					} else {
 						return "Deactivation Error at Account Transfer.";
 					}
-				}
+				}*/
 
 			}
 			return "error";
@@ -299,7 +302,10 @@ public class MobitelServiceImpl implements MobitelService {
 
 			String serverResponse = "";
 
-			int lastTransaciontId = new Random().nextInt((Integer.MAX_VALUE - 1000000) + 1000000);
+			int lastTransaciontId = idGeneratorService.generateId(AppConstant.MOBITEL+(int)subscriptionEntity.getAmount().doubleValue());
+			
+			System.out.println(lastTransaciontId);
+			
 			try {
 				LinkedHashMap<String, String> response = (LinkedHashMap<String, String>) res.getBody();
 				logger.info("get access token");
@@ -314,9 +320,9 @@ public class MobitelServiceImpl implements MobitelService {
 					returnValue = response2.get("resultCode");
 					logger.info("while return value : " + response2.get("resultCode") + ", last transaction id : "
 							+ lastTransaciontId);
-
+					paymentLogService.createPaymentLog("Mobitel", returnValue, "-", subscriptionEntity.getViewerId(), mobileNo, AppConstant.DECLINE);
 					if (returnValue.equals("0002")) {
-						lastTransaciontId = new Random().nextInt((Integer.MAX_VALUE - 1000000) + 1000000);
+						lastTransaciontId = idGeneratorService.generateId(AppConstant.MOBITEL+(int)subscriptionEntity.getAmount().doubleValue());
 						SubscriptionInvoiceEntity subscriptionInvoiceEntity=  subscriptionService.getSubscriptionInvoiceEntity(mobileNo, "1", subscriptionEntity, AppConstant.MOBITEL);
 						subscriptionInvoiceEntity.setDecision(AppConstant.DECLINE);
 						subscriptionInvoiceEntity.setSuccess(AppConstant.INACTIVE);
@@ -342,7 +348,7 @@ public class MobitelServiceImpl implements MobitelService {
 						transactionType, viewerId, true);
 
 				merchantAccountRepository.save(merchantAccountEntity);*/
-				
+				paymentLogService.createPaymentLog("Mobitel", returnValue, "-", subscriptionEntity.getViewerId(), mobileNo, AppConstant.ACCEPT);
 				SubscriptionInvoiceEntity subscriptionInvoiceEntity=  subscriptionService.getSubscriptionInvoiceEntity(mobileNo, "1", subscriptionEntity, AppConstant.MOBITEL);
 				
 				subscriptionInvoiceRepository.save(subscriptionInvoiceEntity);
@@ -357,6 +363,7 @@ public class MobitelServiceImpl implements MobitelService {
 						transactionType, viewerId, false);
 
 				merchantAccountRepository.save(merchantAccountEntity);*/
+				paymentLogService.createPaymentLog("Mobitel", returnValue, "-", subscriptionEntity.getViewerId(), mobileNo, AppConstant.DECLINE);
 				SubscriptionInvoiceEntity subscriptionInvoiceEntity=  subscriptionService.getSubscriptionInvoiceEntity(mobileNo, "1", subscriptionEntity, AppConstant.MOBITEL);
 				subscriptionInvoiceEntity.setDecision(AppConstant.DECLINE);
 				subscriptionInvoiceEntity.setSuccess(AppConstant.INACTIVE);
@@ -400,7 +407,7 @@ public class MobitelServiceImpl implements MobitelService {
 			boolean isUpdateCronViewer, Integer cronId) throws Exception {
 
 		logger.info("called to pay");
-		String resp = activateDataBundle(mobileNo, viewerId, activationStatus, isUpdateCronViewer, cronId);
+		String resp = null;//activateDataBundle(mobileNo, viewerId, activationStatus, isUpdateCronViewer, cronId);
 		logger.info("activateDataBundle resp : " + resp);
 		paymentLogService.createPaymentLog("Mobitel", resp, "-", viewerId, mobileNo, "");
 

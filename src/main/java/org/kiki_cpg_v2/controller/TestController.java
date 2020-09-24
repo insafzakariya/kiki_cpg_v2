@@ -3,6 +3,8 @@ package org.kiki_cpg_v2.controller;
 import org.kiki_cpg_v2.client.DialogClient;
 import org.kiki_cpg_v2.scheduler.CronScheduler;
 import org.kiki_cpg_v2.service.CronService;
+import org.kiki_cpg_v2.service.IDGeneratorService;
+import org.kiki_cpg_v2.util.AppConstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,12 +21,15 @@ public class TestController {
 	
 	@Autowired
 	private CronScheduler cronService;
+	
+	@Autowired
+	private IDGeneratorService idGeneratorService;
 
 	@GetMapping
 	public String test() {
 		
 		try {
-			cronService.cronStart("Test");
+			System.out.println(idGeneratorService.generateId(AppConstant.MOBITEL+"5"));
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
