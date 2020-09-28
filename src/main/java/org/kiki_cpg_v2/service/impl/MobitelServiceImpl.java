@@ -2,24 +2,24 @@ package org.kiki_cpg_v2.service.impl;
 
 import java.util.Date;
 import java.util.LinkedHashMap;
-import java.util.List;
+//import java.util.List;
 
 import org.kiki_cpg_v2.client.MobitelClient;
 import org.kiki_cpg_v2.dto.PaymentRefDto;
 import org.kiki_cpg_v2.dto.request.TransactionBeginDto;
 import org.kiki_cpg_v2.dto.request.ViewerPolicyUpdateRequestDto;
-import org.kiki_cpg_v2.entity.MerchantAccountEntity;
+//import org.kiki_cpg_v2.entity.MerchantAccountEntity;
 import org.kiki_cpg_v2.entity.PackageConfigEntity;
 import org.kiki_cpg_v2.entity.SubscriptionEntity;
 import org.kiki_cpg_v2.entity.SubscriptionInvoiceEntity;
-import org.kiki_cpg_v2.entity.ViewerEntity;
+//import org.kiki_cpg_v2.entity.ViewerEntity;
 import org.kiki_cpg_v2.entity.ViewerSubscriptionEntity;
 import org.kiki_cpg_v2.enums.SubscriptionType;
-import org.kiki_cpg_v2.enums.TransactionType;
+//import org.kiki_cpg_v2.enums.TransactionType;
 /*import org.kiki_cpg_v2.repository.MerchantAccountRepository;*/
 import org.kiki_cpg_v2.repository.SubscriptionInvoiceRepository;
 import org.kiki_cpg_v2.repository.SubscriptionRepository;
-import org.kiki_cpg_v2.repository.ViewerRepository;
+//import org.kiki_cpg_v2.repository.ViewerRepository;
 import org.kiki_cpg_v2.repository.ViewerSubscriptionRepository;
 import org.kiki_cpg_v2.service.CronViewerRepostService;
 import org.kiki_cpg_v2.service.IDGeneratorService;
@@ -45,8 +45,9 @@ public class MobitelServiceImpl implements MobitelService {
 
 	final static Logger logger = LoggerFactory.getLogger(MobitelServiceImpl.class);
 
-	@Autowired
-	private ViewerRepository viewerRepository;
+	/*
+	 * @Autowired private ViewerRepository viewerRepository;
+	 */
 
 	@Autowired
 	private ViewerPolicyService viewerPolicyService;
@@ -244,10 +245,14 @@ public class MobitelServiceImpl implements MobitelService {
 				packageId = packageConfigEntity.getPackageId();
 				subscribedDays = packageConfigEntity.getDays();
 			} else {
+				System.out.println(subscribedDays);
+				System.out.println(AppConstant.MOBITEL);
 				packageId = packageConfigService.getPackageId(subscribedDays, AppConstant.MOBITEL);
 			}
 
 			mobileNo = "0" + appUtility.getNineDigitMobileNumber(mobileNo);
+			
+			System.out.println(packageId);
 
 			if (packageId > 0) {
 				ViewerPolicyUpdateRequestDto dto = new ViewerPolicyUpdateRequestDto();
