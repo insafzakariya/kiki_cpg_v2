@@ -3,6 +3,7 @@
  */
 package org.kiki_cpg_v2.repository;
 
+import java.util.Date;
 import java.util.List;
 
 import org.kiki_cpg_v2.entity.SubscriptionEntity;
@@ -51,6 +52,16 @@ public interface SubscriptionRepository extends JpaRepository<SubscriptionEntity
 	 */
 	List<SubscriptionEntity> findByViewerIdAndStatusAndSubscribeAndType(Integer id, Integer active, Integer active2,
 			String type);
+
+	/**
+	 * @param active
+	 * @param active2
+	 * @param date
+	 * @param mobitel
+	 * @return
+	 */
+	List<SubscriptionEntity> findBySubscribeAndStatusAndPolicyExpDateLessThanEqualAndType(Integer active,
+			Integer active2, Date date, String mobitel);
 
 
 }

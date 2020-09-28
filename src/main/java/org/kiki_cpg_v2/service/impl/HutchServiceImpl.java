@@ -306,7 +306,7 @@ public class HutchServiceImpl implements HutchService {
 	@Override
 	@Transactional
 	public PaymentRefDto beginSubscribe(TransactionBeginDto beginDto) throws Exception {
-		viewerService.updateViewerMobileNumber(beginDto.getMobileNo(), beginDto.getViewerId());
+		
 		PaymentRefDto paymentRefDto = hnbService.getPaymentRefDto(beginDto, -1, -0.1);
 
 		SubscriptionEntity subscriptionEntity = getSubsctiptionEntity(beginDto, paymentRefDto);
@@ -348,6 +348,7 @@ public class HutchServiceImpl implements HutchService {
 										if (viewerUnsubscriptionService.save(beginDto.getMobileNo(),
 												subscriptionEntity.getViewerId(), "SUBSCRIBE", AppConstant.HUTCH,
 												true)) {
+											viewerService.updateViewerMobileNumberAndTrial(beginDto.getMobileNo(), beginDto.getViewerId(), false);
 											paymentRefDto.setStatus(AppConstant.ACCEPT);
 											return paymentRefDto;
 										} else {

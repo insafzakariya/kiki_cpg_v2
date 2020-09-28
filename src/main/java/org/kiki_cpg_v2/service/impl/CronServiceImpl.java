@@ -7,6 +7,7 @@ import java.util.List;
 import org.kiki_cpg_v2.entity.CardDataEntity;
 import org.kiki_cpg_v2.entity.CronErrorEntity;
 import org.kiki_cpg_v2.entity.CronReportEntity;
+import org.kiki_cpg_v2.entity.SubscriptionEntity;
 import org.kiki_cpg_v2.entity.custom.IdeabizViewerCusrtomEntity;
 import org.kiki_cpg_v2.entity.custom.ViewerSubscriptionCustomEntity;
 import org.kiki_cpg_v2.repository.CardDataReository;
@@ -14,6 +15,7 @@ import org.kiki_cpg_v2.repository.CronErrorRepository;
 import org.kiki_cpg_v2.repository.CronMetaDataRepository;
 import org.kiki_cpg_v2.repository.CronReportRepository;
 import org.kiki_cpg_v2.repository.IdeabizRepository;
+import org.kiki_cpg_v2.repository.SubscriptionRepository;
 import org.kiki_cpg_v2.repository.ViewerSubscriptionRepository;
 import org.kiki_cpg_v2.service.CronService;
 import org.kiki_cpg_v2.service.HNBService;
@@ -55,8 +57,12 @@ public class CronServiceImpl implements CronService {
 	@Autowired
 	private CronMetaDataRepository cronMetaDataRepository;
 
+	/*
+	 * @Autowired private ViewerSubscriptionRepository viewerSubscriptionRepository;
+	 */
+	
 	@Autowired
-	private ViewerSubscriptionRepository viewerSubscriptionRepository;
+	private SubscriptionRepository subscriptionRepository;
 	
 	@Autowired
 	private CardDataReository cardDataReository;
@@ -149,7 +155,7 @@ public class CronServiceImpl implements CronService {
 	public void startMobitelCron(String cronName, String ipAddress, String date, String time) {
 		logger.info("mobitel cron started");
 		try {
-			if (cronMetaDataRepository.findOneByCronNameAndStatusAndCronStatus(AppConstant.DIALOG, AppConstant.ACTIVE,
+			if (cronMetaDataRepository.findOneByCronNameAndStatusAndCronStatus(AppConstant.MOBITEL, AppConstant.ACTIVE,
 					AppConstant.ACTIVE) == null) {
 				smsService.sendSms(AppConstant.CRON_NOTIFY_MOBILES, "Mobitel Cron not started.");
 				System.out.println("mobitel Cron not started");
@@ -161,26 +167,30 @@ public class CronServiceImpl implements CronService {
 			smsService.sendSms(AppConstant.CRON_NOTIFY_MOBILES,
 					"Mobitel Cron " + cronName + " Strated " + date + " " + time);
 
-			List<ViewerSubscriptionCustomEntity> viewerSubscriptionCustomEntities = viewerSubscriptionRepository
-					.getViewerSubscriptionCustomEntityExpireBeforeToday();
+			List<SubscriptionEntity> subscriptionEntities = subscriptionRepository.findBySubscribeAndStatusAndPolicyExpDateLessThanEqualAndType(AppConstant.ACTIVE, AppConstant.ACTIVE, new Date(), AppConstant.MOBITEL);
+			
+			/*
+			 * List<ViewerSubscriptionCustomEntity> viewerSubscriptionCustomEntities =
+			 * viewerSubscriptionRepository
+			 * .getViewerSubscriptionCustomEntityExpireBeforeToday();
+			 */
 
-			viewerSubscriptionCustomEntities.forEach(e -> {
+			subscriptionEntities.forEach(e -> {
 				System.out.println("Mobitel Viewer Id : " + e.getViewerId());
 				logger.info("Mobitel Viewer Id : " + e.getViewerId());
 			});
 
-			if (viewerSubscriptionCustomEntities != null) {
+			if (subscriptionEntities != null) {
 				CronReportEntity cronReportEntity = saveCron(cronName, ipAddress, date, time, "Mobitel");
 				if (cronReportEntity != null) {
 					smsService.sendSms(AppConstant.CRON_NOTIFY_MOBILES,
-							"Mobitel Pending Subscribtion Count Is : " + viewerSubscriptionCustomEntities.size()
+							"Mobitel Pending Subscribtion Count Is : " + subscriptionEntities.size()
 									+ " - Cron Started :" + time + " -Server Ip : " + ipAddress);
 					Integer transactionCount = 0;
-					for (ViewerSubscriptionCustomEntity viewerSubscriptionCustomEntity : viewerSubscriptionCustomEntities) {
+					for (SubscriptionEntity subscriptionEntity : subscriptionEntities) {
 						try {
-							String resp = mobitelService.cronPay(viewerSubscriptionCustomEntity.getMobile(),
-									viewerSubscriptionCustomEntity.getViewerId(), "1",
-									viewerSubscriptionCustomEntity.getDays(), true, cronReportEntity.getCronId());
+							String resp = mobitelService.cronPay(subscriptionEntity, "1",
+									 true, cronReportEntity.getCronId());
 							if (resp.equalsIgnoreCase("success")) {
 								transactionCount += 1;
 							}
@@ -188,7 +198,7 @@ public class CronServiceImpl implements CronService {
 							e.printStackTrace();
 							logger.error(e.getLocalizedMessage());
 							cronErrorSave(cronReportEntity.getCronId(), e.getMessage(), e.getLocalizedMessage(),
-									"IS crtInv", viewerSubscriptionCustomEntity.getViewerId());
+									"IS crtInv", subscriptionEntity.getViewerId());
 						}
 
 					}
@@ -197,7 +207,7 @@ public class CronServiceImpl implements CronService {
 
 					smsService.sendSms(AppConstant.CRON_NOTIFY_MOBILES,
 							"Mobitel Done Subscribtion Count Is :" + transactionCount + " / "
-									+ viewerSubscriptionCustomEntities.size() + " -Cron Stoped :" + endTime
+									+ subscriptionEntities.size() + " -Cron Stoped :" + endTime
 									+ " -Server Ip : " + ipAddress);
 
 					cronReportEntity.setEndTime(endTime);
