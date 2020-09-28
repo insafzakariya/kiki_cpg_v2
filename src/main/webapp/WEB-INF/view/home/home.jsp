@@ -135,7 +135,7 @@
                                             </label>
                                         </div>
                                         
-                                        <div class="row" style="margin-left: 0px; margin-right: 0px;">
+                                        <!-- <div class="row" style="margin-left: 0px; margin-right: 0px;">
                                             <input type="radio" class="stv-radio-button"
                                                    name="optionsRadios" value="8" id="button7" /> <label
                                                    for="button7">
@@ -179,7 +179,7 @@
                                                 </div>
 
                                             </label>
-                                        </div>
+                                        </div> -->
 
 
                                         <div class="row" style="margin-left: 0px; margin-right: 0px;">
@@ -194,10 +194,10 @@
                                                     </div>
                                                     <div class="col-md-5 pull-right">
                                                         <p>
-                                                            <strong>Use Scratch </strong>
+                                                            <strong>Use Promo </strong>
                                                         </p>
                                                         <p>
-                                                            <strong>Card code</strong>
+                                                            <strong>Code</strong>
                                                         </p>
                                                     </div>
                                                 </div>

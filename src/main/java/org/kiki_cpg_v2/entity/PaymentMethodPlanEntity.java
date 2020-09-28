@@ -34,6 +34,8 @@ public class PaymentMethodPlanEntity {
 	@JoinColumn(name = "payment_method_id", nullable = false)
 	private PaymentMethodEntity paymentMethodEntity;
 
+	private Integer status;
+
 	private String serviceCode;
 
 	public String getServiceCode() {
@@ -90,6 +92,14 @@ public class PaymentMethodPlanEntity {
 
 	public void setPaymentMethodEntity(PaymentMethodEntity paymentMethodEntity) {
 		this.paymentMethodEntity = paymentMethodEntity;
+	}
+
+	public Integer getStatus() {
+		return status;
+	}
+
+	public void setStatus(Integer status) {
+		this.status = status;
 	}
 
 }
