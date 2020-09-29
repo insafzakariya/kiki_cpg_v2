@@ -87,8 +87,10 @@ public class HutchServiceImpl implements HutchService {
 
 	@Override
 	public Map<String, String> transaction(Map<String, String> requestMap) throws Exception {
+		
 		Map<String, String> response = null;
 		if (requestMap.containsKey("responseCode") && requestMap.get("responseCode").equalsIgnoreCase("0")) {
+			System.out.println(requestMap.get("responseCode"));
 			if (requestMap.containsKey("transactionType")) {
 				String transactionType = requestMap.get("transactionType");
 				switch (transactionType) {

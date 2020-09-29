@@ -29,6 +29,7 @@ public class HutchController {
 
 	@PostMapping("/transaction")
 	public Map<String, String> transaction(@RequestBody Map<String, String> requestMap) throws Exception {
+		System.out.println(requestMap.toString());
 		Map<String, String> response = new HashMap<String, String>();
 		try {
 			response = hutchService.transaction(requestMap);

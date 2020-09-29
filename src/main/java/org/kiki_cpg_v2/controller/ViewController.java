@@ -97,6 +97,8 @@ public class ViewController {
 	public ModelAndView mobitelPay(
 			@RequestParam(value = "bridgeId", required = false, defaultValue = "0") int subscriptionID,
 			HttpServletRequest request) throws IOException {
+		
+		System.out.println("CALLED");
 		ModelAndView modelAndView = new ModelAndView();
 
 		try {
