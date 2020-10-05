@@ -39,7 +39,7 @@ body {
     left: 0;
     right: 0;
     display: inline-block;
-    background-color: rgb(204, 204, 204, 0.3);
+    background-color: transparent;
     border: solid 2px #24A9A6;
     opacity: 1;
     color: #ffffff;
