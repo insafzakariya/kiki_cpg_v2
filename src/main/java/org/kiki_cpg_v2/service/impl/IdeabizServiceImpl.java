@@ -90,9 +90,11 @@ public class IdeabizServiceImpl implements IdeabizService {
 							dialogOtpConfirmDto.getDay());
 					message = "SUBSCRIBED";
 
+					System.out.println(dialogOtpConfirmDto.toString());
 					if (ideabizRepository.save(ideabizEntity) != null) {
 
 						if (dialogOtpConfirmDto.isTrial()) {
+							System.out.println("TRIAL");
 							viewerService.updateViewerMobileNumberAndTrial(mobileNo, dialogOtpConfirmDto.getViewerId(),
 									false);
 							processTrial(dialogOtpConfirmDto.getViewerId(), mobileNo);

@@ -95,7 +95,7 @@
                                 var subscriptionPaymentId = localStorage.getItem("subscriptionPaymentId");
                                 localStorage.setItem("mobile", mobile_no);
                                 var url = "https://services.mobitel.lk/MCCPortal/service/?compId=SusilaTV&reqType=ACTIVE&servId=SUWS&returnUrl="
-                                        + baseURL + "/mobitel/mobitelPay?bridgeID=" + subscriptionPaymentId;
+                                        + baseURL + "/mobitel/mobitelPay&bridgeID=" + subscriptionPaymentId;
                                 window.location.href = url;
                             } else if (method == 5 && resp != "success") {
                                 $("#mobitelIncorrect").removeClass("hide");

@@ -32,6 +32,9 @@ public class ViewerServiceImpl implements ViewerService {
 	
 	@Override
 	public ViewerEntity updateViewerMobileNumberAndTrial(String mobileNo, Integer viewerId, boolean trial) {
+		
+		System.out.println("TRIAL updateViewerMobileNumberAndTrial");
+		
 		ViewerEntity viewerEntity=viewerRepository.findById(viewerId).get();
 		viewerEntity.setMobileNumber("+94" + appUtility.getNineDigitMobileNumber(mobileNo));
 		viewerEntity.setTrialActivate(trial);
