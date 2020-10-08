@@ -39,6 +39,8 @@ public class PaymentMethodPlanEntity {
 	private String trialText;
 	
 	private Integer trialDays;
+	
+	private Integer status;
 
 	public String getServiceCode() {
 		return serviceCode;
@@ -110,6 +112,14 @@ public class PaymentMethodPlanEntity {
 
 	public void setTrialDays(Integer trialDays) {
 		this.trialDays = trialDays;
+	}
+
+	public Integer getStatus() {
+		return status;
+	}
+
+	public void setStatus(Integer status) {
+		this.status = status;
 	}
 
 }
