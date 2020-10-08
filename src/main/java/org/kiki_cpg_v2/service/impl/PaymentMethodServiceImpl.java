@@ -5,10 +5,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.kiki_cpg_v2.dto.PaymantPlanDto;
+import org.kiki_cpg_v2.dto.request.PaymantMethodDto;
 import org.kiki_cpg_v2.entity.PaymentMethodEntity;
 import org.kiki_cpg_v2.entity.PaymentMethodPlanEntity;
 import org.kiki_cpg_v2.repository.PaymentMethodRepository;
 import org.kiki_cpg_v2.service.PaymentMethodService;
+import org.kiki_cpg_v2.util.AppConstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -64,6 +66,28 @@ public class PaymentMethodServiceImpl implements PaymentMethodService {
 
 		return -1.0;
 
+	}
+
+	@Override
+	public List<PaymantMethodDto> getActivePaymentMethodes() {
+		List<PaymentMethodEntity> paymentMethodEntities = paymentMethodRepository.findByStatus(AppConstant.ACTIVE);
+		
+		List<PaymantMethodDto> paymantPlanDtos = new ArrayList<PaymantMethodDto>();
+		paymentMethodEntities.forEach(e -> {
+			paymantPlanDtos.add(getPaymantMethodDto(e));
+		});
+		return paymantPlanDtos;
+	}
+
+	@Override
+	public PaymantMethodDto getPaymantMethodDto(PaymentMethodEntity e) {
+		PaymantMethodDto dto = new PaymantMethodDto();
+		dto.setDescription(e.getDescription());
+		dto.setId(e.getId());
+		dto.setImage(e.getImage());
+		dto.setName(e.getMethodName());
+		dto.setStatus(e.getStatus());
+		return dto;
 	}
 
 }
