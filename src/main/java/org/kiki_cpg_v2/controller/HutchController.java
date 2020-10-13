@@ -35,9 +35,10 @@ public class HutchController {
 			response = hutchService.transaction(requestMap);
 		} catch (Exception e) {
 
-			response.put("ResultCode", "500");
-			response.put("Description", e.getMessage());
+			response.put("resultCode", "500");
+			response.put("description", e.getMessage());
 		}
+		System.out.println(response.toString());
 		return response;
 	}
 

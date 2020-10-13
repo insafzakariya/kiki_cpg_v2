@@ -89,10 +89,10 @@ public class HutchServiceImpl implements HutchService {
 	public Map<String, String> transaction(Map<String, String> requestMap) throws Exception {
 		
 		Map<String, String> response = null;
-		if (requestMap.containsKey("responseCode") && requestMap.get("responseCode").equalsIgnoreCase("0")) {
-			System.out.println(requestMap.get("responseCode"));
-			if (requestMap.containsKey("transactionType")) {
-				String transactionType = requestMap.get("transactionType");
+		if (requestMap.containsKey("ResponseCode") && requestMap.get("ResponseCode").equalsIgnoreCase("0")) {
+			System.out.println(requestMap.get("ResponseCode"));
+			if (requestMap.containsKey("TransactionType")) {
+				String transactionType = requestMap.get("TransactionType");
 				switch (transactionType) {
 				case "6":
 					response = autoRenew(requestMap);
@@ -104,25 +104,25 @@ public class HutchServiceImpl implements HutchService {
 				default:
 					response = new HashMap<String, String>();
 					paymentLogService.createPaymentLog(AppConstant.HUTCH, "", "", -1, "", requestMap.toString());
-					response.put("ResultCode", "103");
-					response.put("Description", "transactionType Not Supported");
+					response.put("resultCode", "103");
+					response.put("description", "transactionType Not Supported");
 				}
 			} else {
 				response = new HashMap<String, String>();
 				paymentLogService.createPaymentLog(AppConstant.HUTCH, "", "", -1, "", requestMap.toString());
-				response.put("ResultCode", "102");
-				response.put("Description", "transactionType Not found in request");
+				response.put("resultCode", "102");
+				response.put("description", "transactionType Not found in request");
 			}
 		} else if (requestMap.containsKey("responseCode")) {
 			response = new HashMap<String, String>();
 			paymentLogService.createPaymentLog(AppConstant.HUTCH, "", "", -1, "", requestMap.toString());
-			response.put("ResultCode", "100");
-			response.put("Description", "Log saved | Fail request");
+			response.put("resultCode", "100");
+			response.put("description", "Log saved | Fail request");
 		} else {
 			response = new HashMap<String, String>();
 			paymentLogService.createPaymentLog(AppConstant.HUTCH, "", "", -1, "", requestMap.toString());
-			response.put("ResultCode", "101");
-			response.put("Description", "Log saved");
+			response.put("resultCode", "101");
+			response.put("description", "Log saved");
 		}
 
 		return response;
@@ -163,43 +163,43 @@ public class HutchServiceImpl implements HutchService {
 											.updateViewerPolicy(viewerPolicyService.getViewerPolicyUpdateRequestDto(
 													subscriptionEntity.getViewerId(), packageId), -1)
 											.equalsIgnoreCase("success")) {
-										response.put("ResultCode", "0");
-										response.put("Description", "Success");
+										response.put("resultCode", "0");
+										response.put("description", "Success");
 									} else {
-										response.put("ResultCode", "1");
-										response.put("Description", "Policy Not Updated");
+										response.put("resultCode", "1");
+										response.put("description", "Policy Not Updated");
 									}
 								} else {
-									response.put("ResultCode", "2");
-									response.put("Description", "Package Not Found");
+									response.put("resultCode", "2");
+									response.put("description", "Package Not Found");
 								}
 							} else {
-								response.put("ResultCode", "3");
-								response.put("Description", "Payment Details save error");
+								response.put("resultCode", "3");
+								response.put("description", "Payment Details save error");
 							}
 						} else {
-							response.put("ResultCode", "4");
-							response.put("Description", "subscriptionInvoice save error");
+							response.put("resultCode", "4");
+							response.put("description", "subscriptionInvoice save error");
 						}
 					} else {
-						response.put("ResultCode", "5");
-						response.put("Description", "subscription save error");
+						response.put("resultCode", "5");
+						response.put("description", "subscription save error");
 					}
 				} else {
-					response.put("ResultCode", "6");
-					response.put("Description", "Subscription Not Fund");
+					response.put("resultCode", "6");
+					response.put("description", "Subscription Not Fund");
 				}
 
 			} else {
 				paymentLogService.createPaymentLog(AppConstant.HUTCH, "", "", -1, requestMap.get("MSISDN"),
 						requestMap.toString());
-				response.put("ResultCode", "7");
-				response.put("Description", "Viewer Not Fund");
+				response.put("resultCode", "7");
+				response.put("description", "Viewer Not Fund");
 			}
 		} else {
 			paymentLogService.createPaymentLog(AppConstant.HUTCH, "", "", -1, "", requestMap.toString());
-			response.put("ResultCode", "8");
-			response.put("Description", "MSISDN Not Fund in request");
+			response.put("resultCode", "8");
+			response.put("description", "MSISDN Not Fund in request");
 		}
 		return response;
 	}
@@ -220,7 +220,7 @@ public class HutchServiceImpl implements HutchService {
 		invoiceEntity.setSubscribedDays(subscriptionEntity.getSubscribedDays());
 		invoiceEntity.setSuccess(AppConstant.ACTIVE);
 		invoiceEntity.setTransactionNo(transactionNo);
-		invoiceEntity.setTransactionType(requestMap.get("transactionType"));
+		invoiceEntity.setTransactionType(requestMap.get("TransactionType"));
 		invoiceEntity.setViewerId(subscriptionEntity.getViewerId());
 		invoiceEntity.setType(AppConstant.HUTCH);
 		return invoiceEntity;
@@ -260,47 +260,47 @@ public class HutchServiceImpl implements HutchService {
 //												.updateViewerPolicy(viewerPolicyService.getViewerPolicyUpdateRequestDto(
 //														subscriptionEntity.getViewerId(), packageId), -1)
 //												.equalsIgnoreCase("success")) {
-//											response.put("ResultCode", "0");
-//											response.put("Description", "Success");
+//											response.put("resultCode", "0");
+//											response.put("description", "Success");
 //										} else {
-//											response.put("ResultCode", "1");
-//											response.put("Description", "Policy Not Updated");
+//											response.put("resultCode", "1");
+//											response.put("description", "Policy Not Updated");
 //										}
 //									} else {
-//										response.put("ResultCode", "2");
-//										response.put("Description", "Package Not Found");
+//										response.put("resultCode", "2");
+//										response.put("description", "Package Not Found");
 //									}
 //								} else {
-//									response.put("ResultCode", "3");
-//									response.put("Description", "Payment Details save error");
+//									response.put("resultCode", "3");
+//									response.put("description", "Payment Details save error");
 //								}
 //							} else {
-//								response.put("ResultCode", "4");
-//								response.put("Description", "subscriptionInvoice save error");
+//								response.put("resultCode", "4");
+//								response.put("description", "subscriptionInvoice save error");
 //							}
 //						} else {
-//							response.put("ResultCode", "5");
-//							response.put("Description", "subscription save error");
+//							response.put("resultCode", "5");
+//							response.put("description", "subscription save error");
 //						}
 //					} else {
-//						response.put("ResultCode", "9");
-//						response.put("Description", "SubscriptionInvoice not found");
+//						response.put("resultCode", "9");
+//						response.put("description", "SubscriptionInvoice not found");
 //					}
 //					
 //				} else {
-//					response.put("ResultCode", "6");
-//					response.put("Description", "Subscription Not Fund");
+//					response.put("resultCode", "6");
+//					response.put("description", "Subscription Not Fund");
 //				}
 //
 //			}else {
 //				paymentLogService.createPaymentLog(AppConstant.HUTCH, "", "" , -1, requestMap.get("MSISDN"), requestMap.toString());
-//				response.put("ResultCode", "7");
-//				response.put("Description", "Viewer Not Fund");
+//				response.put("resultCode", "7");
+//				response.put("description", "Viewer Not Fund");
 //			}
 //		} else {
 //			paymentLogService.createPaymentLog(AppConstant.HUTCH, "", "" , -1, "", requestMap.toString());
-//			response.put("ResultCode", "8");
-//			response.put("Description", "MSISDN Not Found in request");
+//			response.put("resultCode", "8");
+//			response.put("description", "MSISDN Not Found in request");
 //		}
 //		return response;
 	}
