@@ -114,4 +114,13 @@ public class SubscriptionPaymentDto {
 		this.lastSubscribeDay = lastSubscribeDay;
 	}
 
+	@Override
+	public String toString() {
+		return "SubscriptionPaymentDto [subscriptionPaymentId=" + subscriptionPaymentId + ", viewerId=" + viewerId
+				+ ", packageId=" + packageId + ", tokenHash=" + tokenHash + ", status=" + status
+				+ ", alreadySubscribed=" + alreadySubscribed + ", mobile=" + mobile + ", subscriptionTypeList="
+				+ subscriptionTypeList + ", subscriptionType=" + subscriptionType + ", trialVerify=" + trialVerify
+				+ ", ideabizDays=" + ideabizDays + ", lastSubscribeDay=" + lastSubscribeDay + "]";
+	}
+
 }
