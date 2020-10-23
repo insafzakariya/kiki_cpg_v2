@@ -282,13 +282,24 @@ public class DialogClientImpl implements DialogClient {
 			try {
 				dialogOtpDto.setTransactionOperationStatus(jsonObjRef.get("transactionOperationStatus").toString());
 			} catch (Exception e) {
-				// e.printStackTrace();
+				e.printStackTrace();
 			}
 
 			return dialogOtpDto;
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw e;
+			
+			if(e.getLocalizedMessage().contains("Wrong Pin")) {
+				System.out.println("Wrong Pin");
+				throw new RuntimeException("Wrong Pin");
+			}
+			
+			if(e.getLocalizedMessage().contains("Max attempt exceeded")) {
+				System.out.println("Max Attempt Exceeded");
+				throw new RuntimeException("Max Attempt Exceeded");
+			} else {
+				throw new RuntimeException("OTP Fail");
+			}
 		}
 	}
 

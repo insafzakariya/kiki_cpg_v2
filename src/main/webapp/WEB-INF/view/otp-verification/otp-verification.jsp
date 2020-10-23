@@ -85,14 +85,18 @@
                             data: JSON.stringify(data_st),
                             success: function (data) {
                                 console.log(data);
-
                                 x.style.display = "none";
                                 var myJSON = JSON.stringify(data);
                                 var myJSON = JSON.parse(myJSON);
                                 if (data.statusCode == 'FAIL') {
                                     $("#error-p").text(data.message);
                                     $("#error").removeClass("hide");
-                                } else {
+                                }
+                                if (data.statusCode == 'Expired') {
+                                	var url = baseURL + "/error-page?message=" +data.message ;
+                                    window.location.replace(url);
+                                }
+                                else {
                                 	localStorage.setItem("invoiceId",data.invoiceId);
                                     //var url = baseURL + "/notification-email";
                                     var url = baseURL + "/thanks/4";
@@ -100,7 +104,9 @@
                                 }
                             },
                             error: function (e) {
-                                $("#error-p").text('An error occurred while updating payment transaction : ' + e);
+                            	 var x = document.getElementById("gif-load");
+                                 x.style.display = "none";
+                                $("#error-p").text('An error occurred while updating payment transaction : ' + e.responseText);
                                 console.log('An error occurred while updating payment transaction : ', e);
                                 $("#error").removeClass("hide");
                             }
@@ -146,12 +152,14 @@
                                         }
                                     });
                                 } else {
-                                    $("#error-p").text(data.message);
+                                	 var x = document.getElementById("gif-load");
+                                     x.style.display = "none";
+                                    $("#error-p").text(data.status);
                                     $("#error").removeClass("hide");
                                 }
                             },
                             error: function (e) {
-                                $("#error-p").text('An error occurred while updating payment transaction : ' + e);
+                                $("#error-p").text('An error occurred while updating payment transaction : ' + e.responseText);
                                 console.log('An error occurred while updating payment transaction : ', e);
                                 $("#error").removeClass("hide");
                             }
@@ -164,6 +172,7 @@
                             url: baseURL + "/rest/otp/confirm",
                             data: JSON.stringify(data_st),
                             success: function (data) {
+                            	
                                 if (data.status == "Success") {
                                     var data_st2 = {
                                         "mobileNo": localStorage.getItem("mobile"),
@@ -186,7 +195,7 @@
                                                  $("#error").removeClass("hide");
                                         	} else{
                                         		 $("#error-p").text('An error occurred while connecting Payment Gateway');
-                                                 console.log('An error occurred while connecting Payment Gateway : ', e);
+                                                 console.log('An error occurred while connecting Payment Gateway : ');
                                                  $("#error").removeClass("hide");
                                         	}
                                         	
@@ -199,12 +208,14 @@
                                         }
                                     });
                                 } else {
-                                    $("#error-p").text(data.message);
+                                    $("#error-p").text(data.status);
                                     $("#error").removeClass("hide");
+                                    var x = document.getElementById("gif-load");
+                                    x.style.display = "none";
                                 }
                             },
                             error: function (e) {
-                                $("#error-p").text('An error occurred while updating payment transaction : ' + e);
+                                $("#error-p").text('An error occurred while updating payment transaction : ' + e.responseText);
                                 console.log('An error occurred while updating payment transaction : ', e);
                                 $("#error").removeClass("hide");
                             }
@@ -218,6 +229,7 @@
                             url: baseURL + "/rest/otp/confirm",
                             data: JSON.stringify(data_st),
                             success: function (data) {
+                            	console.log(data);
                                 if (data.status == "Success") {
                                     var data_st2 = {
                                         "mobileNo": localStorage.getItem("mobile"),
@@ -237,18 +249,21 @@
 
                                         },
                                         error: function (e) {
-                                            $("#error-p").text('An error occurred while connecting Payment Gateway');
-                                            console.log('An error occurred while connecting Payment Gateway : ', e);
+                                            $("#error-p").text('An error occurred while connecting Payment Gateway: ', e.responseText);
+                                            console.log('An error occurred while connecting Payment Gateway : ', e.responseText);
                                             $("#error").removeClass("hide");
                                         }
                                     });
                                 } else {
-                                    $("#error-p").text(data.message);
+                                	 var x = document.getElementById("gif-load");
+                                     x.style.display = "none";
+                                	console.log(data.status);
+                                    $("#error-p").text(data.status);
                                     $("#error").removeClass("hide");
                                 }
                             },
                             error: function (e) {
-                                $("#error-p").text('An error occurred while updating payment transaction : ' + e);
+                                $("#error-p").text('An error occurred while updating payment transaction : ' + e.responseText);
                                 console.log('An error occurred while updating payment transaction : ', e);
                                 $("#error").removeClass("hide");
                             }

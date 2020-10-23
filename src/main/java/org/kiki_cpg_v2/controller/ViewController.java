@@ -76,6 +76,12 @@ public class ViewController {
 		view.addObject("type", type);
 		return view;
 	}
+	
+	@GetMapping(value = "/thanks/redirecthome")
+	public ModelAndView thanks() {
+		ModelAndView view = new ModelAndView("thanks-home/thanks-home");
+		return view;
+	}
 
 	@GetMapping(value = "/scratch-card")
 	public ModelAndView screchCard(HttpServletRequest request) {

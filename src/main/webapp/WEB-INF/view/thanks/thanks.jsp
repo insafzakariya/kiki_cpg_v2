@@ -116,7 +116,7 @@
         <script type="text/javascript">
             $("#btn-home").click(function () {
                 var token = localStorage.getItem("tokenHash");
-                window.location.replace(baseURL + "/home?token=" + token);
+                window.location.replace(baseURL + "/thanks/redirecthome");
             });
         </script>
     </body>

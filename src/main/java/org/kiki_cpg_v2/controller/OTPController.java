@@ -53,7 +53,7 @@ public class OTPController {
 			return new ResponseEntity<Object>(otpService.confirm(dialogOtpConfirmDto), HttpStatus.OK);
 		}catch (Exception e) {
 			e.printStackTrace();
-			return new ResponseEntity<Object>("error : " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<Object>("error : " + e.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		
 

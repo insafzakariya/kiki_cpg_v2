@@ -12,6 +12,7 @@ import org.kiki_cpg_v2.service.HutchService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -45,6 +46,26 @@ public class HutchController {
 	@PostMapping("/subscribe")
 	public ResponseEntity<Object> subscribe(@RequestBody TransactionBeginDto beginDto) throws Exception {
 
+		System.out.println("calle to subscribe");
+		try {
+			PaymentRefDto dto = hutchService.beginSubscribe(beginDto);
+			return new ResponseEntity<Object>(dto, HttpStatus.OK);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ResponseEntity<Object>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		
+	}
+	
+	@GetMapping("/subscribe-2")
+	public ResponseEntity<Object> subscribe2() throws Exception {
+
+		TransactionBeginDto beginDto = new TransactionBeginDto();
+		beginDto.setMobileNo("+94787997960");
+		beginDto.setPlanId(10);
+		beginDto.setViewerId(447205);
+		
+		System.out.println("calle to subscribe");
 		try {
 			PaymentRefDto dto = hutchService.beginSubscribe(beginDto);
 			return new ResponseEntity<Object>(dto, HttpStatus.OK);

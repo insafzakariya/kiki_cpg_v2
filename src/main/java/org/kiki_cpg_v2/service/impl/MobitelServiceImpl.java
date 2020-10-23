@@ -146,6 +146,8 @@ public class MobitelServiceImpl implements MobitelService {
 		Integer subscribedDays = paymentRefDto.getDays();
 		if(subscriptionEntity != null) {
 			if(trial) {
+				viewerService.updateViewerMobileNumberAndTrial(mobileNo, viewerId,
+						false);
 				String paymentResp = proceedPayment(viewerId, subscribedDays, mobileNo, subscriptionPaymentId, planId, subscriptionEntity, trial);
 				if (paymentResp.equalsIgnoreCase("success")) {
 					try {

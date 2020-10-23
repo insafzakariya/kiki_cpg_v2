@@ -138,8 +138,11 @@ public class HutchServiceImpl implements HutchService {
 			ViewerEntity viewerEntity = viewerRepository
 					.findFirstByMobileNumberEndingWithOrderByIdDesc(requestMap.get("MSISDN"));
 			if (viewerEntity != null) {
+				viewerService.updateViewerMobileNumberAndTrial("+94"+appUtility.getNineDigitMobileNumber(requestMap.get("MSISDN")), viewerEntity.getId(),
+						false);
 				paymentLogService.createPaymentLog(AppConstant.HUTCH, "", "", viewerEntity.getId(),
 						requestMap.get("MSISDN"), requestMap.toString());
+				
 				SubscriptionEntity subscriptionEntity = subscriptionRepository.findFirstByViewerIdAndStatusAndSubscribeAndType(
 						viewerEntity.getId(), AppConstant.ACTIVE, AppConstant.ACTIVE, AppConstant.HUTCH);
 
@@ -322,6 +325,7 @@ public class HutchServiceImpl implements HutchService {
 				paymentRefDto.setCardInvoiceId(subscriptionInvoiceEntity.getId());
 				HutchSubscribeDto hutchSubscribeDto = getHutchSubscribeDto(paymentRefDto, subscriptionEntity,
 						subscriptionInvoiceEntity);
+				System.out.println(hutchSubscribeDto.toString());
 				HutchResponseDto hutchResponseDto = hutchClient.subscribe(hutchSubscribeDto);
 				System.out.println(hutchResponseDto.toString());
 				if (hutchResponseDto != null) {

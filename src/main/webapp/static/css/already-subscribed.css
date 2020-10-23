@@ -78,6 +78,20 @@ body {
 	text-transform: uppercase;
 }
 
+
+.form_btn {
+	background-color: #009b9f;
+	color: #ffffff;
+	margin-top: 25px;
+	text-align: center;
+	border: none;
+	width : 70px;;
+	border-radius: 5px;
+	font-size: 14px;
+	font-weight: 600;
+	text-transform: uppercase;
+}
+
 @media screen and (min-width: 360px) {
 	body {
 		margin-left: auto;
@@ -85,6 +99,11 @@ body {
 		max-width: 340px;
 		text-align: center;
 	}
+}
+
+.modal {
+    position: fixed;
+    top: 30% !important;
 }
 
                                                                                                                                                  

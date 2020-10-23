@@ -66,7 +66,7 @@
         <script type="text/javascript">
                                 function redirect_ideabiz() {
                                     var token = localStorage.getItem("tokenHash");
-                                    window.location.replace(baseURL + "/home?token=" + token);
+                                    window.location.replace(baseURL + "/thanks/redirecthome");
                                 }
         </script>
 
