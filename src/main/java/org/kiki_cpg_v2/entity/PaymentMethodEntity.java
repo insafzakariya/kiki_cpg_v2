@@ -32,6 +32,12 @@ public class PaymentMethodEntity{
 	
 	@Column(name = "ModifiedOn")
 	private Date modifiedOn;
+	
+	@Column(name = "Description")
+	private String description;
+
+	@Column(name = "Image")
+	private String image;
 
 	@OneToMany(mappedBy = "paymentMethodEntity", targetEntity = PaymentPolicyEntity.class)
 	private List<PaymentPolicyEntity> paymentPolicyEntities;
@@ -77,6 +83,22 @@ public class PaymentMethodEntity{
 
 	public void setModifiedOn(Date modifiedOn) {
 		this.modifiedOn = modifiedOn;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public String getImage() {
+		return image;
+	}
+
+	public void setImage(String image) {
+		this.image = image;
 	}
 
 	public List<PaymentPolicyEntity> getPaymentPolicyEntities() {

@@ -75,6 +75,9 @@ public class ViewerEntity implements Serializable {
 
 	@Column(name = "DeviceID")
 	private String deviceId;
+	
+	@Column(name = "Trial")
+	private boolean trialActivate;
 
 	public Integer getId() {
 		return id;
@@ -246,6 +249,14 @@ public class ViewerEntity implements Serializable {
 
 	public static long getSerialversionuid() {
 		return serialVersionUID;
+	}
+
+	public boolean isTrialActivate() {
+		return trialActivate;
+	}
+
+	public void setTrialActivate(boolean trialActivate) {
+		this.trialActivate = trialActivate;
 	}
 
 }

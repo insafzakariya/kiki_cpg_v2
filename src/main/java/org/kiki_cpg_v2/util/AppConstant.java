@@ -14,6 +14,9 @@ public class AppConstant {
 	public static final String URL_IDEABIZ_OTP = "https://ideabiz.lk/apicall/pin/subscription/v1/subscribe";
 	public static final String URL_IDEABIZ_UNSUBSCRIBE = "https://ideabiz.lk/apicall/subscription/v3/unsubscribe";
 	public static final String URL_IDEABIZ_SUBSCRIBE = "https://ideabiz.lk/apicall/pin/subscription/v1/subscribe";
+	
+	public static final String URL_APPLE_VERIFY = "https://sandbox.itunes.apple.com/verifyReceipt";
+	
 	public static final Integer ACTIVE = 1;
 	public static final Integer INACTIVE = 0;
 	public static final String IDEABIZ = "Ideabiz";
@@ -26,6 +29,7 @@ public class AppConstant {
 	public static final String URL_NOTIFICATION = "http://35.200.234.252:3000/fcm/v1/message";
 	public static final String HNB = "HNB";
 	public static final String ACCEPT = "ACCEPT";
+	public static final String DECLINE = "DECLINE";
 	public static final String HUTCH = "HUTCH";
 
 	public static final String URL_HUTCH_BASE = "http://192.168.192.51:8581/prc";
@@ -34,5 +38,6 @@ public class AppConstant {
 	public static final String TRIAL = "TRIAL";
 	public static final String DUPLICATE = "DUPLICATE";
 	public static final String URL_HUTCH_UNSUBSCRIBE = URL_HUTCH_BASE + "/deactivation";
+	public static final String APPLE = "APPLE";
 
 }
