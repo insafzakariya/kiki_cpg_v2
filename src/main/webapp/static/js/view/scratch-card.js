@@ -42,9 +42,9 @@ function scratchCardPayment(){
 	
     var data = {
     		code : cardCode,
-    		viewerId : localStorage.getItem('viewerId'),
-    		subscriptionPaymentId : localStorage.getItem('subscriptionPaymentId'),
-    		mobileNo : localStorage.getItem('mobile')
+    		viewerId : sessionStorage.getItem('viewerId'),
+    		subscriptionPaymentId : sessionStorage.getItem('subscriptionPaymentId'),
+    		mobileNo : sessionStorage.getItem('mobile')
     };
     
     

@@ -10,14 +10,14 @@ import java.util.ArrayList;
  */
 public class NotificationDto {
 
-	private ArrayList<String> deviceid;
-	private String title;
-	private String body;
-	private String image_url;
-	private String type;
-	private String content_type;
-	private String content_id;
-	private String date_time;
+	private ArrayList<String> deviceid = new ArrayList<>();
+	private String title= "";
+	private String body = "";
+	private String image_url = "";
+	private String type = "";
+	private String content_type = "";
+	private String content_id = "";
+	private String date_time= "";
 
 	public ArrayList<String> getDeviceid() {
 		return deviceid;

@@ -109,7 +109,7 @@ public class AppUtility {
 		default:
 			break;
 		}
-		
+
 		return frequency;
 	}
 
@@ -128,5 +128,28 @@ public class AppUtility {
 			return true;
 		}
 		return false;
+	}
+
+	public String getHutchPackageFrequance(Integer date) {
+		String text = "";
+		switch (date) {
+		case 1:
+			text = "day";
+			break;
+		case 7:
+			text = "week";
+			break;
+		case 30:
+			text = "month";
+			break;
+		case 90:
+			text = "3 month";
+			break;
+
+		default:
+			break;
+		}
+		
+		return text;
 	}
 }

@@ -9,7 +9,6 @@ package org.kiki_cpg_v2.dto;
 public class NotificationRespDto {
 
 	private Integer id;
-	private String notificationId;
 
 	public Integer getId() {
 		return id;
@@ -17,14 +16,6 @@ public class NotificationRespDto {
 
 	public void setId(Integer id) {
 		this.id = id;
-	}
-
-	public String getNotificationId() {
-		return notificationId;
-	}
-
-	public void setNotificationId(String notificationId) {
-		this.notificationId = notificationId;
 	}
 
 }

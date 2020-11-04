@@ -26,7 +26,7 @@
 
 			<c:choose>
 				<c:when test="${subscriptionType eq 'CREDIT_CARD'}">
-					<a id="card">
+					<a id="card" data-toggle="modal" data-target="#confirmation_card">
 						<div class="body_frame">
 							<div class="row">
 								<div class="col-xs-4 col-md-4" style="padding-top: 10px;">
@@ -57,7 +57,7 @@
 					</a>
 				</c:when>
 				<c:when test="${subscriptionType eq 'IDEABIZ'}">
-					<a id="dviu">
+					<a id="dviu" data-toggle="modal" data-target="#confirmation_dialog">
 
 						<div class="body_frame">
 							<div class="row">
@@ -86,7 +86,7 @@
 					</a>
 				</c:when>
 				<c:when test="${subscriptionType eq 'MOBITEL'}">
-					<a id="mobitel">
+					<a id="mobitel" data-toggle="modal" data-target="#confirmation_mobitel">
 
 						<div class="body_frame">
 							<div class="row">
@@ -114,7 +114,7 @@
 					</a>
 				</c:when>
 				<c:when test="${subscriptionType eq 'HUTCH'}">
-					<a id="hutch">
+					<a id="hutch" data-toggle="modal" data-target="#confirmation_hutch">
 
 						<div class="body_frame">
 							<div class="row">
@@ -176,12 +176,48 @@
 		<button type="button" id="btnnewsubscription" class="form_submit">ADD NEW
 			SUBSCRIPTION</button>
 
-		<div id="confirmation" class="modal fade" >
+		<div id="confirmation_dialog" class="modal fade" >
 			<div class="modal-dialog modal-sm">
 				<div class="modal-content" style="border: solid 3px #24A9A6">
 					<div class="modal-body">
 						<h4 class="modal-title">Would you like to Unsubscribe?</h4>
-						<button type="button" class="btn form_btn">Yes</button>
+						<button id="btn_dviu" type="button" class="btn form_btn">Yes</button>
+						
+						<button type="button" class="btn form_btn" data-dismiss="modal">No</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div id="confirmation_mobitel" class="modal fade" >
+			<div class="modal-dialog modal-sm">
+				<div class="modal-content" style="border: solid 3px #24A9A6">
+					<div class="modal-body">
+						<h4 class="modal-title">Would you like to Unsubscribe?</h4>
+						<button id="btn_mobitel" type="button" class="btn form_btn">Yes</button>
+						
+						<button type="button" class="btn form_btn" data-dismiss="modal">No</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div id="confirmation_hutch" class="modal fade" >
+			<div class="modal-dialog modal-sm">
+				<div class="modal-content" style="border: solid 3px #24A9A6">
+					<div class="modal-body">
+						<h4 class="modal-title">Would you like to Unsubscribe?</h4>
+						<button id="btn_hutch" type="button" class="btn form_btn">Yes</button>
+						
+						<button type="button" class="btn form_btn" data-dismiss="modal">No</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div id="confirmation_card" class="modal fade" >
+			<div class="modal-dialog modal-sm">
+				<div class="modal-content" style="border: solid 3px #24A9A6">
+					<div class="modal-body">
+						<h4 class="modal-title">Would you like to Unsubscribe?</h4>
+						<button id="btn_card" type="button" class="btn form_btn">Yes</button>
 						
 						<button type="button" class="btn form_btn" data-dismiss="modal">No</button>
 					</div>
@@ -208,19 +244,19 @@
 			
 			function initialize() {
 			    console.log("initialize");
-			    localStorage.setItem('subscriptionPaymentId', ${subscriptionPaymentDto.getSubscriptionPaymentId()});
-			    localStorage.setItem('viewerId', ${subscriptionPaymentDto.getViewerId()});
-			    localStorage.setItem('packageId', ${subscriptionPaymentDto.getPackageId()});
-			    localStorage.setItem('tokenHash', "${subscriptionPaymentDto.getTokenHash()}");
-			    localStorage.setItem('mobile', "${subscriptionPaymentDto.getMobile()}");
+			    sessionStorage.setItem('subscriptionPaymentId', ${subscriptionPaymentDto.getSubscriptionPaymentId()});
+			    sessionStorage.setItem('viewerId', ${subscriptionPaymentDto.getViewerId()});
+			    sessionStorage.setItem('packageId', ${subscriptionPaymentDto.getPackageId()});
+			    sessionStorage.setItem('tokenHash', "${subscriptionPaymentDto.getTokenHash()}");
+			    sessionStorage.setItem('mobile', "${subscriptionPaymentDto.getMobile()}");
 			}
 			
-			$("#dviu").click(function () {
+			$("#btn_dviu").click(function () {
 			    var data = {
-			        subscriptionPaymentId: localStorage.getItem('subscriptionPaymentId'),
-			        viewerid: localStorage.getItem('viewerId'),
+			        subscriptionPaymentId: sessionStorage.getItem('subscriptionPaymentId'),
+			        viewerid: sessionStorage.getItem('viewerId'),
 			        type: 4,
-			        mobile: localStorage.getItem('mobile')
+			        mobile: sessionStorage.getItem('mobile')
 			    }
 			
 			    console.log("send Req");
@@ -248,12 +284,12 @@
 			    });
 			});
 			
-			$("#mobitel").click(function () {
+			$("#btn_mobitel").click(function () {
 			    var data = {
-			        subscriptionPaymentId: localStorage.getItem('subscriptionPaymentId'),
-			        viewerid: localStorage.getItem('viewerId'),
+			        subscriptionPaymentId: sessionStorage.getItem('subscriptionPaymentId'),
+			        viewerid: sessionStorage.getItem('viewerId'),
 			        type: 5,
-			        mobile: localStorage.getItem('mobile')
+			        mobile: sessionStorage.getItem('mobile')
 			    }
 			
 			    $.ajax({
@@ -278,12 +314,12 @@
 			    });
 			});
 			
-			$("#card").click(function () {
+			$("#btn_card").click(function () {
 			    var data = {
-			        subscriptionPaymentId: localStorage.getItem('subscriptionPaymentId'),
-			        viewerid: localStorage.getItem('viewerId'),
+			        subscriptionPaymentId: sessionStorage.getItem('subscriptionPaymentId'),
+			        viewerid: sessionStorage.getItem('viewerId'),
 			        type: 7,
-			        mobile: localStorage.getItem('mobile')
+			        mobile: sessionStorage.getItem('mobile')
 			    }
 			
 			    $.ajax({
@@ -308,12 +344,12 @@
 			    });
 			});
 			
-			$("#hutch").click(function () {
+			$("#btn_hutch").click(function () {
 			    var data = {
-			        subscriptionPaymentId: localStorage.getItem('subscriptionPaymentId'),
-			        viewerid: localStorage.getItem('viewerId'),
+			        subscriptionPaymentId: sessionStorage.getItem('subscriptionPaymentId'),
+			        viewerid: sessionStorage.getItem('viewerId'),
 			        type: 8,
-			        mobile: localStorage.getItem('mobile')
+			        mobile: sessionStorage.getItem('mobile')
 			    }
 			
 			    $.ajax({
@@ -333,7 +369,7 @@
 			        },
 			        error: function (e) {
 			            console.log(e);
-			            window.location.replace(baseURL + "/error-page?message=" + e);
+			            window.location.replace(baseURL + "/error-page?message=" + e.responseText);
 			        }
 			    });
 			});

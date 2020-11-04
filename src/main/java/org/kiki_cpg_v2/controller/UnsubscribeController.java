@@ -88,6 +88,9 @@ public class UnsubscribeController {
 			return new ResponseEntity<Object>(responseMapDto, HttpStatus.OK);
 		} catch (Exception e) {
 			e.printStackTrace();
+			if(e.getLocalizedMessage().contains("Connection timed out")) {
+				return new ResponseEntity<Object>("Connection Time Out", HttpStatus.INTERNAL_SERVER_ERROR);
+			}
 			return new ResponseEntity<Object>(e.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 

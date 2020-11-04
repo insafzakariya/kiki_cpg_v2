@@ -194,7 +194,7 @@ public class HNBServiceImpl implements HNBService {
 			System.out.println("Log Created");
 
 			if (formData.getFirst("decision").trim().equalsIgnoreCase("ACCEPT")) {
-				viewerService.updateViewerMobileNumber(cardDataEntity.getMobile(), cardInvoiceEntity.getViewerId());
+				viewerService.updateViewerMobileNumberAndTrial(cardDataEntity.getMobile(), cardInvoiceEntity.getViewerId(), false);
 
 				System.out.println("Accept");
 

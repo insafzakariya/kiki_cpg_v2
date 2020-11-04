@@ -5,6 +5,7 @@ package org.kiki_cpg_v2.service;
 
 import java.util.Map;
 
+import org.kiki_cpg_v2.dto.HutchSubscriptionStatusDto;
 import org.kiki_cpg_v2.dto.PaymentRefDto;
 import org.kiki_cpg_v2.dto.request.HutchSubscribeDto;
 import org.kiki_cpg_v2.dto.request.TransactionBeginDto;
@@ -87,5 +88,18 @@ public interface HutchService {
 	 * @return
 	 */
 	boolean processUnsubscription(Integer viewerid, String mobile) throws Exception;
+
+	/**
+	 * @param mobileNo
+	 * @return
+	 * @throws Exception 
+	 */
+	boolean checkSubsciption(String mobileNo) throws Exception;
+
+	/**
+	 * @param hutchSubscribeDto
+	 * @return
+	 */
+	HutchSubscriptionStatusDto checkSubscriptionStatus(HutchSubscribeDto hutchSubscribeDto);
 
 }

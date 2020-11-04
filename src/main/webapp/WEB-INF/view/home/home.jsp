@@ -71,7 +71,7 @@
                                             </label>
                                         </div> -->
                                     
-                                    	<!-- <div class="row" style="margin-left: 0px; margin-right: 0px;">
+                                    	<div class="row" style="margin-left: 0px; margin-right: 0px;">
                                             <input type="radio" class="stv-radio-button"
                                                    name="optionsRadios" value="7" id="button6" /> <label
                                                    for="button6" >
@@ -90,7 +90,7 @@
                                                     </div>
                                                 </div>
                                             </label>
-                                        </div> -->
+                                        </div>
                                     
                                         <div class="row" style="margin-left: 0px; margin-right: 0px;">
                                             <input type="radio" class="stv-radio-button"
@@ -222,41 +222,41 @@
 
         function initialize() {
             console.log("initialize");
-            localStorage.setItem('subscriptionPaymentId', ${subscriptionPaymentDto.getSubscriptionPaymentId()});
-            localStorage.setItem('viewerId', ${subscriptionPaymentDto.getViewerId()});
-            localStorage.setItem('packageId', ${subscriptionPaymentDto.getPackageId()});
-            localStorage.setItem('tokenHash', "${subscriptionPaymentDto.getTokenHash()}");
-            localStorage.setItem('mobile', "${subscriptionPaymentDto.getMobile()}");
-            localStorage.setItem('isFreeTrial', "${isFreeTrial}");
+            sessionStorage.setItem('subscriptionPaymentId', ${subscriptionPaymentDto.getSubscriptionPaymentId()});
+            sessionStorage.setItem('viewerId', ${subscriptionPaymentDto.getViewerId()});
+            sessionStorage.setItem('packageId', ${subscriptionPaymentDto.getPackageId()});
+            sessionStorage.setItem('tokenHash', "${subscriptionPaymentDto.getTokenHash()}");
+            sessionStorage.setItem('mobile', "${subscriptionPaymentDto.getMobile()}");
+            sessionStorage.setItem('isFreeTrial', "${isFreeTrial}");
         }
 
         $('#button3').click(function () {
-            localStorage.setItem('paymentId', $('#button3').val());
+            sessionStorage.setItem('paymentId', $('#button3').val());
             window.location.replace(baseURL + "/plan");
         });
 
         $('#button4').click(function () {
-            localStorage.setItem('paymentId', $('#button4').val());
+            sessionStorage.setItem('paymentId', $('#button4').val());
             window.location.replace(baseURL + "/plan");
         });
 
         $('#button5').click(function () {
-            localStorage.setItem('paymentId', $('#button5').val());
+            sessionStorage.setItem('paymentId', $('#button5').val());
             window.location.replace(baseURL + "/scratch-card");
         });
         
         $('#button6').click(function () {
-            localStorage.setItem('paymentId', $('#button6').val());
+            sessionStorage.setItem('paymentId', $('#button6').val());
             window.location.replace(baseURL + "/plan");
         });
         
         $('#button7').click(function () {
-            localStorage.setItem('paymentId', $('#button7').val());
+            sessionStorage.setItem('paymentId', $('#button7').val());
             window.location.replace(baseURL + "/plan");
         });
         
         $('#button8').click(function () {
-            localStorage.setItem('paymentId', $('#button8').val());
+            sessionStorage.setItem('paymentId', $('#button8').val());
             window.location.replace(baseURL + "/plan");
         });
 

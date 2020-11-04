@@ -52,17 +52,17 @@
             });
 
             $('#btn_otp_approve').click(function () {
-                var serverRef = localStorage.getItem("server_ref");
-                var subscriptionPaymentId = localStorage.getItem("subscriptionPaymentId");
-                var day = localStorage.getItem("day");
-                var viewerId = localStorage.getItem("viewerId");
-                var methodId = localStorage.getItem("methodId");
+                var serverRef = sessionStorage.getItem("server_ref");
+                var subscriptionPaymentId = sessionStorage.getItem("subscriptionPaymentId");
+                var day = sessionStorage.getItem("day");
+                var viewerId = sessionStorage.getItem("viewerId");
+                var methodId = sessionStorage.getItem("methodId");
                 
 
-            	var isTrial = localStorage.getItem('isFreeTrial');
+            	var isTrial = sessionStorage.getItem('isFreeTrial');
                 var otp = $('#d1').val();
                 var otp_length = otp.toString().length;
-                localStorage.removeItem("invoiceId");
+                sessionStorage.removeItem("invoiceId");
 
                 if (otp_length == 6) {
                     var data_st = {
@@ -97,7 +97,7 @@
                                     window.location.replace(url);
                                 }
                                 else {
-                                	localStorage.setItem("invoiceId",data.invoiceId);
+                                	sessionStorage.setItem("invoiceId",data.invoiceId);
                                     //var url = baseURL + "/notification-email";
                                     var url = baseURL + "/thanks/4";
                                     window.location.replace(url);
@@ -122,9 +122,9 @@
                                 if (data.status == "Success") {
 
                                     var data_st2 = {
-                                        "mobileNo": localStorage.getItem("mobile"),
-                                        "viewerId": localStorage.getItem("viewerId"),
-                                        "planId": localStorage.getItem("planId")
+                                        "mobileNo": sessionStorage.getItem("mobile"),
+                                        "viewerId": sessionStorage.getItem("viewerId"),
+                                        "planId": sessionStorage.getItem("planId")
                                     };
 
                                     $.ajax({
@@ -134,10 +134,10 @@
                                         url: baseURL + "/rest/hnb/begin",
                                         data: JSON.stringify(data_st2),
                                         success: function (data) {
-                                            localStorage.setItem('transaction_uuid', data.transactionUUID);
-                                            localStorage.setItem('referance_no', data.referanceNo);
-                                            localStorage.setItem('card_amount', data.amount);
-                                            localStorage.setItem('invoiceId', data.cardInvoiceId);
+                                            sessionStorage.setItem('transaction_uuid', data.transactionUUID);
+                                            sessionStorage.setItem('referance_no', data.referanceNo);
+                                            sessionStorage.setItem('card_amount', data.amount);
+                                            sessionStorage.setItem('invoiceId', data.cardInvoiceId);
                                             console.log(data);
                                             var url = paymentGatewayRedirectURL + "transaction_uuid=" + data.transactionUUID
                                                     + "&referance=" + data.referanceNo + "&amount=" + data.amount + "&frequency=" + data.frequency
@@ -172,12 +172,13 @@
                             url: baseURL + "/rest/otp/confirm",
                             data: JSON.stringify(data_st),
                             success: function (data) {
-                            	
+                            	var isTrial = sessionStorage.getItem('isFreeTrial');
                                 if (data.status == "Success") {
                                     var data_st2 = {
-                                        "mobileNo": localStorage.getItem("mobile"),
-                                        "viewerId": localStorage.getItem("viewerId"),
-                                        "planId": localStorage.getItem("planId")
+                                        "mobileNo": sessionStorage.getItem("mobile"),
+                                        "viewerId": sessionStorage.getItem("viewerId"),
+                                        "planId": sessionStorage.getItem("planId"),
+                                        "trial": isTrial
                                     };
                                     $.ajax({
                                         type: "post",
@@ -187,7 +188,7 @@
                                         data: JSON.stringify(data_st2),
                                         success: function (data) {
                                         	if(data.status == "ACCEPT"){
-                                        		localStorage.setItem('invoiceId', data.cardInvoiceId);
+                                        		sessionStorage.setItem('invoiceId', data.cardInvoiceId);
                                         		var url = baseURL + "/thanks/8";
                                                 window.location.replace(url);
                                         	} else if(data.status == "DUPLICATE"){
@@ -232,9 +233,9 @@
                             	console.log(data);
                                 if (data.status == "Success") {
                                     var data_st2 = {
-                                        "mobileNo": localStorage.getItem("mobile"),
-                                        "viewerId": localStorage.getItem("viewerId"),
-                                        "planId": localStorage.getItem("planId")
+                                        "mobileNo": sessionStorage.getItem("mobile"),
+                                        "viewerId": sessionStorage.getItem("viewerId"),
+                                        "planId": sessionStorage.getItem("planId")
                                     };
                                     $.ajax({
                                         type: "post",
@@ -243,7 +244,7 @@
                                         url: baseURL + "/keells/begin",
                                         data: JSON.stringify(data_st2),
                                         success: function (data) {
-                                    		localStorage.setItem('invoiceId', data.cardInvoiceId);
+                                    		sessionStorage.setItem('invoiceId', data.cardInvoiceId);
                                         	 var url = baseURL + "/thanks/9";
                                             window.location.replace(url);
 

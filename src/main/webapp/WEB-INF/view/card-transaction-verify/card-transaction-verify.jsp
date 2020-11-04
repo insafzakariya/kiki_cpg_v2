@@ -25,11 +25,11 @@
         function check() {
             console.log("load");
 
-            var viewerId = localStorage.getItem("viewerId");
-            var mobile = localStorage.getItem("mobile");
-            var transaction_uuid = localStorage.getItem("transaction_uuid");
-            var referance_no = localStorage.getItem("referance_no");
-            var card_amount = localStorage.getItem("card_amount");
+            var viewerId = sessionStorage.getItem("viewerId");
+            var mobile = sessionStorage.getItem("mobile");
+            var transaction_uuid = sessionStorage.getItem("transaction_uuid");
+            var referance_no = sessionStorage.getItem("referance_no");
+            var card_amount = sessionStorage.getItem("card_amount");
 
             console.log(mobile);
             var data = {

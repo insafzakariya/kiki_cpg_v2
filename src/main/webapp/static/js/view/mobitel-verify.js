@@ -1,5 +1,5 @@
 $(document).ready(function(){
-        var url = "https://services.mobitel.lk/MCCPortal/service/?compId=SusilaTV&reqType=ACTIVE&servId=SUWS&returnUrl=https://payment.kiki.lk/susilawebpay/mobitel/mobitelPay&bridgeID="+localStorage.getItem("subscriptionPaymentId");
+        var url = "https://services.mobitel.lk/MCCPortal/service/?compId=SusilaTV&reqType=ACTIVE&servId=SUWS&returnUrl=https://payment.kiki.lk/susilawebpay/mobitel/mobitelPay&bridgeID="+sessionStorage.getItem("subscriptionPaymentId");
         console.log(url);
         window.location.href = url;
         $("#confirmPay").addClass("hide");

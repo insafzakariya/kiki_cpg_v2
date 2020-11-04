@@ -115,7 +115,7 @@
         <script src="<c:url value='/static/js/globle.js'/>" type="text/javascript"></script>
         <script type="text/javascript">
             $("#btn-home").click(function () {
-                var token = localStorage.getItem("tokenHash");
+                var token = sessionStorage.getItem("tokenHash");
                 window.location.replace(baseURL + "/thanks/redirecthome");
             });
         </script>

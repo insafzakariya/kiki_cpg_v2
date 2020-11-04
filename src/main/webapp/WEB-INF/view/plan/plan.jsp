@@ -65,22 +65,22 @@
         <script type="text/javascript">
         function initialize() {
         	var isTrial = false;
-        	if(localStorage.getItem('isFreeTrial') == "true") {
+        	if(sessionStorage.getItem('isFreeTrial') == "true") {
         		$("#div-trial").removeClass("hide");
-        		if(localStorage.getItem('paymentId') == '4' || localStorage.getItem('paymentId') == '5' ||
-        			 localStorage.getItem('paymentId') == '8'){
+        		if(sessionStorage.getItem('paymentId') == '4' || sessionStorage.getItem('paymentId') == '5' ||
+        			 sessionStorage.getItem('paymentId') == '8'){
         			$("#div-telco").removeClass("hide");
         			isTrial = true;
         		}
-        		if(localStorage.getItem('paymentId') == '7'){
+        		if(sessionStorage.getItem('paymentId') == '7'){
            			$("#div-hnb").removeClass("hide");
            		}
-        		if(localStorage.getItem('paymentId') == '9'){
+        		if(sessionStorage.getItem('paymentId') == '9'){
            			$("#div-keells").removeClass("hide");
            		}
         	}
 
-            var paymentId = localStorage.getItem('paymentId');
+            var paymentId = sessionStorage.getItem('paymentId');
 
             $.get(baseURL + "/rest/plan/planlist/" + paymentId, function (data, status) {
                 console.log(status);
@@ -136,11 +136,11 @@
         }
 
         function checkNumber(day, methodId, paymentId, planId, amount) {
-            localStorage.setItem('day', day);
-            localStorage.setItem('methodId', methodId);
-            localStorage.setItem('paymentId', paymentId);
-            localStorage.setItem('planId', planId);
-            localStorage.setItem('amount', amount);
+            sessionStorage.setItem('day', day);
+            sessionStorage.setItem('methodId', methodId);
+            sessionStorage.setItem('paymentId', paymentId);
+            sessionStorage.setItem('planId', planId);
+            sessionStorage.setItem('amount', amount);
 
             window.location.replace(baseURL + "/number_verify");
         }

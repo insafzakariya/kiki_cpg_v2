@@ -31,6 +31,9 @@ public class SubscriptionEntity {
 
 	@Column(name = "mobile")
 	private String mobile;
+	
+	@Column(name = "token")
+	private String token;
 
 	@Column(name = "type")
 	private String type;
@@ -150,6 +153,14 @@ public class SubscriptionEntity {
 
 	public void setPaymentPlan(Integer paymentPlan) {
 		this.paymentPlan = paymentPlan;
+	}
+
+	public String getToken() {
+		return token;
+	}
+
+	public void setToken(String token) {
+		this.token = token;
 	}
 
 }
