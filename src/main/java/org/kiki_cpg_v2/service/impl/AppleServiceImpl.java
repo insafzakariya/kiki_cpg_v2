@@ -97,7 +97,7 @@ public class AppleServiceImpl implements AppleService {
 					PaymentMethodPlanEntity paymentMethodPlanEntity = paymentMethodPlanRepository
 							.findById(applePayDto.getPlanId()).get();
 					PackageConfigEntity packageConfigEntity = packageConfigService
-							.getFreeTrialPackageId(paymentMethodPlanEntity.getDays(), AppConstant.APPLE);
+							.getPackage(paymentMethodPlanEntity.getDays(), AppConstant.APPLE);
 
 					SubscriptionEntity subscriptionEntity = getSubsctiptionEntity(applePayDto, paymentMethodPlanEntity,
 							viewerEntity);
