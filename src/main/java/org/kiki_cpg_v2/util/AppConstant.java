@@ -15,7 +15,8 @@ public class AppConstant {
 	public static final String URL_IDEABIZ_UNSUBSCRIBE = "https://ideabiz.lk/apicall/subscription/v3/unsubscribe";
 	public static final String URL_IDEABIZ_SUBSCRIBE = "https://ideabiz.lk/apicall/pin/subscription/v1/subscribe";
 	
-	public static final String URL_APPLE_VERIFY = "https://sandbox.itunes.apple.com/verifyReceipt";
+	//public static final String URL_APPLE_VERIFY = "https://sandbox.itunes.apple.com/verifyReceipt";
+	public static final String URL_APPLE_VERIFY = "https://buy.itunes.apple.com/verifyReceipt";
 	
 	public static final Integer ACTIVE = 1;
 	public static final Integer INACTIVE = 0;

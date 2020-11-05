@@ -23,4 +23,11 @@ public interface PackageConfigRepository extends JpaRepository<PackageConfigEnti
 	 */
 	PackageConfigEntity findFirstByType(String type) throws Exception;
 
+	/**
+	 * @param apple 
+	 * @param days
+	 * @return
+	 */
+	PackageConfigEntity findFirstByTypeAndDays(String apple, Integer days);
+
 }

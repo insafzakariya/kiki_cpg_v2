@@ -2,6 +2,11 @@ package org.kiki_cpg_v2.dto.request;
 
 public class ViewerPolicyUpdateRequestDto {
 
+	@Override
+	public String toString() {
+		return "ViewerPolicyUpdateRequestDto [viewerId=" + viewerId + ", packageId=" + packageId + "]";
+	}
+
 	private Integer viewerId;
 	private Integer packageId;
 

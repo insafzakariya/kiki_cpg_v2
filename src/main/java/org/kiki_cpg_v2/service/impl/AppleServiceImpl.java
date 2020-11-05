@@ -97,7 +97,7 @@ public class AppleServiceImpl implements AppleService {
 					PaymentMethodPlanEntity paymentMethodPlanEntity = paymentMethodPlanRepository
 							.findById(applePayDto.getPlanId()).get();
 					PackageConfigEntity packageConfigEntity = packageConfigService
-							.getFreeTrialPackageId(paymentMethodPlanEntity.getDays(), AppConstant.APPLE);
+							.getPackage(paymentMethodPlanEntity.getDays(), AppConstant.APPLE);
 
 					SubscriptionEntity subscriptionEntity = getSubsctiptionEntity(applePayDto, paymentMethodPlanEntity,
 							viewerEntity);
@@ -207,6 +207,7 @@ public class AppleServiceImpl implements AppleService {
 		entity.setSubscribedDays(paymentMethodPlanEntity.getDays());
 		entity.setType(AppConstant.APPLE);
 		entity.setViewerId(viewerEntity.getId());
+		System.out.println("paymentMethodPlanEntity.getDays() : " + paymentMethodPlanEntity.getDays());
 		entity.setPolicyExpDate(appUtility.getbeforeDay(paymentMethodPlanEntity.getDays(), new Date()));
 		entity.setSubscribe(AppConstant.ACTIVE);
 		entity.setUpdateDate(new Date());

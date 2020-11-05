@@ -39,4 +39,13 @@ public class PackageConfigServiceImpl implements PackageConfigService {
 		}
 		return null;
 	}
+
+	@Override
+	public PackageConfigEntity getPackage(Integer days, String apple) throws Exception {
+		PackageConfigEntity entity = packageConfigRepository.findFirstByTypeAndDays(apple, days);
+		if (entity != null) {
+			return entity;
+		}
+		return null;
+	}
 }

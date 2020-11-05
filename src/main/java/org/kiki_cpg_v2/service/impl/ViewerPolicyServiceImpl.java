@@ -34,6 +34,8 @@ public class ViewerPolicyServiceImpl implements ViewerPolicyService {
 	@Override
 	@Transactional
 	public String updateViewerPolicy(ViewerPolicyUpdateRequestDto viewerPolicyUpdateRequestDto, Integer dateCount) {
+		
+		System.out.println(viewerPolicyUpdateRequestDto);
 
 		ViewerPackageEntity viewerPackageEntity = viewerPackageRepository
 				.findFirstByViewerIdAndStatus(viewerPolicyUpdateRequestDto.getViewerId(), AppConstant.ACTIVE);
@@ -43,6 +45,9 @@ public class ViewerPolicyServiceImpl implements ViewerPolicyService {
 			PackageEntity packageEntity = packageRepository.findById(viewerPackageEntity.getPackageId()).get();
 
 			if (packageEntity != null) {
+				System.out.println(packageEntity.getId() );
+				System.out.println(viewerPolicyUpdateRequestDto.getPackageId());
+				
 				if (packageEntity.getId() == viewerPolicyUpdateRequestDto.getPackageId()) {
 
 					List<PackagePolicyEntity> packagePolicyEntities = new ArrayList<>();
@@ -135,6 +140,7 @@ public class ViewerPolicyServiceImpl implements ViewerPolicyService {
 		entity.setViewerId(viewerId);
 		entity.setViewerPackageEntity(viewerPackageEntity);
 		Calendar c = Calendar.getInstance();
+		System.out.println(packageEntity.getAvailableDays());
 		c.setTime(new Date());
 		if(dateCount > 0) {
 			c.add(Calendar.DATE, dateCount);
