@@ -21,6 +21,13 @@
               href="<c:url value='/static/vendors/awesomebootstrapcheckbox/css/awesome-bootstrap-checkbox.css'/>">
         <link href="<c:url value='/static/css/common.css'/>" rel="stylesheet">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        
+        <style type="text/css">
+	        body {
+			  pointer-events:none;
+			}
+		</style>
+        
         <title>HOME</title>
     </head>
     <body onload="initialize()">
@@ -71,7 +78,7 @@
                                             </label>
                                         </div> -->
                                     
-                                    	<div class="row" style="margin-left: 0px; margin-right: 0px;">
+                                    <!-- 	<div class="row" style="margin-left: 0px; margin-right: 0px;">
                                             <input type="radio" class="stv-radio-button"
                                                    name="optionsRadios" value="7" id="button6" /> <label
                                                    for="button6" >
@@ -91,7 +98,7 @@
                                                 </div>
                                             </label>
                                         </div>
-                                    
+                                     -->
                                         <div class="row" style="margin-left: 0px; margin-right: 0px;">
                                             <input type="radio" class="stv-radio-button"
                                                    name="optionsRadios" value="4" id="button3" /> <label
@@ -135,7 +142,7 @@
                                             </label>
                                         </div>
                                         
-                                        <div class="row" style="margin-left: 0px; margin-right: 0px;">
+                                        <!-- <div class="row" style="margin-left: 0px; margin-right: 0px;">
                                             <input type="radio" class="stv-radio-button"
                                                    name="optionsRadios" value="8" id="button7" /> <label
                                                    for="button7">
@@ -156,9 +163,9 @@
                                                 </div>
 
                                             </label>
-                                        </div>
+                                        </div> -->
                                         
-                                        <div class="row" style="margin-left: 0px; margin-right: 0px;">
+                                        <!-- <div class="row" style="margin-left: 0px; margin-right: 0px;">
                                             <input type="radio" class="stv-radio-button"
                                                    name="optionsRadios" value="9" id="button8" /> <label
                                                    for="button8">
@@ -179,10 +186,10 @@
                                                 </div>
 
                                             </label>
-                                        </div>
+                                        </div> -->
 
 
-                                        <div class="row" style="margin-left: 0px; margin-right: 0px;">
+                                        <!-- <div class="row" style="margin-left: 0px; margin-right: 0px;">
                                             <input type="radio" class="stv-radio-button"
                                                    name="optionsRadios" value="6" id="button5" /> <label
                                                    for="button5">
@@ -202,7 +209,7 @@
                                                     </div>
                                                 </div>
                                             </label>
-                                        </div>
+                                        </div> -->
                                     </form>
                                 </div>
                             </div>
@@ -224,11 +231,16 @@
             console.log("initialize");
             sessionStorage.setItem('subscriptionPaymentId', ${subscriptionPaymentDto.getSubscriptionPaymentId()});
             sessionStorage.setItem('viewerId', ${subscriptionPaymentDto.getViewerId()});
+            sessionStorage.setItem('language', "${subscriptionPaymentDto.getLanguage()}");
             sessionStorage.setItem('packageId', ${subscriptionPaymentDto.getPackageId()});
             sessionStorage.setItem('tokenHash', "${subscriptionPaymentDto.getTokenHash()}");
             sessionStorage.setItem('mobile', "${subscriptionPaymentDto.getMobile()}");
             sessionStorage.setItem('isFreeTrial', "${isFreeTrial}");
         }
+        
+        $(document).ready(() => {
+        	  $('body').css('pointer-events', 'all') //activate all pointer-events on body
+        })
 
         $('#button3').click(function () {
             sessionStorage.setItem('paymentId', $('#button3').val());

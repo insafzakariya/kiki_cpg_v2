@@ -21,8 +21,15 @@ public class PlanController {
 	
 	@GetMapping("/planlist/{paymentMethodId}")
 	public List<PaymantPlanDto> getPaymentListDto( @PathVariable Integer paymentMethodId) {
-		System.out.println("paymentMethodId" + paymentMethodId);
-		List<PaymantPlanDto> packageDtos = paymentMethodService.getPaymentPlan(paymentMethodId);
+		System.out.println("paymentMethodId : " + paymentMethodId);
+		List<PaymantPlanDto> packageDtos = paymentMethodService.getPaymentPlan(paymentMethodId, null);
+		return packageDtos;
+	}
+
+	@GetMapping("/planlist/{paymentMethodId}/{lang}")
+	public List<PaymantPlanDto> getPaymentListDtoByLang( @PathVariable Integer paymentMethodId, @PathVariable(name = "lang", required = false) String lang) {
+		System.out.println("paymentMethodId 12 : " + paymentMethodId);
+		List<PaymantPlanDto> packageDtos = paymentMethodService.getPaymentPlan(paymentMethodId, lang);
 		return packageDtos;
 	}
 

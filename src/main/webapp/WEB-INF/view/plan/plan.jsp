@@ -40,13 +40,13 @@
                 	
                 	<div id="div-telco" class="hide" style="color: white; text-align: left;">
                 		<ul>
-                			<li>Subscribe to enjoy a 3 days free trial</li>
-                			<li>You wan't be charged until after your trial ends</li>
-                			<li>Cancle anytime</li>
+                			<li>Subscribe to enjoy 3 days free trial</li>
+                			<li>You won't be charged any subscription fees until the end of your free trial period</li>
+                			<li>Cancel anytime</li>
                 		</ul>
                 	</div>
                 	<div id="div-hnb" class="hide">
-                		<span style="color: red; text-align: center;">Please note that free trial for Card Payment is currently unavailable.</span>
+                		<span style="color: red; text-align: center;">Please note that free trial for HNB is currently unavailable.</span>
                 	</div>
                 	<div id="div-keells" class="hide">
                 		<span style="color: red; text-align: center;">Please note that free trial is not available for Keells pay.</span>
@@ -81,8 +81,16 @@
         	}
 
             var paymentId = sessionStorage.getItem('paymentId');
+            var lang = sessionStorage.getItem('language');
+            
+            var url = baseURL + "/rest/plan/planlist/" + paymentId;
+            if(lang != null){
+            	url = url+"/"+lang;
+            }
+            
+            console.log(url);
 
-            $.get(baseURL + "/rest/plan/planlist/" + paymentId, function (data, status) {
+            $.get(url, function (data, status) {
                 console.log(status);
                 if (status == "success") {
                     console.log(data);

@@ -8,7 +8,7 @@ import org.kiki_cpg_v2.entity.PaymentMethodEntity;
 
 public interface PaymentMethodService {
 
-	List<PaymantPlanDto> getPaymentPlan(Integer paymentMethodId);
+	List<PaymantPlanDto> getPaymentPlan(Integer paymentMethodId, String lang);
 
 	Double getPaymentPlanAmount(Integer day, Integer i);
 
@@ -22,5 +22,12 @@ public interface PaymentMethodService {
 	 * @return
 	 */
 	PaymantMethodDto getPaymantMethodDto(PaymentMethodEntity e);
+
+	/**
+	 * @param paymentMethodId
+	 * @param lang
+	 * @return
+	 */
+	
 
 }

@@ -405,48 +405,28 @@ public class HutchServiceImpl implements HutchService {
 											try {
 
 												Double amount = subscriptionEntity.getAmount();
-
-												Thread thread = new Thread() {
-													public void run() {
-														String body = "";
-														String title = "Subscription";
-														if (beginDto.isTrial()) {
-															if (checkSubscriptionStatus(hutchSubscribeDto).getStatus()
-																	.equalsIgnoreCase("t")) {
-																body = "Welcome to KiKi. We regret to inform you that the 3 days free trial is not available for this mobile number as it was already allotted before. You will be charged Rs "
-																		+ amount + " + tax/ "
-																		+ appUtility.getHutchPackageFrequance(
-																				paymentRefDto.getDays());
-															} else {
-																body = "Welcome to KiKi. You will be charged Rs "
-																		+ amount + "+tax/ "
-																		+ appUtility.getHutchPackageFrequance(
-																				paymentRefDto.getDays())
-																		+ " with a 3-day free trial";
-															}
-														} else {
-															body = "Welcome to KiKi. You will be charged Rs " + amount
-																	+ " + tax/ " + appUtility.getHutchPackageFrequance(
-																			paymentRefDto.getDays());
-														}
-														NotificationDto notificationDto = new NotificationDto();
-														notificationDto.getDeviceid().add(viewerEntity.getDeviceId());
-														notificationDto.setBody(body);
-														notificationDto.setTitle(title);
-														notificationDto.setType("2");
-														notificationDto.setDate_time(
-																new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
-																		.format(new Date()));
-														System.out.println(notificationDto.toString());
-														try {
-															notificationService.sendNotification(notificationDto);
-														} catch (Exception e) {
-															e.printStackTrace();
-														}
+												String body = "";
+												if (beginDto.isTrial()) {
+													if (checkSubscriptionStatus(hutchSubscribeDto).getStatus()
+															.equalsIgnoreCase("t")) {
+														body = "Welcome to KiKi. We regret to inform you that the 3 days free trial is not available for this mobile number as it was already allotted before. You will be charged Rs "
+																+ amount + " + tax/ "
+																+ appUtility.getHutchPackageFrequance(
+																		paymentRefDto.getDays());
+													} else {
+														body = "Welcome to KiKi. You will be charged Rs "
+																+ amount + "+tax/ "
+																+ appUtility.getHutchPackageFrequance(
+																		paymentRefDto.getDays())
+																+ " with a 3-day free trial";
 													}
-												};
-
-												thread.start();
+												} else {
+													body = "Welcome to KiKi. You will be charged Rs " + amount
+															+ " + tax/ " + appUtility.getHutchPackageFrequance(
+																	paymentRefDto.getDays());
+												}
+												notificationService.sendSubscriptionNotification(body, viewerEntity.getDeviceId());
+												
 
 											} catch (Exception e) {
 												e.printStackTrace();

@@ -12,6 +12,7 @@ import org.kiki_cpg_v2.dto.request.ViewerPolicyUpdateRequestDto;
 import org.kiki_cpg_v2.entity.PackageConfigEntity;
 import org.kiki_cpg_v2.entity.SubscriptionEntity;
 import org.kiki_cpg_v2.entity.SubscriptionInvoiceEntity;
+import org.kiki_cpg_v2.entity.ViewerEntity;
 //import org.kiki_cpg_v2.entity.ViewerEntity;
 import org.kiki_cpg_v2.entity.ViewerSubscriptionEntity;
 import org.kiki_cpg_v2.enums.SubscriptionType;
@@ -19,11 +20,13 @@ import org.kiki_cpg_v2.enums.SubscriptionType;
 /*import org.kiki_cpg_v2.repository.MerchantAccountRepository;*/
 import org.kiki_cpg_v2.repository.SubscriptionInvoiceRepository;
 import org.kiki_cpg_v2.repository.SubscriptionRepository;
+import org.kiki_cpg_v2.repository.ViewerRepository;
 //import org.kiki_cpg_v2.repository.ViewerRepository;
 import org.kiki_cpg_v2.repository.ViewerSubscriptionRepository;
 import org.kiki_cpg_v2.service.CronViewerRepostService;
 import org.kiki_cpg_v2.service.IDGeneratorService;
 import org.kiki_cpg_v2.service.MobitelService;
+import org.kiki_cpg_v2.service.NotificationService;
 import org.kiki_cpg_v2.service.PackageConfigService;
 import org.kiki_cpg_v2.service.PaymentLogService;
 import org.kiki_cpg_v2.service.SubscriptionPaymentService;
@@ -84,6 +87,9 @@ public class MobitelServiceImpl implements MobitelService {
 	private SubscriptionService subscriptionService;
 	
 	@Autowired
+	private NotificationService notificationService;
+	
+	@Autowired
 	private SubscriptionRepository subscriptionRepository;
 	
 	@Autowired
@@ -91,6 +97,9 @@ public class MobitelServiceImpl implements MobitelService {
 	
 	@Autowired
 	private IDGeneratorService idGeneratorService;
+	
+	@Autowired
+	private ViewerRepository viewerRepository;
 	
 	@Autowired
 	private PackageConfigService packageConfigService;
@@ -143,6 +152,7 @@ public class MobitelServiceImpl implements MobitelService {
 		PaymentRefDto paymentRefDto = subscriptionService.getPaymentRefDto(transactionBeginDto, -1, -1);
 		SubscriptionEntity subscriptionEntity = subscriptionService.getSubsctiptionEntity(transactionBeginDto, paymentRefDto, AppConstant.MOBITEL); 
 		subscriptionEntity = subscriptionRepository.save(subscriptionEntity);
+		ViewerEntity viewerEntity = viewerRepository.findById(viewerId).get();
 		Integer subscribedDays = paymentRefDto.getDays();
 		if(subscriptionEntity != null) {
 			if(trial) {
@@ -160,6 +170,23 @@ public class MobitelServiceImpl implements MobitelService {
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
+					
+					Double amount = subscriptionEntity.getAmount();
+					String body = "";
+					if (trial) {
+						body = "Welcome to KiKi. You will be charged Rs "
+									+ amount + "+tax/ "
+									+ appUtility.getHutchPackageFrequance(
+											paymentRefDto.getDays())
+									+ " with a 3-day free trial";
+						
+					} else {
+						body = "Welcome to KiKi. You will be charged Rs " + amount
+								+ " + tax/ " + appUtility.getHutchPackageFrequance(
+										paymentRefDto.getDays());
+					}
+					notificationService.sendSubscriptionNotification(body, viewerEntity.getDeviceId());
+					
 					return "success";
 				} else {
 					return paymentResp;
@@ -170,6 +197,22 @@ public class MobitelServiceImpl implements MobitelService {
 				if (resp.equals("1000")) {
 					String paymentResp = proceedPayment(viewerId, subscribedDays, mobileNo, subscriptionPaymentId, planId, subscriptionEntity, trial);
 					if (paymentResp.equalsIgnoreCase("success")) {
+						Double amount = subscriptionEntity.getAmount();
+						String body = "";
+						if (trial) {
+							body = "Welcome to KiKi. You will be charged Rs "
+										+ amount + "+tax/ "
+										+ appUtility.getHutchPackageFrequance(
+												paymentRefDto.getDays())
+										+ " with a 3-day free trial";
+							
+						} else {
+							body = "Welcome to KiKi. You will be charged Rs " + amount
+									+ " + tax/ " + appUtility.getHutchPackageFrequance(
+											paymentRefDto.getDays());
+						}
+						notificationService.sendSubscriptionNotification(body, viewerEntity.getDeviceId());
+						
 						try {
 							mobitelClient.updateOneCCTool(true, mobileNo, new Date(), null);
 						} catch (Exception e) {
@@ -310,6 +353,7 @@ public class MobitelServiceImpl implements MobitelService {
 
 			String serverResponse = "";
 
+			System.out.println(AppConstant.MOBITEL+(int)subscriptionEntity.getAmount().doubleValue());
 			int lastTransaciontId = idGeneratorService.generateId(AppConstant.MOBITEL+(int)subscriptionEntity.getAmount().doubleValue());
 			
 			System.out.println(lastTransaciontId);
@@ -358,7 +402,7 @@ public class MobitelServiceImpl implements MobitelService {
 				merchantAccountRepository.save(merchantAccountEntity);*/
 				paymentLogService.createPaymentLog("Mobitel", returnValue, "-", subscriptionEntity.getViewerId(), mobileNo, AppConstant.ACCEPT);
 				SubscriptionInvoiceEntity subscriptionInvoiceEntity=  subscriptionService.getSubscriptionInvoiceEntity(mobileNo, "1", subscriptionEntity, AppConstant.MOBITEL);
-				
+				subscriptionEntity.setPolicyExpDate(appUtility.getbeforeDay(subscriptionEntity.getSubscribedDays(), new Date()));
 				subscriptionInvoiceRepository.save(subscriptionInvoiceEntity);
 				paymentStatus = "Success";
 				responseMsg = "Activation Successful";

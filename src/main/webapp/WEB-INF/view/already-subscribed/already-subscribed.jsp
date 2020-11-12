@@ -64,7 +64,7 @@
 								<div class="col-xs-4 col-md-4">
 									<div>
 										<img src="/susilawebpay/static/assets/images/dialog-new.jpg"
-											style="height: 40px; margin-top: 5px;">
+											style="height: 40px; margin-top: 8px;">
 									</div>
 
 								</div>
@@ -93,7 +93,7 @@
 								<div class="col-xs-4 col-md-4" style="padding-top: 10px;">
 									<div>
 										<img src="/susilawebpay/static/assets/images/mobitel.png"
-											style="height: 40px; margin-top: 5px;">
+											style="height: 40px; margin-top: 8px;">
 									</div>
 
 								</div>
@@ -121,7 +121,7 @@
 								<div class="col-xs-4 col-md-4">
 									<div>
 										<img src="/susilawebpay/static/assets/images/hutch.jpg"
-											style="height: 40px; margin-top: 5px;">
+											style="height: 40px; margin-top: 8px;">
 									</div>
 
 								</div>
@@ -151,7 +151,7 @@
 								<div class="col-xs-4 col-md-4">
 									<div>
 										<img src="/susilawebpay/static/assets/images/Keells.jpg"
-											style="height: 40px; margin-top: 5px;">
+											style="height: 40px; margin-top: 8px;">
 									</div>
 
 								</div>
@@ -247,6 +247,7 @@
 			    sessionStorage.setItem('subscriptionPaymentId', ${subscriptionPaymentDto.getSubscriptionPaymentId()});
 			    sessionStorage.setItem('viewerId', ${subscriptionPaymentDto.getViewerId()});
 			    sessionStorage.setItem('packageId', ${subscriptionPaymentDto.getPackageId()});
+			    sessionStorage.setItem('language', "${subscriptionPaymentDto.getLanguage()}");
 			    sessionStorage.setItem('tokenHash', "${subscriptionPaymentDto.getTokenHash()}");
 			    sessionStorage.setItem('mobile', "${subscriptionPaymentDto.getMobile()}");
 			}

@@ -95,6 +95,8 @@ public class SubscriptionPaymentServiceImpl implements SubscriptionPaymentServic
 
 			SubscriptionPaymentDto subscriptionPaymentDto = getSubscriptionPaymentDto(subscriptionPaymentEntity,
 					viewerTrialPeriodAssociationEntity, viewerEntity);
+			
+			subscriptionPaymentDto.setLanguage(viewerEntity.getLanguage());
 
 			if (!type.equalsIgnoreCase("new")) {
 				ViewerSubscriptionEntity viewerSubscriptionEntity = viewerSubscriptionRepository

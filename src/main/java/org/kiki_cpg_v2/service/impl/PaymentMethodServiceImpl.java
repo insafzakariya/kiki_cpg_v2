@@ -1,6 +1,5 @@
 package org.kiki_cpg_v2.service.impl;
 
-import java.time.DayOfWeek;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,23 +20,43 @@ public class PaymentMethodServiceImpl implements PaymentMethodService {
 	private PaymentMethodRepository paymentMethodRepository;
 
 	@Override
-	public List<PaymantPlanDto> getPaymentPlan(Integer paymentMethodId) {
+	public List<PaymantPlanDto> getPaymentPlan(Integer paymentMethodId, String lang) {
 		PaymentMethodEntity paymentMethodEntity = paymentMethodRepository.findById(paymentMethodId).get();
 		System.out.println(paymentMethodEntity == null);
 		List<PaymantPlanDto> paymantPlanDtos = new ArrayList<PaymantPlanDto>();
 		paymentMethodEntity.getPaymentMethodPlanEntities().forEach(e -> {
 			if (e.getStatus() == 1) {
-				paymantPlanDtos.add(getPaymantPlanDto(e, paymentMethodId));
+				paymantPlanDtos.add(getPaymantPlanDto(e, paymentMethodId, lang));
 			}
 		});
 		return paymantPlanDtos;
 	}
 
-	private PaymantPlanDto getPaymantPlanDto(PaymentMethodPlanEntity e, Integer paymentMethodId) {
+	private PaymantPlanDto getPaymantPlanDto(PaymentMethodPlanEntity e, Integer paymentMethodId, String lang) {
 		PaymantPlanDto dto = new PaymantPlanDto();
 		dto.setId(e.getId());
-		dto.setName(e.getName());
-		dto.setValue("Rs. " + e.getValue() + " + Tax");
+		
+		
+		if(lang != null && !lang.isEmpty()) {
+			if (lang.equalsIgnoreCase("si")) {
+				dto.setName(e.getNameSinhala());
+				dto.setValue("රු . " + e.getValue() + " + බදු");
+			}
+
+			if (lang.equalsIgnoreCase("en")) {
+				dto.setName(e.getName());
+				dto.setValue("Rs. " + e.getValue() + " + Tax");
+			}
+			
+			if (lang.equalsIgnoreCase("ta")) {
+				dto.setName(e.getNameTamil());
+				dto.setValue("Rs. " + e.getValue() + " + Tax");
+			}	
+		}else {
+			dto.setName(e.getName());
+			dto.setValue("Rs. " + e.getValue() + " + Tax");
+		}
+
 		dto.setAmount(e.getValue());
 		dto.setOffer(e.getOffer());
 		dto.setPaymentMethodId(paymentMethodId);
@@ -71,7 +90,7 @@ public class PaymentMethodServiceImpl implements PaymentMethodService {
 	@Override
 	public List<PaymantMethodDto> getActivePaymentMethodes() {
 		List<PaymentMethodEntity> paymentMethodEntities = paymentMethodRepository.findByStatus(AppConstant.ACTIVE);
-		
+
 		List<PaymantMethodDto> paymantPlanDtos = new ArrayList<PaymantMethodDto>();
 		paymentMethodEntities.forEach(e -> {
 			paymantPlanDtos.add(getPaymantMethodDto(e));

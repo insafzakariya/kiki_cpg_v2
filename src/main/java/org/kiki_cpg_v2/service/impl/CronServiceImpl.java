@@ -175,10 +175,7 @@ public class CronServiceImpl implements CronService {
 			 * .getViewerSubscriptionCustomEntityExpireBeforeToday();
 			 */
 
-			subscriptionEntities.forEach(e -> {
-				System.out.println("Mobitel Viewer Id : " + e.getViewerId());
-				logger.info("Mobitel Viewer Id : " + e.getViewerId());
-			});
+			
 
 			if (subscriptionEntities != null) {
 				CronReportEntity cronReportEntity = saveCron(cronName, ipAddress, date, time, "Mobitel");
