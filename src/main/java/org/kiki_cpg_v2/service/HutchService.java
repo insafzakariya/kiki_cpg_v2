@@ -94,7 +94,7 @@ public interface HutchService {
 	 * @return
 	 * @throws Exception 
 	 */
-	boolean checkSubsciption(String mobileNo) throws Exception;
+	boolean checkSubsciption(String mobileNo, Integer planId) throws Exception;
 
 	/**
 	 * @param hutchSubscribeDto

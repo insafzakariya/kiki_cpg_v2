@@ -78,7 +78,7 @@
                                             </label>
                                         </div> -->
                                     
-                                    <!-- 	<div class="row" style="margin-left: 0px; margin-right: 0px;">
+                                   <div class="row" style="margin-left: 0px; margin-right: 0px;">
                                             <input type="radio" class="stv-radio-button"
                                                    name="optionsRadios" value="7" id="button6" /> <label
                                                    for="button6" >
@@ -98,7 +98,7 @@
                                                 </div>
                                             </label>
                                         </div>
-                                     -->
+                                     
                                         <div class="row" style="margin-left: 0px; margin-right: 0px;">
                                             <input type="radio" class="stv-radio-button"
                                                    name="optionsRadios" value="4" id="button3" /> <label
@@ -142,7 +142,7 @@
                                             </label>
                                         </div>
                                         
-                                        <!-- <div class="row" style="margin-left: 0px; margin-right: 0px;">
+                                        <div class="row" style="margin-left: 0px; margin-right: 0px;">
                                             <input type="radio" class="stv-radio-button"
                                                    name="optionsRadios" value="8" id="button7" /> <label
                                                    for="button7">
@@ -163,9 +163,9 @@
                                                 </div>
 
                                             </label>
-                                        </div> -->
+                                        </div> 
                                         
-                                        <!-- <div class="row" style="margin-left: 0px; margin-right: 0px;">
+                                        <div class="row" style="margin-left: 0px; margin-right: 0px;">
                                             <input type="radio" class="stv-radio-button"
                                                    name="optionsRadios" value="9" id="button8" /> <label
                                                    for="button8">
@@ -186,8 +186,7 @@
                                                 </div>
 
                                             </label>
-                                        </div> -->
-
+                                        </div>
 
                                         <!-- <div class="row" style="margin-left: 0px; margin-right: 0px;">
                                             <input type="radio" class="stv-radio-button"

@@ -31,6 +31,7 @@ import org.kiki_cpg_v2.service.NotificationService;
 import org.kiki_cpg_v2.service.PackageConfigService;
 import org.kiki_cpg_v2.service.PaymentDetailService;
 import org.kiki_cpg_v2.service.PaymentLogService;
+import org.kiki_cpg_v2.service.ViewerNotificationService;
 import org.kiki_cpg_v2.service.ViewerPolicyService;
 import org.kiki_cpg_v2.service.ViewerService;
 import org.kiki_cpg_v2.service.ViewerUnsubscriptionService;
@@ -83,6 +84,9 @@ public class HutchServiceImpl implements HutchService {
 
 	@Autowired
 	private ViewerService viewerService;
+	
+	@Autowired
+	private ViewerNotificationService viewerNotificationService;
 
 	@Autowired
 	private HutchClient hutchClient;
@@ -194,6 +198,12 @@ public class HutchServiceImpl implements HutchService {
 												System.out.println(notificationDto.toString());
 												try {
 													notificationService.sendNotification(notificationDto);
+												} catch (Exception e) {
+													e.printStackTrace();
+												}
+												
+												try {
+													viewerNotificationService.save(body, viewerEntity.getId());
 												} catch (Exception e) {
 													e.printStackTrace();
 												}
@@ -348,7 +358,7 @@ public class HutchServiceImpl implements HutchService {
 	@Transactional
 	public PaymentRefDto beginSubscribe(TransactionBeginDto beginDto) throws Exception {
 
-		if (!checkSubsciption(beginDto.getMobileNo())) {
+		if (!checkSubsciption(beginDto.getMobileNo(), beginDto.getPlanId())) {
 			throw new RuntimeException("Save Error | Can't Unsubscribe Previous Package");
 		}
 
@@ -425,8 +435,16 @@ public class HutchServiceImpl implements HutchService {
 															+ " + tax/ " + appUtility.getHutchPackageFrequance(
 																	paymentRefDto.getDays());
 												}
-												notificationService.sendSubscriptionNotification(body, viewerEntity.getDeviceId());
-												
+												try {
+													notificationService.sendSubscriptionNotification(body, viewerEntity.getDeviceId());
+												} catch (Exception e) {
+													e.printStackTrace();
+												}
+												try {
+													viewerNotificationService.save(body, viewerEntity.getId());
+												} catch (Exception e) {
+													e.printStackTrace();
+												}
 
 											} catch (Exception e) {
 												e.printStackTrace();
@@ -476,11 +494,11 @@ public class HutchServiceImpl implements HutchService {
 	}
 
 	@Override
-	public boolean checkSubsciption(String mobileNo) throws Exception {
+	public boolean checkSubsciption(String mobileNo, Integer planId) throws Exception {
 		SubscriptionEntity subscriptionEntity = subscriptionRepository
 				.findFirstByMobileContainingAndStatusAndSubscribeAndType(mobileNo, AppConstant.ACTIVE,
 						AppConstant.ACTIVE, AppConstant.HUTCH);
-		if (subscriptionEntity != null) {
+		if (subscriptionEntity != null && !subscriptionEntity.getPaymentPlan().equals(planId)) {
 			return processUnsubscription(subscriptionEntity.getViewerId(), subscriptionEntity.getMobile());
 		} else {
 			return true;

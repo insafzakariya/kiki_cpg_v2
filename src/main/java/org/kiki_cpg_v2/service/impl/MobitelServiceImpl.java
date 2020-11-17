@@ -31,6 +31,7 @@ import org.kiki_cpg_v2.service.PackageConfigService;
 import org.kiki_cpg_v2.service.PaymentLogService;
 import org.kiki_cpg_v2.service.SubscriptionPaymentService;
 import org.kiki_cpg_v2.service.SubscriptionService;
+import org.kiki_cpg_v2.service.ViewerNotificationService;
 import org.kiki_cpg_v2.service.ViewerPolicyService;
 import org.kiki_cpg_v2.service.ViewerService;
 import org.kiki_cpg_v2.service.ViewerUnsubscriptionService;
@@ -97,6 +98,9 @@ public class MobitelServiceImpl implements MobitelService {
 	
 	@Autowired
 	private IDGeneratorService idGeneratorService;
+	
+	@Autowired
+	private ViewerNotificationService viewerNotificationService;
 	
 	@Autowired
 	private ViewerRepository viewerRepository;
@@ -211,7 +215,18 @@ public class MobitelServiceImpl implements MobitelService {
 									+ " + tax/ " + appUtility.getHutchPackageFrequance(
 											paymentRefDto.getDays());
 						}
-						notificationService.sendSubscriptionNotification(body, viewerEntity.getDeviceId());
+						try {
+							notificationService.sendSubscriptionNotification(body, viewerEntity.getDeviceId());
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+						
+						try {
+							viewerNotificationService.save(body, viewerEntity.getId());
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+						
 						
 						try {
 							mobitelClient.updateOneCCTool(true, mobileNo, new Date(), null);
