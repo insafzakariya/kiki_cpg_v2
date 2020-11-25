@@ -59,13 +59,12 @@ public class CronSchedulerImpl implements CronScheduler {
 		
 		/*Thread hnbThread = new Thread() {
 			public void run() {
-				
+				cronService.startHnbCron(name, ipAddress, date, time);
 			}
 		};
 
 		hnbThread.start();*/
 		
-		//cronService.startHnbCron(name, ipAddress, date, time);
 
 	}
 

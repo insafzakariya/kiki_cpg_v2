@@ -17,7 +17,7 @@
 </head>
 <body onload="initialize()" class="container main_container ">
 	<div class="header_container">
-		<h5 class="header">Your Subscriptions</h5>
+		<h5 class="header" id="title">Your Subscriptions</h5>
 	</div>
 
 	<div class="body_container">
@@ -41,10 +41,10 @@
 								<div class="col-xs-8 col-md-8" style="padding-right: 20px;">
 									<p style="text-align: right;">Card</p>
 									<p style="text-align: right; margin-top: -13px;">
-										<span style="color: red;"> Click to unsubscribe</span>
+										<span style="color: red;" class="body-text-1"> Click to unsubscribe</span>
 									</p>
 									<p style="text-align: right; margin-top: -15px;">
-										<span style="margin-top: 20px;">Last Payment:
+										<span style="margin-top: 20px;" class="body-text-2">Last Payment:</span><span style="margin-top: 20px;">
 											${lastSubscribeDay}</span>
 									</p>
 
@@ -71,10 +71,10 @@
 								<div class="col-xs-8 col-md-8" style="padding-right: 20px;">
 									<p style="text-align: right;">Dialog</p>
 									<p style="text-align: right; margin-top: -13px;">
-										<span style="color: red;"> Click to unsubscribe</span>
+										<span style="color: red;" class="body-text-1"> Click to unsubscribe</span>
 									</p>
 									<p style="text-align: right; margin-top: -15px;">
-										<span style="margin-top: 20px;">Last Payment:
+										<span style="margin-top: 20px;" class="body-text-2">Last Payment:</span><span style="margin-top: 20px;">
 											${lastSubscribeDay}</span>
 									</p>
 								</div>
@@ -86,7 +86,8 @@
 					</a>
 				</c:when>
 				<c:when test="${subscriptionType eq 'MOBITEL'}">
-					<a id="mobitel" data-toggle="modal" data-target="#confirmation_mobitel">
+					<a id="mobitel" data-toggle="modal"
+						data-target="#confirmation_mobitel">
 
 						<div class="body_frame">
 							<div class="row">
@@ -100,10 +101,10 @@
 								<div class="col-xs-8 col-md-8" style="padding-right: 20px;">
 									<p style="text-align: right;">Mobitel - Add to my bill</p>
 									<p style="text-align: right; margin-top: -13px;">
-										<span style="color: red;"> Click to unsubscribe</span>
+										<span style="color: red;" class="body-text-1"> Click to unsubscribe</span>
 									</p>
 									<p style="text-align: right; margin-top: -15px;">
-										<span style="margin-top: 20px;">Last Payment:
+										<span style="margin-top: 20px;" class="body-text-2">Last Payment:</span><span style="margin-top: 20px;">
 											${lastSubscribeDay}</span>
 									</p>
 								</div>
@@ -128,10 +129,10 @@
 								<div class="col-xs-8 col-md-8" style="padding-right: 20px;">
 									<p style="text-align: right;">Hutch</p>
 									<p style="text-align: right; margin-top: -13px;">
-										<span style="color: red;"> Click to unsubscribe</span>
+										<span style="color: red;" class="body-text-1"> Click to unsubscribe</span>
 									</p>
 									<p style="text-align: right; margin-top: -15px;">
-										<span style="margin-top: 20px;">Last Payment:
+										<span style="margin-top: 20px;" class="body-text-2">Last Payment:</span><span style="margin-top: 20px;">
 											${lastSubscribeDay}</span>
 									</p>
 								</div>
@@ -160,7 +161,7 @@
 									<br>
 									<!-- <p style=" text-align: right; margin-top: -13px;"> <span style="color: red;"> Click to unsubscribe</span> </p> -->
 									<p style="text-align: right; margin-top: -15px;">
-										<span style="margin-top: 20px;">Last Payment:
+										<span style="margin-top: 20px;" class="body-text-2">Last Payment:</span><span style="margin-top: 20px;">
 											${lastSubscribeDay}</span>
 									</p>
 								</div>
@@ -173,53 +174,53 @@
 				</c:when>
 			</c:choose>
 		</c:forEach>
-		<button type="button" id="btnnewsubscription" class="form_submit">ADD NEW
-			SUBSCRIPTION</button>
+		<button type="button" id="btnnewsubscription" class="form_submit">ADD
+			NEW SUBSCRIPTION</button>
 
-		<div id="confirmation_dialog" class="modal fade" >
+		<div id="confirmation_dialog" class="modal fade">
 			<div class="modal-dialog modal-sm">
 				<div class="modal-content" style="border: solid 3px #24A9A6">
 					<div class="modal-body">
 						<h4 class="modal-title">Would you like to Unsubscribe?</h4>
 						<button id="btn_dviu" type="button" class="btn form_btn">Yes</button>
-						
-						<button type="button" class="btn form_btn" data-dismiss="modal">No</button>
+
+						<button type="button" class="btn form_btn btn-no" data-dismiss="modal">No</button>
 					</div>
 				</div>
 			</div>
 		</div>
-		<div id="confirmation_mobitel" class="modal fade" >
+		<div id="confirmation_mobitel" class="modal fade">
 			<div class="modal-dialog modal-sm">
 				<div class="modal-content" style="border: solid 3px #24A9A6">
 					<div class="modal-body">
 						<h4 class="modal-title">Would you like to Unsubscribe?</h4>
 						<button id="btn_mobitel" type="button" class="btn form_btn">Yes</button>
-						
-						<button type="button" class="btn form_btn" data-dismiss="modal">No</button>
+
+						<button type="button" class="btn form_btn btn-no" data-dismiss="modal">No</button>
 					</div>
 				</div>
 			</div>
 		</div>
-		<div id="confirmation_hutch" class="modal fade" >
+		<div id="confirmation_hutch" class="modal fade">
 			<div class="modal-dialog modal-sm">
 				<div class="modal-content" style="border: solid 3px #24A9A6">
 					<div class="modal-body">
 						<h4 class="modal-title">Would you like to Unsubscribe?</h4>
 						<button id="btn_hutch" type="button" class="btn form_btn">Yes</button>
-						
-						<button type="button" class="btn form_btn" data-dismiss="modal">No</button>
+
+						<button type="button" class="btn form_btn btn-no" data-dismiss="modal">No</button>
 					</div>
 				</div>
 			</div>
 		</div>
-		<div id="confirmation_card" class="modal fade" >
+		<div id="confirmation_card" class="modal fade">
 			<div class="modal-dialog modal-sm">
 				<div class="modal-content" style="border: solid 3px #24A9A6">
 					<div class="modal-body">
 						<h4 class="modal-title">Would you like to Unsubscribe?</h4>
 						<button id="btn_card" type="button" class="btn form_btn">Yes</button>
-						
-						<button type="button" class="btn form_btn" data-dismiss="modal">No</button>
+
+						<button type="button" class="btn form_btn btn-no" data-dismiss="modal">No</button>
 					</div>
 				</div>
 			</div>
@@ -229,9 +230,27 @@
 	</div>
 
 
-	<script src="<c:url value='/static/js/jquery-1.11.3.min.js'/>"
+	<script src="<c:url value='/static/js/jquery-3.5.1.min.js'/>"
 		type="text/javascript"></script>
 	<script src="<c:url value='/static/js/bootstrap.min.js'/>"
+		type="text/javascript"></script>
+	<script src="<c:url value='/static/js/i18n/CLDRPluralRuleParser.js'/>"
+		type="text/javascript"></script>
+	<script src="<c:url value='/static/js/i18n/jquery.i18n.js'/>"
+		type="text/javascript"></script>
+	<script
+		src="<c:url value='/static/js/i18n/jquery.i18n.messagestore.js'/>"
+		type="text/javascript"></script>
+	<script src="<c:url value='/static/js/i18n/jquery.i18n.fallbacks.js'/>"
+		type="text/javascript"></script>
+	<script src="<c:url value='/static/js/i18n/jquery.i18n.parser.js'/>"
+		type="text/javascript"></script>
+	<script src="<c:url value='/static/js/i18n/jquery.i18n.emitter.js'/>"
+		type="text/javascript"></script>
+	<script
+		src="<c:url value='/static/js/i18n/jquery.i18n.emitter.bidi.js'/>"
+		type="text/javascript"></script>
+	<script src="<c:url value='/static/js/i18n/jquery.i18n.language.js'/>"
 		type="text/javascript"></script>
 	<script src="<c:url value='/static/js/globle.js'/>"
 		type="text/javascript"></script>
@@ -250,6 +269,29 @@
 			    sessionStorage.setItem('language', "${subscriptionPaymentDto.getLanguage()}");
 			    sessionStorage.setItem('tokenHash', "${subscriptionPaymentDto.getTokenHash()}");
 			    sessionStorage.setItem('mobile', "${subscriptionPaymentDto.getMobile()}");
+			    
+			    
+			    $.i18n({
+	                locale: sessionStorage.getItem('language').toLowerCase()
+	            });
+	            $.i18n().load({
+	                en: './static/language/en.json',
+	                si: './static/language/si.json',
+	                ta: './static/language/ta.json'
+	            }).done(function() {
+	                console.log('done!')
+	                $("#title").text($.i18n('already-sub-title'));
+	                $("#btnnewsubscription").text($.i18n('already-sub-add-new-btn'));
+	                $(".modal-title").text($.i18n('already-sub-pop-up'));
+	                $(".btn-no").text($.i18n('already-sub-pop-up-no'));
+					$("#btn_card").text($.i18n('already-sub-pop-up-yes'));
+					$("#btn_hutch").text($.i18n('already-sub-pop-up-yes'));
+					$("#btn_mobitel").text($.i18n('already-sub-pop-up-yes'));
+					$("#btn_dviu").text($.i18n('already-sub-pop-up-yes'));
+					$(".body-text-1").text($.i18n('already-sub-button-body-1'));
+					$(".body-text-2").text($.i18n('already-sub-button-body-2'));
+	            });
+	            
 			}
 			
 			$("#btn_dviu").click(function () {
