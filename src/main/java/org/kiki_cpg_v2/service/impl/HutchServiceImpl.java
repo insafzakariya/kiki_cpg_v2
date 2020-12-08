@@ -447,7 +447,7 @@ public class HutchServiceImpl implements HutchService {
 			System.out.println(hutchResponseDto.toString());
 			if(hutchResponseDto.getResponseCode().equals("0") || hutchResponseDto.getResponseCode().equals("41501020") ) {
 				if (subscriptionRepository.save(subscriptionEntity) != null) {
-					if (viewerUnsubscriptionService.unubscribe(subscriptionEntity.getMobile(), viewerid, "UNSUBSCRIBE", "Dialog")) {
+					if (viewerUnsubscriptionService.unubscribe(subscriptionEntity.getMobile(), viewerid, "UNSUBSCRIBE", "Hutch")) {
 						return true;
 					}
 				}
