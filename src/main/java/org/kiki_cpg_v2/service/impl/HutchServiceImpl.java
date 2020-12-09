@@ -161,6 +161,7 @@ public class HutchServiceImpl implements HutchService {
 							subscriptionEntity);
 					subscriptionEntity.setPolicyExpDate(
 							appUtility.getbeforeDay(subscriptionEntity.getSubscribedDays(), new Date()));
+					invoiceEntity.setExpireDate(appUtility.getbeforeDay(subscriptionEntity.getSubscribedDays(), new Date()));
 					subscriptionEntity.setUpdateDate(new Date());
 
 					if (subscriptionRepository.save(subscriptionEntity) != null) {
@@ -370,6 +371,7 @@ public class HutchServiceImpl implements HutchService {
 		SubscriptionInvoiceEntity subscriptionInvoiceEntity = getBeginSubscriptionInvoiceEntity(beginDto,
 				subscriptionEntity, paymentRefDto);
 		subscriptionInvoiceEntity.setAmount(0.0);
+		subscriptionInvoiceEntity.setExpireDate(appUtility.getbeforeDay(AppConstant.TRIAL_DAYS_HUTCH, new Date()));
 		subscriptionEntity = subscriptionRepository.save(subscriptionEntity);
 		if (subscriptionEntity != null) {
 			subscriptionInvoiceEntity = subscriptionInvoiceRepository.save(subscriptionInvoiceEntity);
@@ -569,12 +571,8 @@ public class HutchServiceImpl implements HutchService {
 			if (hutchResponseDto.getResponseCode().equals("0")
 					|| hutchResponseDto.getResponseCode().equals("41501020")) {
 				if (subscriptionRepository.save(subscriptionEntity) != null) {
-<<<<<<< HEAD
 					if (viewerUnsubscriptionService.unubscribe(subscriptionEntity.getMobile(), viewerid, "UNSUBSCRIBE", "Hutch")) {
-=======
-					if (viewerUnsubscriptionService.unubscribe(subscriptionEntity.getMobile(), viewerid, "UNSUBSCRIBE",
-							"Dialog")) {
->>>>>>> 519d0c379a37fefdf69d324c70c1a2694783a382
+
 						return true;
 					}
 				}

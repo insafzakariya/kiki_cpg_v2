@@ -96,6 +96,7 @@ public class SubscriptionServiceImpl implements SubscriptionService{
 		SubscriptionInvoiceEntity invoiceEntity = new SubscriptionInvoiceEntity();
 		invoiceEntity.setAmount(subscriptionEntity.getAmount());
 		invoiceEntity.setCreatedDate(new Date());
+		invoiceEntity.setExpireDate(appUtility.getbeforeDay(subscriptionEntity.getSubscribedDays(), new Date()));
 		invoiceEntity.setDecision(AppConstant.ACCEPT);
 		invoiceEntity.setMobile("+94" + appUtility.getNineDigitMobileNumber(mobile));
 		invoiceEntity.setReferanceNo(UUID.randomUUID().toString());

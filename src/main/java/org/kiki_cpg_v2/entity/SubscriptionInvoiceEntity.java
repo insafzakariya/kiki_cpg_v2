@@ -162,6 +162,14 @@ public class SubscriptionInvoiceEntity {
 		this.success = success;
 	}
 
+	public Date getExpireDate() {
+		return expireDate;
+	}
+
+	public void setExpireDate(Date expireDate) {
+		this.expireDate = expireDate;
+	}
+
 	public Date getCreatedDate() {
 		return createdDate;
 	}
