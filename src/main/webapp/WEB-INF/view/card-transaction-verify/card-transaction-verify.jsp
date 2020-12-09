@@ -19,17 +19,17 @@
         </div>
 
         <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
-        <script src="<c:url value='/static/js/jquery-1.11.3.min.js'/>" type="text/javascript"></script>
+        <script src="<c:url value='/static/js/jquery-3.5.1.min.js'/>" type="text/javascript"></script>
         <script src="<c:url value='/static/js/globle.js'/>" type="text/javascript"></script>
         <script type="text/javascript">
         function check() {
             console.log("load");
 
-            var viewerId = localStorage.getItem("viewerId");
-            var mobile = localStorage.getItem("mobile");
-            var transaction_uuid = localStorage.getItem("transaction_uuid");
-            var referance_no = localStorage.getItem("referance_no");
-            var card_amount = localStorage.getItem("card_amount");
+            var viewerId = sessionStorage.getItem("viewerId");
+            var mobile = sessionStorage.getItem("mobile");
+            var transaction_uuid = sessionStorage.getItem("transaction_uuid");
+            var referance_no = sessionStorage.getItem("referance_no");
+            var card_amount = sessionStorage.getItem("card_amount");
 
             console.log(mobile);
             var data = {

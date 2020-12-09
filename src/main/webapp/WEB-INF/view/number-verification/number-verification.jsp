@@ -13,7 +13,7 @@
     <body onload="initialize()">
         <div class="main_container">
             <div class="header_container">
-                <h5 class="header">Please enter your number below</h5>
+                <h5 id="title" class="header">Please enter your number below</h5>
                 <!-- <p class="tagline">You will get a verification code to given mobile number after you this form</p> -->
             </div>
             <div class="body_container">
@@ -46,15 +46,50 @@
 
     </body>
     <!-- global js -->
-    <script src="<c:url value='/static/js/jquery-1.11.3.min.js'/>"
+    <script src="<c:url value='/static/js/jquery-3.5.1.min.js'/>"
     type="text/javascript"></script>
+    <script src="<c:url value='/static/js/i18n/CLDRPluralRuleParser.js'/>"
+		type="text/javascript"></script>
+	<script src="<c:url value='/static/js/i18n/jquery.i18n.js'/>"
+		type="text/javascript"></script>
+	<script
+		src="<c:url value='/static/js/i18n/jquery.i18n.messagestore.js'/>"
+		type="text/javascript"></script>
+	<script src="<c:url value='/static/js/i18n/jquery.i18n.fallbacks.js'/>"
+		type="text/javascript"></script>
+	<script src="<c:url value='/static/js/i18n/jquery.i18n.parser.js'/>"
+		type="text/javascript"></script>
+	<script src="<c:url value='/static/js/i18n/jquery.i18n.emitter.js'/>"
+		type="text/javascript"></script>
+	<script
+		src="<c:url value='/static/js/i18n/jquery.i18n.emitter.bidi.js'/>"
+		type="text/javascript"></script>
+	<script src="<c:url value='/static/js/i18n/jquery.i18n.language.js'/>"
+		type="text/javascript"></script>
     <script src="<c:url value='/static/js/globle.js'/>"
     type="text/javascript"></script>
 
     <script type="text/javascript">
         function initialize() {
-            var mobile = localStorage.getItem("mobile");
+            var mobile = sessionStorage.getItem("mobile");
             $("#mobile_no").val(mobile);
+            $.i18n({
+                locale: sessionStorage.getItem('language').toLowerCase()
+            });
+            $.i18n().load({
+                en: './static/language/en.json',
+                si: './static/language/si.json',
+                ta: './static/language/ta.json'
+            }).done(function() {
+                console.log('done!')
+                $("#title").text($.i18n('num-verify-title'));
+                $("#dialogIncorrect").text($.i18n('num-verify-error-1'));
+                $("#hutchIncorrect").text($.i18n('num-verify-error-2'));
+                $("#mobitelIncorrect").text($.i18n('num-verify-error-3'));
+                $("#mobileIncorrest").text($.i18n('num-verify-error-4'));
+                $("#numbernotvalied").text($.i18n('num-verify-error-5'));
+                
+            });
         }
 
         $("#mobile_no").keyup(function () {
@@ -68,7 +103,7 @@
                
                 function () {
                      $("#gif-load").removeClass("hide");
-                    var method = localStorage.getItem("methodId");
+                    var method = sessionStorage.getItem("methodId");
                     var mobile_no = $('#mobile_no').val();
                     console.log(mobile_no);
                     console.log(mobile_no.length);
@@ -81,40 +116,40 @@
                     $.get(baseURL + "/rest/common/verifyNumber/" + method + "/" + mobile_no, function (resp, status) {
                         console.log(resp);
                         console.log(status);
-                        localStorage.setItem("mobile", mobile_no);
+                        sessionStorage.setItem("mobile", mobile_no);
                         if (status == "success") {
                             if (method == 4 && resp == "success") {
-                                var day = localStorage.getItem("day");
+                                var day = sessionStorage.getItem("day");
                                 $.get(baseURL + "/rest/ideabiz/otp/send/" + mobile_no + "/" + day, function (resp, status) {
-                                    localStorage.setItem('server_ref', resp.serverRef);
+                                    sessionStorage.setItem('server_ref', resp.serverRef);
                                     window.location.replace(baseURL + "/otp_verification");
                                 });
                             } else if (method == 4 && resp != "success") {
                                 $("#dialogIncorrect").removeClass("hide");
                             } else if (method == 5 && resp == "success") {
-                                var subscriptionPaymentId = localStorage.getItem("subscriptionPaymentId");
-                                localStorage.setItem("mobile", mobile_no);
+                                var subscriptionPaymentId = sessionStorage.getItem("subscriptionPaymentId");
+                                sessionStorage.setItem("mobile", mobile_no);
                                 var url = "https://services.mobitel.lk/MCCPortal/service/?compId=SusilaTV&reqType=ACTIVE&servId=SUWS&returnUrl="
                                         + baseURL + "/mobitel/mobitelPay&bridgeID=" + subscriptionPaymentId;
                                 window.location.href = url;
                             } else if (method == 5 && resp != "success") {
                                 $("#mobitelIncorrect").removeClass("hide");
                             } else if (method == 7 && resp == "success") {
-                                var viewerId = localStorage.getItem("viewerId");
+                                var viewerId = sessionStorage.getItem("viewerId");
                                 $.get(baseURL + "/rest/otp/send/" + viewerId + "/" + mobile_no, function (resp, status) {
                                     window.location.replace(baseURL + "/otp_verification");
                                 });
                             } else if (method == 7 && resp != "success") {
                                 $("#mobileIncorrest").removeClass("hide");
                             } else if (method == 8 && resp == "success") {
-                                var viewerId = localStorage.getItem("viewerId");
+                                var viewerId = sessionStorage.getItem("viewerId");
                                 $.get(baseURL + "/rest/otp/send/" + viewerId + "/" + mobile_no, function (resp, status) {
                                     window.location.replace(baseURL + "/otp_verification");
                                 });
                             } else if (method == 8 && resp != "success") {
                                 $("#hutchIncorrect").removeClass("hide");
                             } else if (method == 9 && resp == "success") {
-                                var viewerId = localStorage.getItem("viewerId");
+                                var viewerId = sessionStorage.getItem("viewerId");
                                 $.get(baseURL + "/rest/otp/send/" + viewerId + "/" + mobile_no, function (resp, status) {
                                     window.location.replace(baseURL + "/otp_verification");
                                 });

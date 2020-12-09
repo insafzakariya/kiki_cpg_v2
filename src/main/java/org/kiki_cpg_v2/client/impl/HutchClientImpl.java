@@ -8,6 +8,7 @@ import java.util.Date;
 
 import org.kiki_cpg_v2.client.HutchClient;
 import org.kiki_cpg_v2.dto.HutchResponseDto;
+import org.kiki_cpg_v2.dto.HutchSubscriptionStatusDto;
 import org.kiki_cpg_v2.dto.request.HutchSubscribeDto;
 import org.kiki_cpg_v2.util.AppConstant;
 import org.springframework.http.HttpEntity;
@@ -63,6 +64,23 @@ public class HutchClientImpl implements HutchClient{
 
 		return response.getBody();
 		
+	}
+
+	@Override
+	public HutchSubscriptionStatusDto checkStatus(HutchSubscribeDto hutchSubscribeDto) {
+		RestTemplate restTemplate = new RestTemplate();
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.set("content-type", "application/json");
+		headers.set("PartnerCode", "0000000022");
+		headers.set("Password", "JGqowwLdRJXAyK+Dql1Ydg==");
+
+		System.out.println(hutchSubscribeDto.toString());
+		
+		HttpEntity<?> entity = new HttpEntity<>(hutchSubscribeDto, headers);
+		ResponseEntity<HutchSubscriptionStatusDto> response = restTemplate.exchange(AppConstant.URL_HUTCH_SUBSCRIPRION_STATUS, HttpMethod.POST, entity, HutchSubscriptionStatusDto.class);
+
+		return response.getBody();
 	}
 	
 	/*@Override

@@ -47,7 +47,7 @@ public class CronSchedulerImpl implements CronScheduler {
 			}
 		};
 
-		//dialogThread.start();
+		dialogThread.start();
 
 		Thread mobitelThread = new Thread() {
 			public void run() {
@@ -55,17 +55,16 @@ public class CronSchedulerImpl implements CronScheduler {
 			}
 		};
 
-		//mobitelThread.start();
+		mobitelThread.start();
 		
 		/*Thread hnbThread = new Thread() {
 			public void run() {
-				
+				cronService.startHnbCron(name, ipAddress, date, time);
 			}
 		};
 
 		hnbThread.start();*/
 		
-		cronService.startHnbCron(name, ipAddress, date, time);
 
 	}
 

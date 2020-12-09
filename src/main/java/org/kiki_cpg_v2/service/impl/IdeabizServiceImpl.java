@@ -99,14 +99,15 @@ public class IdeabizServiceImpl implements IdeabizService {
 									false);
 							processTrial(dialogOtpConfirmDto.getViewerId(), mobileNo);
 						} else {
-							viewerService.updateViewerMobileNumber(mobileNo, dialogOtpConfirmDto.getViewerId());
-
+							
 							List resp = processIdeabizPayment(dialogOtpConfirmDto.getServerRef(),
 									dialogOtpConfirmDto.getViewerId(), dialogOtpConfirmDto.getDay(), mobileNo, amount,
 									true, false, -1);
 							System.out.println("Invoice No " + Integer.valueOf(resp.get(0).toString()));
 							invoiceNo = Integer.valueOf(resp.get(0).toString());
 							if (resp.get(1).toString().equalsIgnoreCase("Success")) {
+								viewerService.updateViewerMobileNumberAndTrial(mobileNo, dialogOtpConfirmDto.getViewerId(),
+										false);
 							}
 						}
 

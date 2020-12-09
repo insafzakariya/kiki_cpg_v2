@@ -20,5 +20,10 @@ public class ViewerPolicyUpdateRequestDto {
 	public void setPackageId(Integer packageId) {
 		this.packageId = packageId;
 	}
+	
+	@Override
+	public String toString() {
+		return "ViewerPolicyUpdateRequestDto [viewerId=" + viewerId + ", packageId=" + packageId + "]";
+	}
 
 }

@@ -98,9 +98,10 @@ public class OTPServiceImpl implements OTPService{
 
 	public String genarateOTP(String mobile_no) throws Exception {
 		Random rand = new Random();
-		String code = String.format("%06d", rand.nextInt(10000));
+		String code = String.format("%06d", rand.nextInt(999999));
 		Integer resultCode = smsService.sendSms(mobile_no, "Dear Customer, please use the following OTP " +code + " to complete your kiki verification.");
 		System.out.println("otp : " + code);
+		//Integer resultCode = 200;
 		if (resultCode==200) {
 			return code;
 		}else {
@@ -119,7 +120,7 @@ public class OTPServiceImpl implements OTPService{
 			if(ckotpEntity != null) {
 				dto.setStatus("Success");
 			} else {
-				dto.setStatus("OTP Expired");
+				dto.setStatus("OTP Wrong or Expired");
 			}
 		} else {
 			dto.setStatus("Subscription Token Expired");

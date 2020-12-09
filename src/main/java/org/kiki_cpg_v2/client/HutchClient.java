@@ -4,6 +4,7 @@
 package org.kiki_cpg_v2.client;
 
 import org.kiki_cpg_v2.dto.HutchResponseDto;
+import org.kiki_cpg_v2.dto.HutchSubscriptionStatusDto;
 import org.kiki_cpg_v2.dto.request.HutchSubscribeDto;
 
 /**
@@ -23,5 +24,11 @@ public interface HutchClient {
 	 * @return
 	 */
 	HutchResponseDto unsubscribe(String mobile, String serviceCode);
+
+	/**
+	 * @param hutchSubscribeDto
+	 * @return
+	 */
+	HutchSubscriptionStatusDto checkStatus(HutchSubscribeDto hutchSubscribeDto);
 
 }

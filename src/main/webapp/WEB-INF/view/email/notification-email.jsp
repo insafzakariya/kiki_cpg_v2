@@ -47,14 +47,14 @@
 
     </body>
     <!-- global js -->
-    <script src="<c:url value='/static/js/jquery-1.11.3.min.js'/>"
+    <script src="<c:url value='/static/js/jquery-3.5.1.min.js'/>"
     type="text/javascript"></script>
     <script src="<c:url value='/static/js/globle.js'/>"
     type="text/javascript"></script>
 
     <script type="text/javascript">
         function initialize() {
-        	getViewerEmail(localStorage.getItem("viewerId"));
+        	getViewerEmail(sessionStorage.getItem("viewerId"));
         }
 
         $("#email_address").keyup(function () {
@@ -62,7 +62,7 @@
         });
         
         $("#btn_skiped").click(function() {
-			var methodId = localStorage.getItem("methodId");
+			var methodId = sessionStorage.getItem("methodId");
             var email_address = $('#email_address').val();
 			if (methodId == 4 || methodId == 7 || methodId == 8 || methodId == 9) {
 				window.location.replace(baseURL + "/thanks/" + methodId);
@@ -75,9 +75,9 @@
         $("#btn_proceed").click(
         function () {
             $("#gif-load").removeClass("hide");
-            var method = localStorage.getItem("methodId");
-            var viewerId = localStorage.getItem("viewerId");
-			var invoiceId = localStorage.getItem("invoiceId");
+            var method = sessionStorage.getItem("methodId");
+            var viewerId = sessionStorage.getItem("viewerId");
+			var invoiceId = sessionStorage.getItem("invoiceId");
             var email_address = $('#email_address').val();             
 			var isEmailValid = validateViewerEmail(email_address);	
              
@@ -88,7 +88,7 @@
                 return;
             }
 	
-	    	var methodId = localStorage.getItem("methodId");
+	    	var methodId = sessionStorage.getItem("methodId");
 			if (methodId == 4 || methodId == 7 || methodId == 8 || methodId == 9) {
 				saveViewerEmail(email_address,viewerId);
 				sendViewerConfirmationEmail(email_address,viewerId,invoiceId,methodId);
@@ -179,8 +179,8 @@
                         $("#error-p").text(data.message);
                         $("#error").removeClass("hide");
                     } else {
-                    	localStorage.setItem("emailAddress",data.dataMap.emailaddress);
-                        var emailAddress = localStorage.getItem("emailAddress");
+                    	sessionStorage.setItem("emailAddress",data.dataMap.emailaddress);
+                        var emailAddress = sessionStorage.getItem("emailAddress");
                         $("#email_address").val(emailAddress);
                     }
                 },

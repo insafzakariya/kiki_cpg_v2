@@ -20,14 +20,18 @@ import org.kiki_cpg_v2.dto.request.HNBVerifyDto;
 import org.kiki_cpg_v2.entity.CardDataEntity;
 import org.kiki_cpg_v2.entity.CardInvoiceEntity;
 import org.kiki_cpg_v2.entity.PaymentMethodPlanEntity;
+import org.kiki_cpg_v2.entity.ViewerEntity;
 import org.kiki_cpg_v2.repository.CardDataReository;
 import org.kiki_cpg_v2.repository.CardInvoiceRepository;
 import org.kiki_cpg_v2.repository.PaymentMethodPlanRepository;
+import org.kiki_cpg_v2.repository.ViewerRepository;
 import org.kiki_cpg_v2.service.CronViewerRepostService;
 import org.kiki_cpg_v2.service.HNBService;
+import org.kiki_cpg_v2.service.NotificationService;
 import org.kiki_cpg_v2.service.PackageConfigService;
 import org.kiki_cpg_v2.service.PaymentDetailService;
 import org.kiki_cpg_v2.service.PaymentLogService;
+import org.kiki_cpg_v2.service.ViewerNotificationService;
 import org.kiki_cpg_v2.service.ViewerPolicyService;
 import org.kiki_cpg_v2.service.ViewerService;
 import org.kiki_cpg_v2.service.ViewerUnsubscriptionService;
@@ -74,9 +78,18 @@ public class HNBServiceImpl implements HNBService {
 
 	@Autowired
 	private PackageConfigService packageConfigService;
+	
+	@Autowired
+	private NotificationService notificationService;
 
 	@Autowired
 	private CronViewerRepostService cronViewerRepostService;
+	
+	@Autowired
+	private ViewerNotificationService viewerNotificationService;
+	
+	@Autowired
+	private ViewerRepository viewerRepository;
 
 	@Autowired
 	private AppUtility appUtility;
@@ -185,6 +198,7 @@ public class HNBServiceImpl implements HNBService {
 				.findFirstByTransactionNo(formData.getFirst("req_transaction_uuid").trim());
 		CardDataEntity cardDataEntity = cardDataReository
 				.findFirstByViewerIdAndStatusOrderByIdDesc(cardInvoiceEntity.getViewerId(), AppConstant.ACTIVE);
+		ViewerEntity viewerEntity = viewerRepository.findById(cardInvoiceEntity.getViewerId()).get();
 		boolean unsubscrideEntityUpdate = false;
 		if (cardInvoiceEntity != null && cardDataEntity != null) {
 			paymentLogService.createPaymentLog("HNB", formData.getFirst("req_reference_number"),
@@ -194,7 +208,7 @@ public class HNBServiceImpl implements HNBService {
 			System.out.println("Log Created");
 
 			if (formData.getFirst("decision").trim().equalsIgnoreCase("ACCEPT")) {
-				viewerService.updateViewerMobileNumber(cardDataEntity.getMobile(), cardInvoiceEntity.getViewerId());
+				viewerService.updateViewerMobileNumberAndTrial(cardDataEntity.getMobile(), cardInvoiceEntity.getViewerId(), false);
 
 				System.out.println("Accept");
 
@@ -236,6 +250,24 @@ public class HNBServiceImpl implements HNBService {
 									.equalsIgnoreCase("success")) {
 								viewerUnsubscriptionService.save(cardDataEntity.getMobile(),
 										cardInvoiceEntity.getViewerId(), "SUBSCRIBE", "Card", unsubscrideEntityUpdate);
+								
+								Double amount = cardDataEntity.getAmount();
+								String body = "Welcome to KiKi. You will be charged Rs " + amount
+											+ " + tax/ " + appUtility.getHutchPackageFrequance(
+													cardDataEntity.getSubscribedDays());
+								
+								try {
+									notificationService.sendSubscriptionNotification(body, viewerEntity.getDeviceId());
+								} catch (Exception e) {
+									e.printStackTrace();
+								}
+								
+								try {
+									viewerNotificationService.save(body, viewerEntity.getId());
+								} catch (Exception e) {
+									e.printStackTrace();
+								}
+								
 							}
 						}
 					}

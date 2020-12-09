@@ -21,6 +21,12 @@ public class PaymentMethodPlanEntity {
 	@Column(name = "name")
 	private String name;
 
+	@Column(name = "name_s")
+	private String nameSinhala;
+
+	@Column(name = "name_t")
+	private String nameTamil;
+
 	@Column(name = "offer")
 	private String offer;
 
@@ -35,11 +41,11 @@ public class PaymentMethodPlanEntity {
 	private PaymentMethodEntity paymentMethodEntity;
 
 	private String serviceCode;
-	
+
 	private String trialText;
-	
+
 	private Integer trialDays;
-	
+
 	private Integer status;
 
 	public String getServiceCode() {
@@ -64,6 +70,22 @@ public class PaymentMethodPlanEntity {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public String getNameSinhala() {
+		return nameSinhala;
+	}
+
+	public void setNameSinhala(String nameSinhala) {
+		this.nameSinhala = nameSinhala;
+	}
+
+	public String getNameTamil() {
+		return nameTamil;
+	}
+
+	public void setNameTamil(String nameTamil) {
+		this.nameTamil = nameTamil;
 	}
 
 	public String getOffer() {

@@ -20,11 +20,9 @@ public class NotificationClientImpl implements NotificationClient{
 	public String sendNotification(NotificationDto notificationDto) throws Exception {
 		RestTemplate restTemplate = new RestTemplate();
 		
-		NotificationRespDto resp = restTemplate.postForObject(AppConstant.URL_NOTIFICATION, notificationDto, NotificationRespDto.class);
-
+		NotificationRespDto [] resp = restTemplate.postForObject(AppConstant.URL_NOTIFICATION, notificationDto, NotificationRespDto[].class);
 		
-		
-		return resp.getNotificationId();
+		return resp[0].getId().toString();
 	}
 
 }

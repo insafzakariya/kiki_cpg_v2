@@ -11,11 +11,12 @@ import java.util.UUID;
 
 import org.kiki_cpg_v2.client.HutchClient;
 import org.kiki_cpg_v2.dto.HutchResponseDto;
+import org.kiki_cpg_v2.dto.HutchSubscriptionStatusDto;
+import org.kiki_cpg_v2.dto.NotificationDto;
 import org.kiki_cpg_v2.dto.PaymentRefDto;
 import org.kiki_cpg_v2.dto.request.HutchSubscribeDto;
 import org.kiki_cpg_v2.dto.request.TransactionBeginDto;
 import org.kiki_cpg_v2.entity.PackageConfigEntity;
-import org.kiki_cpg_v2.entity.PackageEntity;
 import org.kiki_cpg_v2.entity.PaymentMethodPlanEntity;
 import org.kiki_cpg_v2.entity.SubscriptionEntity;
 import org.kiki_cpg_v2.entity.SubscriptionInvoiceEntity;
@@ -26,9 +27,11 @@ import org.kiki_cpg_v2.repository.SubscriptionRepository;
 import org.kiki_cpg_v2.repository.ViewerRepository;
 import org.kiki_cpg_v2.service.HNBService;
 import org.kiki_cpg_v2.service.HutchService;
+import org.kiki_cpg_v2.service.NotificationService;
 import org.kiki_cpg_v2.service.PackageConfigService;
 import org.kiki_cpg_v2.service.PaymentDetailService;
 import org.kiki_cpg_v2.service.PaymentLogService;
+import org.kiki_cpg_v2.service.ViewerNotificationService;
 import org.kiki_cpg_v2.service.ViewerPolicyService;
 import org.kiki_cpg_v2.service.ViewerService;
 import org.kiki_cpg_v2.service.ViewerUnsubscriptionService;
@@ -66,7 +69,7 @@ public class HutchServiceImpl implements HutchService {
 
 	@Autowired
 	private SubscriptionInvoiceRepository subscriptionInvoiceRepository;
-	
+
 	@Autowired
 	private PaymentMethodPlanRepository paymentMethodPlanRepository;
 
@@ -77,7 +80,13 @@ public class HutchServiceImpl implements HutchService {
 	private ViewerUnsubscriptionService viewerUnsubscriptionService;
 
 	@Autowired
+	private NotificationService notificationService;
+
+	@Autowired
 	private ViewerService viewerService;
+	
+	@Autowired
+	private ViewerNotificationService viewerNotificationService;
 
 	@Autowired
 	private HutchClient hutchClient;
@@ -87,12 +96,12 @@ public class HutchServiceImpl implements HutchService {
 
 	@Override
 	public Map<String, String> transaction(Map<String, String> requestMap) throws Exception {
-		
+
 		Map<String, String> response = null;
-		if (requestMap.containsKey("responseCode") && requestMap.get("responseCode").equalsIgnoreCase("0")) {
-			System.out.println(requestMap.get("responseCode"));
-			if (requestMap.containsKey("transactionType")) {
-				String transactionType = requestMap.get("transactionType");
+		if (requestMap.containsKey("ResponseCode") && requestMap.get("ResponseCode").equalsIgnoreCase("0")) {
+			System.out.println(requestMap.get("ResponseCode"));
+			if (requestMap.containsKey("TransactionType")) {
+				String transactionType = requestMap.get("TransactionType");
 				switch (transactionType) {
 				case "6":
 					response = autoRenew(requestMap);
@@ -104,25 +113,25 @@ public class HutchServiceImpl implements HutchService {
 				default:
 					response = new HashMap<String, String>();
 					paymentLogService.createPaymentLog(AppConstant.HUTCH, "", "", -1, "", requestMap.toString());
-					response.put("ResultCode", "103");
-					response.put("Description", "transactionType Not Supported");
+					response.put("resultCode", "103");
+					response.put("description", "transactionType Not Supported");
 				}
 			} else {
 				response = new HashMap<String, String>();
 				paymentLogService.createPaymentLog(AppConstant.HUTCH, "", "", -1, "", requestMap.toString());
-				response.put("ResultCode", "102");
-				response.put("Description", "transactionType Not found in request");
+				response.put("resultCode", "102");
+				response.put("description", "transactionType Not found in request");
 			}
 		} else if (requestMap.containsKey("responseCode")) {
 			response = new HashMap<String, String>();
 			paymentLogService.createPaymentLog(AppConstant.HUTCH, "", "", -1, "", requestMap.toString());
-			response.put("ResultCode", "100");
-			response.put("Description", "Log saved | Fail request");
+			response.put("resultCode", "100");
+			response.put("description", "Log saved | Fail request");
 		} else {
 			response = new HashMap<String, String>();
 			paymentLogService.createPaymentLog(AppConstant.HUTCH, "", "", -1, "", requestMap.toString());
-			response.put("ResultCode", "101");
-			response.put("Description", "Log saved");
+			response.put("resultCode", "101");
+			response.put("description", "Log saved");
 		}
 
 		return response;
@@ -131,17 +140,21 @@ public class HutchServiceImpl implements HutchService {
 	@Override
 	@Transactional
 	public Map<String, String> autoRenew(Map<String, String> requestMap) throws Exception {
-
 		Map<String, String> response = new HashMap<String, String>();
 		if (requestMap.containsKey("MSISDN")) {
 
 			ViewerEntity viewerEntity = viewerRepository
 					.findFirstByMobileNumberEndingWithOrderByIdDesc(requestMap.get("MSISDN"));
 			if (viewerEntity != null) {
+				viewerService.updateViewerMobileNumberAndTrial(
+						"+94" + appUtility.getNineDigitMobileNumber(requestMap.get("MSISDN")), viewerEntity.getId(),
+						false);
 				paymentLogService.createPaymentLog(AppConstant.HUTCH, "", "", viewerEntity.getId(),
 						requestMap.get("MSISDN"), requestMap.toString());
-				SubscriptionEntity subscriptionEntity = subscriptionRepository.findFirstByViewerIdAndStatusAndSubscribeAndType(
-						viewerEntity.getId(), AppConstant.ACTIVE, AppConstant.ACTIVE, AppConstant.HUTCH);
+
+				SubscriptionEntity subscriptionEntity = subscriptionRepository
+						.findFirstByViewerIdAndStatusAndSubscribeAndType(viewerEntity.getId(), AppConstant.ACTIVE,
+								AppConstant.ACTIVE, AppConstant.HUTCH);
 
 				if (subscriptionEntity != null) {
 					SubscriptionInvoiceEntity invoiceEntity = getSubscriptionInvoiceEntity(requestMap,
@@ -163,43 +176,79 @@ public class HutchServiceImpl implements HutchService {
 											.updateViewerPolicy(viewerPolicyService.getViewerPolicyUpdateRequestDto(
 													subscriptionEntity.getViewerId(), packageId), -1)
 											.equalsIgnoreCase("success")) {
-										response.put("ResultCode", "0");
-										response.put("Description", "Success");
+
+										Double amount = subscriptionEntity.getAmount();
+
+										Thread thread = new Thread() {
+											public void run() {
+												String body = "";
+												String title = "Subscription";
+												body = "You have been charged Rs " + amount + "+tax/ "
+														+ appUtility.getHutchPackageFrequance(
+																subscriptionEntity.getSubscribedDays())
+														+ " in subscription renewal.";
+
+												NotificationDto notificationDto = new NotificationDto();
+												notificationDto.getDeviceid().add(viewerEntity.getDeviceId());
+												notificationDto.setBody(body);
+												notificationDto.setTitle(title);
+												notificationDto.setType("2");
+												notificationDto.setDate_time(
+														new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+												System.out.println(notificationDto.toString());
+												try {
+													notificationService.sendNotification(notificationDto);
+												} catch (Exception e) {
+													e.printStackTrace();
+												}
+												
+												try {
+													viewerNotificationService.save(body, viewerEntity.getId());
+												} catch (Exception e) {
+													e.printStackTrace();
+												}
+											}
+										};
+
+										thread.start();
+
+										response.put("resultCode", "0");
+										response.put("description", "Success");
 									} else {
-										response.put("ResultCode", "1");
-										response.put("Description", "Policy Not Updated");
+										response.put("resultCode", "1");
+										response.put("description", "Policy Not Updated");
 									}
 								} else {
-									response.put("ResultCode", "2");
-									response.put("Description", "Package Not Found");
+									response.put("resultCode", "2");
+									response.put("description", "Package Not Found");
 								}
 							} else {
-								response.put("ResultCode", "3");
-								response.put("Description", "Payment Details save error");
+								response.put("resultCode", "3");
+								response.put("description", "Payment Details save error");
 							}
 						} else {
-							response.put("ResultCode", "4");
-							response.put("Description", "subscriptionInvoice save error");
+							response.put("resultCode", "4");
+							response.put("description", "subscriptionInvoice save error");
 						}
 					} else {
-						response.put("ResultCode", "5");
-						response.put("Description", "subscription save error");
+						response.put("resultCode", "5");
+						response.put("description", "subscription save error");
 					}
 				} else {
-					response.put("ResultCode", "6");
-					response.put("Description", "Subscription Not Fund");
+					response.put("resultCode", "6");
+					response.put("description", "Subscription Not Fund");
 				}
 
 			} else {
 				paymentLogService.createPaymentLog(AppConstant.HUTCH, "", "", -1, requestMap.get("MSISDN"),
 						requestMap.toString());
-				response.put("ResultCode", "7");
-				response.put("Description", "Viewer Not Fund");
+				response.put("resultCode", "7");
+				response.put("description", "Viewer Not Fund");
 			}
 		} else {
 			paymentLogService.createPaymentLog(AppConstant.HUTCH, "", "", -1, "", requestMap.toString());
-			response.put("ResultCode", "8");
-			response.put("Description", "MSISDN Not Fund in request");
+			response.put("resultCode", "8");
+			response.put("description", "MSISDN Not Fund in request");
 		}
 		return response;
 	}
@@ -220,7 +269,7 @@ public class HutchServiceImpl implements HutchService {
 		invoiceEntity.setSubscribedDays(subscriptionEntity.getSubscribedDays());
 		invoiceEntity.setSuccess(AppConstant.ACTIVE);
 		invoiceEntity.setTransactionNo(transactionNo);
-		invoiceEntity.setTransactionType(requestMap.get("transactionType"));
+		invoiceEntity.setTransactionType(requestMap.get("TransactionType"));
 		invoiceEntity.setViewerId(subscriptionEntity.getViewerId());
 		invoiceEntity.setType(AppConstant.HUTCH);
 		return invoiceEntity;
@@ -260,47 +309,47 @@ public class HutchServiceImpl implements HutchService {
 //												.updateViewerPolicy(viewerPolicyService.getViewerPolicyUpdateRequestDto(
 //														subscriptionEntity.getViewerId(), packageId), -1)
 //												.equalsIgnoreCase("success")) {
-//											response.put("ResultCode", "0");
-//											response.put("Description", "Success");
+//											response.put("resultCode", "0");
+//											response.put("description", "Success");
 //										} else {
-//											response.put("ResultCode", "1");
-//											response.put("Description", "Policy Not Updated");
+//											response.put("resultCode", "1");
+//											response.put("description", "Policy Not Updated");
 //										}
 //									} else {
-//										response.put("ResultCode", "2");
-//										response.put("Description", "Package Not Found");
+//										response.put("resultCode", "2");
+//										response.put("description", "Package Not Found");
 //									}
 //								} else {
-//									response.put("ResultCode", "3");
-//									response.put("Description", "Payment Details save error");
+//									response.put("resultCode", "3");
+//									response.put("description", "Payment Details save error");
 //								}
 //							} else {
-//								response.put("ResultCode", "4");
-//								response.put("Description", "subscriptionInvoice save error");
+//								response.put("resultCode", "4");
+//								response.put("description", "subscriptionInvoice save error");
 //							}
 //						} else {
-//							response.put("ResultCode", "5");
-//							response.put("Description", "subscription save error");
+//							response.put("resultCode", "5");
+//							response.put("description", "subscription save error");
 //						}
 //					} else {
-//						response.put("ResultCode", "9");
-//						response.put("Description", "SubscriptionInvoice not found");
+//						response.put("resultCode", "9");
+//						response.put("description", "SubscriptionInvoice not found");
 //					}
 //					
 //				} else {
-//					response.put("ResultCode", "6");
-//					response.put("Description", "Subscription Not Fund");
+//					response.put("resultCode", "6");
+//					response.put("description", "Subscription Not Fund");
 //				}
 //
 //			}else {
 //				paymentLogService.createPaymentLog(AppConstant.HUTCH, "", "" , -1, requestMap.get("MSISDN"), requestMap.toString());
-//				response.put("ResultCode", "7");
-//				response.put("Description", "Viewer Not Fund");
+//				response.put("resultCode", "7");
+//				response.put("description", "Viewer Not Fund");
 //			}
 //		} else {
 //			paymentLogService.createPaymentLog(AppConstant.HUTCH, "", "" , -1, "", requestMap.toString());
-//			response.put("ResultCode", "8");
-//			response.put("Description", "MSISDN Not Found in request");
+//			response.put("resultCode", "8");
+//			response.put("description", "MSISDN Not Found in request");
 //		}
 //		return response;
 	}
@@ -308,8 +357,14 @@ public class HutchServiceImpl implements HutchService {
 	@Override
 	@Transactional
 	public PaymentRefDto beginSubscribe(TransactionBeginDto beginDto) throws Exception {
-		
+
+		if (!checkSubsciption(beginDto.getMobileNo(), beginDto.getPlanId())) {
+			throw new RuntimeException("Save Error | Can't Unsubscribe Previous Package");
+		}
+
 		PaymentRefDto paymentRefDto = hnbService.getPaymentRefDto(beginDto, -1, -0.1);
+
+		ViewerEntity viewerEntity = viewerRepository.findById(beginDto.getViewerId()).get();
 
 		SubscriptionEntity subscriptionEntity = getSubsctiptionEntity(beginDto, paymentRefDto);
 		SubscriptionInvoiceEntity subscriptionInvoiceEntity = getBeginSubscriptionInvoiceEntity(beginDto,
@@ -322,9 +377,13 @@ public class HutchServiceImpl implements HutchService {
 				paymentRefDto.setCardInvoiceId(subscriptionInvoiceEntity.getId());
 				HutchSubscribeDto hutchSubscribeDto = getHutchSubscribeDto(paymentRefDto, subscriptionEntity,
 						subscriptionInvoiceEntity);
+				System.out.println(hutchSubscribeDto.toString());
 				HutchResponseDto hutchResponseDto = hutchClient.subscribe(hutchSubscribeDto);
-				System.out.println(hutchResponseDto.toString());
+
+				System.out.println(hutchResponseDto != null ? "hutchResponseDto not null" : "hutchResponseDto null");
 				if (hutchResponseDto != null) {
+
+					System.out.println(hutchResponseDto.toString());
 					paymentLogService.createPaymentLog(AppConstant.HUTCH, "SUBSCRIPTION", "SUBSCRIPTION",
 							subscriptionEntity.getViewerId(), subscriptionEntity.getMobile(),
 							hutchResponseDto.toString());
@@ -350,8 +409,47 @@ public class HutchServiceImpl implements HutchService {
 										if (viewerUnsubscriptionService.save(beginDto.getMobileNo(),
 												subscriptionEntity.getViewerId(), "SUBSCRIBE", AppConstant.HUTCH,
 												true)) {
-											viewerService.updateViewerMobileNumberAndTrial(beginDto.getMobileNo(), beginDto.getViewerId(), false);
+											viewerService.updateViewerMobileNumberAndTrial(beginDto.getMobileNo(),
+													beginDto.getViewerId(), false);
 											paymentRefDto.setStatus(AppConstant.ACCEPT);
+											try {
+
+												Double amount = subscriptionEntity.getAmount();
+												String body = "";
+												if (beginDto.isTrial()) {
+													if (checkSubscriptionStatus(hutchSubscribeDto).getStatus()
+															.equalsIgnoreCase("t")) {
+														body = "Welcome to KiKi. We regret to inform you that the 3 days free trial is not available for this mobile number as it was already allotted before. You will be charged Rs "
+																+ amount + " + tax/ "
+																+ appUtility.getHutchPackageFrequance(
+																		paymentRefDto.getDays());
+													} else {
+														body = "Welcome to KiKi. You will be charged Rs "
+																+ amount + "+tax/ "
+																+ appUtility.getHutchPackageFrequance(
+																		paymentRefDto.getDays())
+																+ " with a 3-day free trial";
+													}
+												} else {
+													body = "Welcome to KiKi. You will be charged Rs " + amount
+															+ " + tax/ " + appUtility.getHutchPackageFrequance(
+																	paymentRefDto.getDays());
+												}
+												try {
+													notificationService.sendSubscriptionNotification(body, viewerEntity.getDeviceId());
+												} catch (Exception e) {
+													e.printStackTrace();
+												}
+												try {
+													viewerNotificationService.save(body, viewerEntity.getId());
+												} catch (Exception e) {
+													e.printStackTrace();
+												}
+
+											} catch (Exception e) {
+												e.printStackTrace();
+											}
+											System.out.println("payment Complete");
 											return paymentRefDto;
 										} else {
 											throw new RuntimeException("Save Error | Viewer Unsubscribe Save Error");
@@ -383,6 +481,27 @@ public class HutchServiceImpl implements HutchService {
 			}
 		} else {
 			throw new RuntimeException("Save Error | Subscription");
+		}
+	}
+
+	@Override
+	public HutchSubscriptionStatusDto checkSubscriptionStatus(HutchSubscribeDto hutchSubscribeDto) {
+		String transactionNo = new SimpleDateFormat("yyMMdd").format(new Date()) + RandomString.make(6);
+		hutchSubscribeDto.setTransactionId(transactionNo);
+		HutchSubscriptionStatusDto dto = hutchClient.checkStatus(hutchSubscribeDto);
+		System.out.println(dto.toString());
+		return dto;
+	}
+
+	@Override
+	public boolean checkSubsciption(String mobileNo, Integer planId) throws Exception {
+		SubscriptionEntity subscriptionEntity = subscriptionRepository
+				.findFirstByMobileContainingAndStatusAndSubscribeAndType(mobileNo, AppConstant.ACTIVE,
+						AppConstant.ACTIVE, AppConstant.HUTCH);
+		if (subscriptionEntity != null && !subscriptionEntity.getPaymentPlan().equals(planId)) {
+			return processUnsubscription(subscriptionEntity.getViewerId(), subscriptionEntity.getMobile());
+		} else {
+			return true;
 		}
 	}
 
@@ -434,20 +553,28 @@ public class HutchServiceImpl implements HutchService {
 
 	@Override
 	public boolean processUnsubscription(Integer viewerid, String mobile) throws Exception {
-		SubscriptionEntity subscriptionEntity = subscriptionRepository
-				.findFirstByViewerIdAndStatusAndSubscribeAndType(viewerid, AppConstant.ACTIVE, AppConstant.ACTIVE, AppConstant.HUTCH);
-		System.out.println("Payment Plan : " + subscriptionEntity.getPaymentPlan() );
-		PaymentMethodPlanEntity entity = paymentMethodPlanRepository.findById(subscriptionEntity.getPaymentPlan()).get();
+		SubscriptionEntity subscriptionEntity = subscriptionRepository.findFirstByViewerIdAndStatusAndSubscribeAndType(
+				viewerid, AppConstant.ACTIVE, AppConstant.ACTIVE, AppConstant.HUTCH);
+		System.out.println("Payment Plan : " + subscriptionEntity.getPaymentPlan());
+		PaymentMethodPlanEntity entity = paymentMethodPlanRepository.findById(subscriptionEntity.getPaymentPlan())
+				.get();
 		if (subscriptionEntity != null) {
 			System.out.println("PaymentMethodId : " + entity.getId());
 			subscriptionEntity.setSubscribe(AppConstant.INACTIVE);
 			subscriptionEntity.setUpdateDate(new Date());
-			
-			HutchResponseDto hutchResponseDto = hutchClient.unsubscribe("94" + appUtility.getNineDigitMobileNumber(mobile), entity.getServiceCode());
+
+			HutchResponseDto hutchResponseDto = hutchClient
+					.unsubscribe("94" + appUtility.getNineDigitMobileNumber(mobile), entity.getServiceCode());
 			System.out.println(hutchResponseDto.toString());
-			if(hutchResponseDto.getResponseCode().equals("0") || hutchResponseDto.getResponseCode().equals("41501020") ) {
+			if (hutchResponseDto.getResponseCode().equals("0")
+					|| hutchResponseDto.getResponseCode().equals("41501020")) {
 				if (subscriptionRepository.save(subscriptionEntity) != null) {
+<<<<<<< HEAD
 					if (viewerUnsubscriptionService.unubscribe(subscriptionEntity.getMobile(), viewerid, "UNSUBSCRIBE", "Hutch")) {
+=======
+					if (viewerUnsubscriptionService.unubscribe(subscriptionEntity.getMobile(), viewerid, "UNSUBSCRIBE",
+							"Dialog")) {
+>>>>>>> 519d0c379a37fefdf69d324c70c1a2694783a382
 						return true;
 					}
 				}

@@ -56,6 +56,9 @@ public class SubscriptionInvoiceEntity {
 
 	@Column(name = "success")
 	private Integer success;
+	
+	@Column(name = "policy_exp_date")
+	private Date expireDate;
 
 	@Column(name = "createdDate")
 	private Date createdDate;

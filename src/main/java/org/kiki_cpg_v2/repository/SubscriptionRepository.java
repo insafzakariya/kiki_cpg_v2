@@ -63,5 +63,15 @@ public interface SubscriptionRepository extends JpaRepository<SubscriptionEntity
 	List<SubscriptionEntity> findBySubscribeAndStatusAndPolicyExpDateLessThanEqualAndType(Integer active,
 			Integer active2, Date date, String mobitel);
 
+	/**
+	 * @param mobileNo
+	 * @param active
+	 * @param active2
+	 * @param hutch
+	 * @return
+	 */
+	SubscriptionEntity findFirstByMobileContainingAndStatusAndSubscribeAndType(String mobileNo, Integer status, Integer subscribe,
+			String hutch);
+
 
 }

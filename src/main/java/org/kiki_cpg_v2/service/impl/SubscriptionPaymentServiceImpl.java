@@ -1,14 +1,19 @@
 package org.kiki_cpg_v2.service.impl;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
+import org.kiki_cpg_v2.dto.PlanDto;
+import org.kiki_cpg_v2.dto.SubscriptionDto;
 import org.kiki_cpg_v2.dto.SubscriptionPaymentDto;
 import org.kiki_cpg_v2.entity.CardDataEntity;
 import org.kiki_cpg_v2.entity.CustomerEntity;
 import org.kiki_cpg_v2.entity.IdeabizEntity;
 import org.kiki_cpg_v2.entity.InvoiceEntity;
 import org.kiki_cpg_v2.entity.MerchantAccountEntity;
+import org.kiki_cpg_v2.entity.PaymentMethodPlanEntity;
 import org.kiki_cpg_v2.entity.SubscriptionEntity;
 import org.kiki_cpg_v2.entity.SubscriptionInvoiceEntity;
 import org.kiki_cpg_v2.entity.SubscriptionPaymentEntity;
@@ -22,6 +27,7 @@ import org.kiki_cpg_v2.repository.CustomerRepository;
 import org.kiki_cpg_v2.repository.IdeabizRepository;
 import org.kiki_cpg_v2.repository.InvoiceRepository;
 import org.kiki_cpg_v2.repository.MerchantAccountRepository;
+import org.kiki_cpg_v2.repository.PaymentMethodPlanRepository;
 import org.kiki_cpg_v2.repository.SubscriptionInvoiceRepository;
 import org.kiki_cpg_v2.repository.SubscriptionPaymentRepository;
 import org.kiki_cpg_v2.repository.SubscriptionRepository;
@@ -69,6 +75,9 @@ public class SubscriptionPaymentServiceImpl implements SubscriptionPaymentServic
 
 	@Autowired
 	private MerchantAccountRepository merchantAccountRepository;
+	
+	@Autowired
+	private PaymentMethodPlanRepository paymentMethodPlanRepository;
 
 	@Override
 	@Transactional
@@ -86,6 +95,13 @@ public class SubscriptionPaymentServiceImpl implements SubscriptionPaymentServic
 
 			SubscriptionPaymentDto subscriptionPaymentDto = getSubscriptionPaymentDto(subscriptionPaymentEntity,
 					viewerTrialPeriodAssociationEntity, viewerEntity);
+			
+			if(viewerEntity.getLanguage() != null && !viewerEntity.getLanguage().isEmpty()) {
+				subscriptionPaymentDto.setLanguage(viewerEntity.getLanguage());
+			} else {
+				subscriptionPaymentDto.setLanguage("en");
+			}
+			
 
 			if (!type.equalsIgnoreCase("new")) {
 				ViewerSubscriptionEntity viewerSubscriptionEntity = viewerSubscriptionRepository
@@ -227,6 +243,31 @@ public class SubscriptionPaymentServiceImpl implements SubscriptionPaymentServic
 		}
 		return false;
 
+	}
+
+	@Override
+	public SubscriptionDto isAppleSubscribe(Integer viewerId) {
+		SubscriptionDto subscriptionDto = new SubscriptionDto();
+		subscriptionDto.setSubscribed(false);
+		SubscriptionEntity subscriptionEntity = subscriptionRepository.findFirstByViewerIdAndStatusAndSubscribeAndTypeOrderByIdDesc(viewerId, AppConstant.ACTIVE, AppConstant.ACTIVE,AppConstant.APPLE);
+		if(subscriptionEntity != null) {
+			subscriptionDto.setSubscribed(true);
+			subscriptionDto.setId(subscriptionEntity.getId());
+			subscriptionDto.setExpireDate(subscriptionEntity.getPolicyExpDate());
+			PaymentMethodPlanEntity paymentMethodPlanEntity = paymentMethodPlanRepository.findById(subscriptionEntity.getPaymentPlan()).get();
+			System.out.println(paymentMethodPlanEntity== null);
+			if(paymentMethodPlanEntity != null) {
+				subscriptionDto.setName(paymentMethodPlanEntity.getPaymentMethodEntity().getMethodName());
+				PlanDto planDto = new PlanDto();
+				planDto.setId(paymentMethodPlanEntity.getId());
+				planDto.setAmount(paymentMethodPlanEntity.getValue());
+				planDto.setName(paymentMethodPlanEntity.getName());
+				List<PlanDto> planDtos = new ArrayList<PlanDto>();
+				planDtos.add(planDto);
+				subscriptionDto.setPlanDtos(planDtos);
+			}
+		}
+		return subscriptionDto;
 	}
 
 }

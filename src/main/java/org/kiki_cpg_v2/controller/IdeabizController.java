@@ -61,6 +61,7 @@ public class IdeabizController {
 				 dialogPaymentConfirmDto =ideabizService.pinSubscriptionConfirm(dialogOtpConfirmDto);	
 			} else {
 				dialogPaymentConfirmDto = new DialogPaymentConfirmDto();
+				dialogPaymentConfirmDto.setStatusCode("Expired");
 				dialogPaymentConfirmDto.setMessage("Subscription Token Expired");
 			}
 			return new ResponseEntity<Object>(dialogPaymentConfirmDto, HttpStatus.OK);

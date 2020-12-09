@@ -9,14 +9,12 @@ import org.kiki_cpg_v2.entity.CronErrorEntity;
 import org.kiki_cpg_v2.entity.CronReportEntity;
 import org.kiki_cpg_v2.entity.SubscriptionEntity;
 import org.kiki_cpg_v2.entity.custom.IdeabizViewerCusrtomEntity;
-import org.kiki_cpg_v2.entity.custom.ViewerSubscriptionCustomEntity;
 import org.kiki_cpg_v2.repository.CardDataReository;
 import org.kiki_cpg_v2.repository.CronErrorRepository;
 import org.kiki_cpg_v2.repository.CronMetaDataRepository;
 import org.kiki_cpg_v2.repository.CronReportRepository;
 import org.kiki_cpg_v2.repository.IdeabizRepository;
 import org.kiki_cpg_v2.repository.SubscriptionRepository;
-import org.kiki_cpg_v2.repository.ViewerSubscriptionRepository;
 import org.kiki_cpg_v2.service.CronService;
 import org.kiki_cpg_v2.service.HNBService;
 import org.kiki_cpg_v2.service.IdeabizService;
@@ -175,10 +173,7 @@ public class CronServiceImpl implements CronService {
 			 * .getViewerSubscriptionCustomEntityExpireBeforeToday();
 			 */
 
-			subscriptionEntities.forEach(e -> {
-				System.out.println("Mobitel Viewer Id : " + e.getViewerId());
-				logger.info("Mobitel Viewer Id : " + e.getViewerId());
-			});
+			
 
 			if (subscriptionEntities != null) {
 				CronReportEntity cronReportEntity = saveCron(cronName, ipAddress, date, time, "Mobitel");

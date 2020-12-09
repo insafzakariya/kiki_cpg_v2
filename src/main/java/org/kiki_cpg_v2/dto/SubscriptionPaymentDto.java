@@ -17,6 +17,9 @@ public class SubscriptionPaymentDto {
 	private boolean trialVerify;
 	private String ideabizDays;
 	private String lastSubscribeDay;
+	private String language;
+
+	
 
 	public Integer getSubscriptionPaymentId() {
 		return subscriptionPaymentId;
@@ -112,6 +115,24 @@ public class SubscriptionPaymentDto {
 
 	public void setLastSubscribeDay(String lastSubscribeDay) {
 		this.lastSubscribeDay = lastSubscribeDay;
+	}
+	
+	public String getLanguage() {
+		return language;
+	}
+
+	public void setLanguage(String language) {
+		this.language = language;
+	}
+
+	@Override
+	public String toString() {
+		return "SubscriptionPaymentDto [subscriptionPaymentId=" + subscriptionPaymentId + ", viewerId=" + viewerId
+				+ ", packageId=" + packageId + ", tokenHash=" + tokenHash + ", status=" + status
+				+ ", alreadySubscribed=" + alreadySubscribed + ", mobile=" + mobile + ", subscriptionTypeList="
+				+ subscriptionTypeList + ", subscriptionType=" + subscriptionType + ", trialVerify=" + trialVerify
+				+ ", ideabizDays=" + ideabizDays + ", lastSubscribeDay=" + lastSubscribeDay + ", language=" + language
+				+ "]";
 	}
 
 }

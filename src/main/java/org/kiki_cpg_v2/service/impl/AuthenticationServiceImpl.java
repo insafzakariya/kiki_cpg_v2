@@ -67,7 +67,7 @@ public class AuthenticationServiceImpl implements AuthenticationService{
 		
 		Calendar c = Calendar.getInstance();
 		c.setTime(entity.getCreatedDate());
-		c.add(Calendar.MINUTE, 10);
+		c.add(Calendar.MINUTE, 15);
 		
 		entity.setExpireDate( c.getTime());
 		entity.setPackageID(packageConfigEntity.getPackageId());

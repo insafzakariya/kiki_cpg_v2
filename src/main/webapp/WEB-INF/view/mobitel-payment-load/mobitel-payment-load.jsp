@@ -21,18 +21,18 @@
         </div>
 
         <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
-        <script src="<c:url value='/static/js/jquery-1.11.3.min.js'/>" type="text/javascript"></script>
+        <script src="<c:url value='/static/js/jquery-3.5.1.min.js'/>" type="text/javascript"></script>
         <script src="<c:url value='/static/js/globle.js'/>" type="text/javascript"></script>
         <script type="text/javascript">
     function pay() {
         console.log("load");
 
-        var isTrial = localStorage.getItem('isFreeTrial');
-        var mobile = localStorage.getItem("mobile");
-        var subscriptionPaymentId = localStorage.getItem("subscriptionPaymentId");
-        var day = localStorage.getItem("day");
-        var viewerId = localStorage.getItem("viewerId");
-        var planId = localStorage.getItem("planId");
+        var isTrial = sessionStorage.getItem('isFreeTrial');
+        var mobile = sessionStorage.getItem("mobile");
+        var subscriptionPaymentId = sessionStorage.getItem("subscriptionPaymentId");
+        var day = sessionStorage.getItem("day");
+        var viewerId = sessionStorage.getItem("viewerId");
+        var planId = sessionStorage.getItem("planId");
 
         console.log(mobile);
         var data = {
