@@ -570,7 +570,7 @@ public class HutchServiceImpl implements HutchService {
 					|| hutchResponseDto.getResponseCode().equals("41501020")) {
 				if (subscriptionRepository.save(subscriptionEntity) != null) {
 					if (viewerUnsubscriptionService.unubscribe(subscriptionEntity.getMobile(), viewerid, "UNSUBSCRIBE",
-							"Dialog")) {
+							"Hutch")) {
 						return true;
 					}
 				}
