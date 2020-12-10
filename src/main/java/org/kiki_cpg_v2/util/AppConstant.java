@@ -40,5 +40,6 @@ public class AppConstant {
 	public static final String URL_HUTCH_SUBSCRIPRION_STATUS = URL_HUTCH_BASE + "/subscriptionStatus";
 	public static final String APPLE = "APPLE";
 	public static final Integer TRIAL_DAYS_HUTCH = 3;
+	public static final Integer TRIAL_DAYS_MOBITEL = 3;
 
 }

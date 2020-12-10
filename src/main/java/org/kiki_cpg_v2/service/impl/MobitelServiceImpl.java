@@ -160,6 +160,11 @@ public class MobitelServiceImpl implements MobitelService {
 		Integer subscribedDays = paymentRefDto.getDays();
 		if(subscriptionEntity != null) {
 			if(trial) {
+				SubscriptionInvoiceEntity subscriptionInvoiceEntity = subscriptionService.getSubscriptionInvoiceEntity(subscriptionEntity.getMobile(), "1", subscriptionEntity, AppConstant.MOBITEL);
+				subscriptionEntity.setAmount(0.0);
+				subscriptionInvoiceEntity.setExpireDate(appUtility.getbeforeDay(AppConstant.TRIAL_DAYS_MOBITEL, new Date()));
+				subscriptionInvoiceRepository.save(subscriptionInvoiceEntity);
+				
 				viewerService.updateViewerMobileNumberAndTrial(mobileNo, viewerId,
 						false);
 				String paymentResp = proceedPayment(viewerId, subscribedDays, mobileNo, subscriptionPaymentId, planId, subscriptionEntity, trial);
