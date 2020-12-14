@@ -39,6 +39,12 @@ public class PaymentMethodEntity {
 	@Column(name = "Image")
 	private String image;
 
+	@Column(name = "is_visible")
+	private boolean visible;
+
+	@Column(name = "display_order")
+	private Integer order;
+
 	@OneToMany(mappedBy = "paymentMethodEntity", targetEntity = PaymentPolicyEntity.class)
 	private List<PaymentPolicyEntity> paymentPolicyEntities;
 
@@ -99,6 +105,22 @@ public class PaymentMethodEntity {
 
 	public void setImage(String image) {
 		this.image = image;
+	}
+
+	public boolean isVisible() {
+		return visible;
+	}
+
+	public void setVisible(boolean visible) {
+		this.visible = visible;
+	}
+
+	public Integer getOrder() {
+		return order;
+	}
+
+	public void setOrder(Integer order) {
+		this.order = order;
 	}
 
 	public List<PaymentPolicyEntity> getPaymentPolicyEntities() {

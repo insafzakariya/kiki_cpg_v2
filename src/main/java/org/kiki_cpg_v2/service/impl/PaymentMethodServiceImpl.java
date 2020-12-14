@@ -35,9 +35,8 @@ public class PaymentMethodServiceImpl implements PaymentMethodService {
 	private PaymantPlanDto getPaymantPlanDto(PaymentMethodPlanEntity e, Integer paymentMethodId, String lang) {
 		PaymantPlanDto dto = new PaymantPlanDto();
 		dto.setId(e.getId());
-		
-		
-		if(lang != null && !lang.isEmpty()) {
+
+		if (lang != null && !lang.isEmpty()) {
 			if (lang.equalsIgnoreCase("si")) {
 				dto.setName(e.getNameSinhala());
 				dto.setValue("රු . " + e.getValue() + " + බදු");
@@ -47,12 +46,12 @@ public class PaymentMethodServiceImpl implements PaymentMethodService {
 				dto.setName(e.getName());
 				dto.setValue("Rs. " + e.getValue() + " + Tax");
 			}
-			
+
 			if (lang.equalsIgnoreCase("ta")) {
 				dto.setName(e.getNameTamil());
 				dto.setValue("Rs. " + e.getValue() + " + Tax");
-			}	
-		}else {
+			}
+		} else {
 			dto.setName(e.getName());
 			dto.setValue("Rs. " + e.getValue() + " + Tax");
 		}
@@ -89,11 +88,13 @@ public class PaymentMethodServiceImpl implements PaymentMethodService {
 
 	@Override
 	public List<PaymantMethodDto> getActivePaymentMethodes() {
-		List<PaymentMethodEntity> paymentMethodEntities = paymentMethodRepository.findByStatus(AppConstant.ACTIVE);
+		List<PaymentMethodEntity> paymentMethodEntities = paymentMethodRepository.findByStatusOrderByOrder(AppConstant.ACTIVE);
 
 		List<PaymantMethodDto> paymantPlanDtos = new ArrayList<PaymantMethodDto>();
 		paymentMethodEntities.forEach(e -> {
-			paymantPlanDtos.add(getPaymantMethodDto(e));
+			if (e.isVisible()) {
+				paymantPlanDtos.add(getPaymantMethodDto(e));
+			}
 		});
 		return paymantPlanDtos;
 	}
