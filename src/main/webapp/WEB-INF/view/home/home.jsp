@@ -59,7 +59,7 @@ body {
 									style="background: #24A9A6; height: 2px; margin-bottom: 20px;"></div>
 								<form id="paymentMethodForm">
 
-									<div id="button6" class="row body_frame" value="7"
+									<!-- <div id="button6" class="row body_frame" value="7"
 										style="margin-left: 0px; margin-right: 0px;">
 										<div class="col-md-4 pull-left center">
 											<img src="/susilawebpay/static/assets/images/visamaster.jpg"
@@ -73,7 +73,7 @@ body {
 											<p class="type-postfix">Add to bill</p>
 										</div>
 
-									</div>
+									</div> -->
 									
 									<div id="button3" class="row body_frame" value="4"
 										style="margin-left: 0px; margin-right: 0px;">
@@ -123,7 +123,7 @@ body {
 
 									</div>
 									
-									<div id="button8" class="row body_frame" value="9"
+									<!-- <div id="button8" class="row body_frame" value="9"
 										style="margin-left: 0px; margin-right: 0px;">
 										<div class="col-md-4 pull-left center">
 											<img src="/susilawebpay/static/assets/images/Keells.jpg"
@@ -137,7 +137,7 @@ body {
 											<p class="type-postfix">Add to bill</p>
 										</div>
 
-									</div>
+									</div> -->
 
 
 									<!-- <div class="row" style="margin-left: 0px; margin-right: 0px;">

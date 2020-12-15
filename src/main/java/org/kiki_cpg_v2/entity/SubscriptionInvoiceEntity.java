@@ -17,7 +17,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "subscription_invoice")
-public class SubscriptionInvoiceEntity {
+public class SubscriptionInvoiceEntity{
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
