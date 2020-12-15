@@ -418,6 +418,7 @@ public class MobitelServiceImpl implements MobitelService {
 				paymentLogService.createPaymentLog("Mobitel", returnValue, "-", subscriptionEntity.getViewerId(), mobileNo, AppConstant.ACCEPT);
 				SubscriptionInvoiceEntity subscriptionInvoiceEntity=  subscriptionService.getSubscriptionInvoiceEntity(mobileNo, "1", subscriptionEntity, AppConstant.MOBITEL);
 				subscriptionEntity.setPolicyExpDate(appUtility.getbeforeDay(subscriptionEntity.getSubscribedDays(), new Date()));
+				subscriptionInvoiceEntity.setExpireDate(appUtility.getbeforeDay(subscriptionEntity.getSubscribedDays(), new Date()));
 				subscriptionInvoiceRepository.save(subscriptionInvoiceEntity);
 				paymentStatus = "Success";
 				responseMsg = "Activation Successful";

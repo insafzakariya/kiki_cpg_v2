@@ -50,12 +50,15 @@ public class SubscriptionInvoiceEntity {
 
 	@Column(name = "decision")
 	private String decision;
-	
+
 	@Column(name = "type")
 	private String type;
 
 	@Column(name = "success")
 	private Integer success;
+
+	@Column(name = "policy_exp_date")
+	private Date expireDate;
 
 	@Column(name = "createdDate")
 	private Date createdDate;
@@ -149,6 +152,14 @@ public class SubscriptionInvoiceEntity {
 
 	public void setType(String type) {
 		this.type = type;
+	}
+
+	public Date getExpireDate() {
+		return expireDate;
+	}
+
+	public void setExpireDate(Date expireDate) {
+		this.expireDate = expireDate;
 	}
 
 	public Integer getSuccess() {
