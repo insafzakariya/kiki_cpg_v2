@@ -4,6 +4,8 @@ import java.util.HashMap;
 
 public class ResponseMapDto {
 	
+	
+
 	private String status;
 	private HashMap<String, Object> dataMap;
 
@@ -22,5 +24,8 @@ public class ResponseMapDto {
 	public void setDataMap(HashMap<String, Object> dataMap) {
 		this.dataMap = dataMap;
 	}
-
+	@Override
+	public String toString() {
+		return "ResponseMapDto [status=" + status + ", dataMap=" + dataMap + "]";
+	}
 }

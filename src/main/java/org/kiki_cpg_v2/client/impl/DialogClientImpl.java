@@ -14,10 +14,12 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.json.JSONObject;
 import org.kiki_cpg_v2.client.DialogClient;
 import org.kiki_cpg_v2.dto.DialogOtpDto;
+import org.kiki_cpg_v2.dto.PaymantPlanDto;
 import org.kiki_cpg_v2.dto.request.DialogOtpConfirmDto;
 import org.kiki_cpg_v2.service.CronViewerRepostService;
 import org.kiki_cpg_v2.service.IdeabizServiceConfigService;
 import org.kiki_cpg_v2.service.PaymentLogService;
+import org.kiki_cpg_v2.service.PaymentPlanService;
 import org.kiki_cpg_v2.util.AppConstant;
 import org.kiki_cpg_v2.util.AppUtility;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,9 +41,12 @@ public class DialogClientImpl implements DialogClient {
 
 	@Autowired
 	private CronViewerRepostService cronViewerRepostService;
-	
+
 	@Autowired
 	private IdeabizServiceConfigService ideabizServiceConfigService;
+
+	@Autowired
+	private PaymentPlanService paymentPlanService;
 
 	@Override
 	public String dialogPaymentConfirm(String serverRef, String mobileNo, Double amount, Integer subscribedDays,
@@ -74,7 +79,8 @@ public class DialogClientImpl implements DialogClient {
 					+ "                \"serviceID\": \"" + serviceID + "\"\r\n" + "            }  \r\n"
 					+ "        },\r\n" + "        \"referenceCode\": " + "\"" + serverRef + "\"" + ",\r\n"
 					+ "        \"transactionOperationStatus\": \"Charged\"\r\n" + "    }\r\n" + "}\r\n";
-
+			System.out.println(mobileNo);
+			System.out.println(payment_json_string);
 			JSONObject json = new JSONObject(payment_json_string);
 			StringEntity params = new StringEntity(json.toString());
 
@@ -88,6 +94,8 @@ public class DialogClientImpl implements DialogClient {
 				result.append(line);
 			}
 
+			System.out.println(result.toString());
+
 			JSONObject jsonObj = new JSONObject(result.toString());
 
 			String respMessage = "";
@@ -95,7 +103,7 @@ public class DialogClientImpl implements DialogClient {
 			if (jsonObj.has("amountTransaction")) {
 				respMessage = "amountTransaction";
 				JSONObject jsonObjRef = (JSONObject) jsonObj.get("amountTransaction");
-				if(jsonObjRef.get("transactionOperationStatus").toString().equalsIgnoreCase("Charged")) {
+				if (jsonObjRef.get("transactionOperationStatus").toString().equalsIgnoreCase("Charged")) {
 					paid = "Success";
 				}
 				paymentLogService.createPaymentLog("Dialog", "-",
@@ -193,11 +201,11 @@ public class DialogClientImpl implements DialogClient {
 			// Body
 			map.put("method", "mobilevisions");
 			map.put("msisdn", mobileNo);
-			
+
 			String serviceID = ideabizServiceConfigService.getServiceId(day);
-			
+
 			map.put("serviceID", serviceID);
-			
+
 //			if (day == 1) {
 //				map.put("serviceID", AppConstant.IDEABIZ_SERVICE_1);
 //			} else if (day == 7) {
@@ -247,11 +255,11 @@ public class DialogClientImpl implements DialogClient {
 			// Body
 			map.put("pin", dialogOtpConfirmDto.getPin());
 			map.put("serverRef", dialogOtpConfirmDto.getServerRef());
-			
+
 			String serviceID = ideabizServiceConfigService.getServiceId(dialogOtpConfirmDto.getDay());
-			
+
 			map.put("serviceID", serviceID);
-			
+
 //			if (dialogOtpConfirmDto.getDay() == 1) {
 //				map.put("serviceID", AppConstant.IDEABIZ_SERVICE_1);
 //			} else if (dialogOtpConfirmDto.getDay() == 7) {
@@ -282,19 +290,19 @@ public class DialogClientImpl implements DialogClient {
 			try {
 				dialogOtpDto.setTransactionOperationStatus(jsonObjRef.get("transactionOperationStatus").toString());
 			} catch (Exception e) {
-				e.printStackTrace();
+				// e.printStackTrace();
 			}
 
 			return dialogOtpDto;
 		} catch (Exception e) {
 			e.printStackTrace();
-			
-			if(e.getLocalizedMessage().contains("Wrong Pin")) {
+
+			if (e.getLocalizedMessage().contains("Wrong Pin")) {
 				System.out.println("Wrong Pin");
 				throw new RuntimeException("Wrong Pin");
 			}
-			
-			if(e.getLocalizedMessage().contains("Max attempt exceeded")) {
+
+			if (e.getLocalizedMessage().contains("Max attempt exceeded")) {
 				System.out.println("Max Attempt Exceeded");
 				throw new RuntimeException("Max Attempt Exceeded");
 			} else {
@@ -303,6 +311,7 @@ public class DialogClientImpl implements DialogClient {
 		}
 	}
 
+	// NotUse After Angular Release
 	@Override
 	public String unsubscribe(String access_token, Integer viewerId, Integer day, String mobileNo) throws Exception {
 		try {
@@ -320,11 +329,11 @@ public class DialogClientImpl implements DialogClient {
 			// Body
 			map.put("method", "WEB");
 			map.put("msisdn", tel);
-			
+
 			String serviceID = ideabizServiceConfigService.getServiceId(day);
-			
+
 			map.put("serviceID", serviceID);
-			
+
 //			if (day == 1) {
 //				map.put("serviceID", AppConstant.IDEABIZ_SERVICE_1);
 //			} else if (day == 7) {
@@ -344,6 +353,100 @@ public class DialogClientImpl implements DialogClient {
 			// JSONObject jsonObjRef = new JSONObject(jsonObj.get("data").toString());
 
 			return jsonObj.get("statusCode").toString();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
+	}
+
+	@Override
+	public String unsubscribeByMobile(PaymantPlanDto planDto, String mobileNo) throws Exception {
+		try {
+
+			RestTemplate restTemplate = new RestTemplate();
+
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("content-type", "application/json");
+			headers.set("authorization", createAccessToken());
+
+			Map<String, Object> map = new HashMap<>();
+
+			mobileNo = "+94" + appUtility.getNineDigitMobileNumber(mobileNo);
+			String tel = "tel:" + mobileNo;
+			// Body
+			map.put("method", "WEB");
+			map.put("msisdn", tel);
+
+			map.put("serviceID", planDto.getServiceId());
+
+//			if (day == 1) {
+//				map.put("serviceID", AppConstant.IDEABIZ_SERVICE_1);
+//			} else if (day == 7) {
+//				map.put("serviceID", AppConstant.IDEABIZ_SERVICE_7);
+//			}
+
+			HttpEntity<?> entity = new HttpEntity<>(map, headers);
+
+			UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(AppConstant.URL_IDEABIZ_UNSUBSCRIBE);
+
+			HttpEntity<String> response = restTemplate.exchange(builder.toUriString(), HttpMethod.POST, entity,
+					String.class);
+
+			System.out.println(response.getBody().toString());
+
+			JSONObject jsonObj = new JSONObject(response.getBody().toString());
+			// JSONObject jsonObjRef = new JSONObject(jsonObj.get("data").toString());
+
+			return jsonObj.get("statusCode").toString();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
+	}
+
+	@Override
+	public DialogOtpDto generateOTP(String mobileNo, Integer methodId) throws Exception {
+		try {
+
+			RestTemplate restTemplate = new RestTemplate();
+
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("content-type", "application/json");
+			headers.set("authorization", createAccessToken());
+
+			Map<String, Object> map = new HashMap<>();
+
+			mobileNo = "+94" + appUtility.getNineDigitMobileNumber(mobileNo);
+
+			map.put("method", "mobilevisions");
+			map.put("msisdn", mobileNo);
+
+			String serviceID = paymentPlanService.getServiceId(methodId);
+
+			map.put("serviceID", serviceID);
+
+			HttpEntity<?> entity = new HttpEntity<>(map, headers);
+
+			UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(AppConstant.URL_IDEABIZ_OTP);
+
+			HttpEntity<String> response = restTemplate.exchange(builder.toUriString(), HttpMethod.POST, entity,
+					String.class);
+
+			System.out.println(response.getBody().toString());
+
+			JSONObject jsonObj = new JSONObject(response.getBody().toString());
+			JSONObject jsonObjRef = new JSONObject(jsonObj.get("data").toString());
+
+			DialogOtpDto dialogOtpDto = new DialogOtpDto();
+
+			dialogOtpDto.setStatusCode(jsonObj.get("statusCode").toString());
+			dialogOtpDto.setServerRef(jsonObjRef.get("serverRef").toString());
+			dialogOtpDto.setMsisdn(jsonObjRef.get("msisdn").toString());
+			dialogOtpDto.setServiceId(jsonObjRef.get("serviceId").toString());
+
+			System.out.println(dialogOtpDto.toString());
+
+			return dialogOtpDto;
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw e;

@@ -3,24 +3,36 @@ package org.kiki_cpg_v2.service.impl;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import org.kiki_cpg_v2.client.DialogClient;
 import org.kiki_cpg_v2.controller.ViewController;
 import org.kiki_cpg_v2.dto.DialogOtpDto;
 import org.kiki_cpg_v2.dto.DialogPaymentConfirmDto;
+import org.kiki_cpg_v2.dto.PaymantPlanDto;
+import org.kiki_cpg_v2.dto.PaymentRefDto;
+import org.kiki_cpg_v2.dto.PlanDto;
+import org.kiki_cpg_v2.dto.ResponseMapDto;
 import org.kiki_cpg_v2.dto.request.DialogOtpConfirmDto;
+import org.kiki_cpg_v2.dto.request.TransactionBeginDto;
 import org.kiki_cpg_v2.entity.IdeabizEntity;
 import org.kiki_cpg_v2.entity.InvoiceEntity;
 import org.kiki_cpg_v2.entity.PackageConfigEntity;
 import org.kiki_cpg_v2.entity.PackageEntity;
+import org.kiki_cpg_v2.entity.SubscriptionEntity;
+import org.kiki_cpg_v2.entity.SubscriptionInvoiceEntity;
 import org.kiki_cpg_v2.repository.IdeabizRepository;
+import org.kiki_cpg_v2.repository.SubscriptionInvoiceRepository;
+import org.kiki_cpg_v2.repository.SubscriptionRepository;
 import org.kiki_cpg_v2.service.IdeabizService;
 import org.kiki_cpg_v2.service.InvoiceService;
 import org.kiki_cpg_v2.service.PackageConfigService;
 import org.kiki_cpg_v2.service.PaymentDetailService;
 import org.kiki_cpg_v2.service.PaymentLogService;
 import org.kiki_cpg_v2.service.PaymentMethodService;
+import org.kiki_cpg_v2.service.PaymentPlanService;
+import org.kiki_cpg_v2.service.SubscriptionService;
 import org.kiki_cpg_v2.service.ViewerPolicyService;
 import org.kiki_cpg_v2.service.ViewerService;
 import org.kiki_cpg_v2.service.ViewerUnsubscriptionService;
@@ -38,6 +50,9 @@ public class IdeabizServiceImpl implements IdeabizService {
 
 	@Autowired
 	private DialogClient dialogClient;
+	
+	@Autowired
+	private PaymentPlanService paymentPlanService;
 
 	@Autowired
 	private PaymentMethodService paymentMethodService;
@@ -65,10 +80,108 @@ public class IdeabizServiceImpl implements IdeabizService {
 
 	@Autowired
 	private PaymentDetailService paymentDetailService;
+	
+	@Autowired
+	private SubscriptionService subscriptionService;
+	
+	@Autowired
+	private SubscriptionRepository subscriptionRepository;
+	
+	@Autowired
+	private SubscriptionInvoiceRepository subscriptionInvoiceRepository;
 
 	@Autowired
 	private AppUtility appUtility;
+	
+	
+	@Override
+	public DialogPaymentConfirmDto payment(DialogOtpConfirmDto dialogOtpConfirmDto) throws Exception{
+		System.out.println("Payment");
+		PaymantPlanDto paymentPlanDto = paymentPlanService.getPaymentPlan(dialogOtpConfirmDto.getPlanId());
+		String message = "";
+		
+		Integer invoiceNo = null;
+		DialogPaymentConfirmDto confirmDto = new DialogPaymentConfirmDto();
+		
+		if (paymentPlanDto.getAmount() > 0) {
+			System.out.println("Payment 1");
+			String accessToken = dialogClient.createAccessToken();
+			DialogOtpDto dialogOtpDto = dialogClient.pinSubscriptionConfirm(dialogOtpConfirmDto, paymentPlanDto.getAmount(), accessToken);
+			
+			if (dialogOtpDto.getStatusCode().equals("SUCCESS")) {
+				System.out.println("Payment 2");
+				String mobileNo = dialogOtpDto.getMsisdn();
+				mobileNo = mobileNo.replace("tel:", "");
+				System.out.println(dialogOtpDto.getStatus() + ": dialogOtpDto.getStatus()");
+				if (dialogOtpDto.getStatus().equals("SUBSCRIBED")) {
+					initializePayment(confirmDto, message, mobileNo, dialogOtpConfirmDto, paymentPlanDto);
+				} else if (dialogOtpDto.getStatus().equalsIgnoreCase("ALREADY_SUBSCRIBED")) {
+					processUnsubscription(mobileNo, paymentPlanDto, dialogOtpConfirmDto.getViewerId());
+					SubscriptionEntity subscriptionEntity= subscriptionService.generateSubsctiptionEntity(mobileNo, dialogOtpConfirmDto.getViewerId(), paymentPlanDto, AppConstant.DIALOG);
+					subscriptionEntity = subscriptionRepository.save(subscriptionEntity);
+					confirmDto.setStatus("Success");
+				}
+			} else {
+				paymentLogService.createPaymentLog("Dialog", "-", dialogOtpDto.getMessage(),
+						dialogOtpConfirmDto.getViewerId(), dialogOtpDto.getMsisdn(), dialogOtpDto.getResult());
+			}
+			
+			
+			confirmDto.setStatusCode(dialogOtpDto.getStatusCode());
+			confirmDto.setServerRef(dialogOtpDto.getServerRef());
+			confirmDto.setServiceId(dialogOtpDto.getServiceId());
+			confirmDto.setAccessCode(accessToken);
+			confirmDto.setMsisdn(dialogOtpDto.getMsisdn());
+			confirmDto.setMessage(message);
+			confirmDto.setInvoiceId(invoiceNo);
 
+			return confirmDto;
+		}
+		
+		return null;
+	}
+	@Override
+	public void initializePayment(DialogPaymentConfirmDto confirmDto, String message, String mobileNo, DialogOtpConfirmDto dialogOtpConfirmDto, PaymantPlanDto paymentPlanDto) throws Exception{
+		System.out.println("Payment 3");
+		SubscriptionEntity subscriptionEntity= subscriptionService.generateSubsctiptionEntity(mobileNo, dialogOtpConfirmDto.getViewerId(), paymentPlanDto, AppConstant.DIALOG);
+		subscriptionEntity = subscriptionRepository.save(subscriptionEntity);
+		message = "SUBSCRIBED";
+		if (subscriptionEntity != null) {
+			if (dialogOtpConfirmDto.isTrial()) {
+				//TODO
+			} else {
+				ResponseMapDto responseMapDto = makePayment(subscriptionEntity, dialogOtpConfirmDto.getServerRef(), dialogOtpConfirmDto.getViewerId(), paymentPlanDto.getDay(), mobileNo, paymentPlanDto.getAmount(), true, false, -1);
+				if (responseMapDto.getStatus().equalsIgnoreCase("Success")) {
+					viewerService.updateViewerMobileNumberAndTrial(mobileNo, dialogOtpConfirmDto.getViewerId(),
+							false);
+					confirmDto.setStatus(responseMapDto.getStatus());
+				} else {
+					paymentLogService.createPaymentLog("Dialog", "-", responseMapDto.getStatus(),
+							dialogOtpConfirmDto.getViewerId(), mobileNo, responseMapDto.toString());
+				}
+			}
+		} else {
+			message = "SUBSCRIBED SAVE ERROR";
+			throw new RuntimeException("Subscription save error");
+		}
+	}
+
+	
+	/**
+	 * @param dialogOtpConfirmDto
+	 * @param mobileNo
+	 * @throws Exception 
+	 */
+	@Override
+	public void processUnsubscription(String mobileNo, PaymantPlanDto planDto, Integer viewerId) throws Exception {
+		if(subscriptionService.unsubscribeAllByMobileAndType(mobileNo, AppConstant.DIALOG)) {
+			dialogClient.unsubscribeByMobile(planDto, mobileNo);
+			viewerUnsubscriptionService.unubscribe(mobileNo, viewerId, "UNSUBSCRIBE", "Dialog");
+		}
+	}
+
+
+	//Not User after angular release
 	@Override
 	public DialogPaymentConfirmDto pinSubscriptionConfirm(DialogOtpConfirmDto dialogOtpConfirmDto) throws Exception {
 		String accessToken = dialogClient.createAccessToken();
@@ -249,6 +362,66 @@ public class IdeabizServiceImpl implements IdeabizService {
 		return false;
 	}
 
+	
+	@Override
+	public ResponseMapDto makePayment(SubscriptionEntity subscriptionEntity, String serverRef, Integer viewerId, Integer day, String mobileNo,
+			Double amount, boolean unsubscrideEntityUpdate, boolean isUpdateCronViewer, Integer cronId)
+			throws Exception {
+		System.out.println("Make Payment");
+		ResponseMapDto response = new ResponseMapDto();
+		HashMap<String, Object> responseData = new HashMap<String, Object>();
+
+		SubscriptionInvoiceEntity subscriptionInvoiceEntity = subscriptionService.getSubscriptionInvoiceEntity( "1", subscriptionEntity);
+		subscriptionInvoiceEntity.setSuccess(AppConstant.INACTIVE);
+		subscriptionInvoiceEntity.setDecision(AppConstant.DECLINE);
+		subscriptionInvoiceEntity = subscriptionInvoiceRepository.save(subscriptionInvoiceEntity);
+		
+		
+		responseData.put("invoiceId", subscriptionInvoiceEntity.getId());
+
+		if (serverRef == null) {
+			serverRef = subscriptionInvoiceEntity.getId().toString();
+		}
+
+		System.out.println(serverRef + " " + mobileNo+ " " + amount+ " " + day+ " " + viewerId+ " " + isUpdateCronViewer+ " " + cronId);
+		String paid = paymentConfirm(serverRef, mobileNo, amount, day, viewerId, isUpdateCronViewer, cronId);
+		System.out.println("paid : " + paid);
+
+		if (paid.equals("Success")) {
+			subscriptionInvoiceEntity.setSuccess(AppConstant.ACTIVE);
+			subscriptionInvoiceEntity.setDecision(AppConstant.ACCEPT);
+			if (subscriptionInvoiceRepository.save(subscriptionInvoiceEntity) != null) {
+				System.out.println("invoice Save");
+				subscriptionEntity.setPolicyExpDate(appUtility.getbeforeDay(day, new Date()));
+				if(subscriptionRepository.save(subscriptionEntity)!= null) {
+					if (viewerUnsubscriptionService.save(mobileNo, viewerId, "SUBSCRIBE", "Dialog",
+							unsubscrideEntityUpdate)) {
+						response.setStatus("Success");
+						responseData.put("message", "Success");
+					} else {
+						response.setStatus("fail");
+						responseData.put("message", "Unsubscription save error");
+					}
+				} else {
+					response.setStatus("fail");
+					responseData.put("message", "Subscription Expire Date Not Updated");
+				}
+				
+			} else {
+				response.setStatus("fail");
+				responseData.put("message", "Invoice Not Updated");
+			}
+
+		} else {
+			response.setStatus("fail");
+			responseData.put("message", "Payment Confirmation Error");
+		}
+		
+		return response;
+	}
+	
+	
+	//Not Use after angular
 	@Override
 	public List<String> processIdeabizPayment(String serverRef, Integer viewerId, Integer day, String mobileNo,
 			Double amount, boolean unsubscrideEntityUpdate, boolean isUpdateCronViewer, Integer cronId)
@@ -359,5 +532,7 @@ public class IdeabizServiceImpl implements IdeabizService {
 		ideabizEntity.setSubscribedDays(day);
 		return ideabizEntity;
 	}
+
+	
 
 }

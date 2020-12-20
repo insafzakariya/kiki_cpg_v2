@@ -160,7 +160,7 @@ public class MobitelServiceImpl implements MobitelService {
 		Integer subscribedDays = paymentRefDto.getDays();
 		if(subscriptionEntity != null) {
 			if(trial) {
-				SubscriptionInvoiceEntity subscriptionInvoiceEntity = subscriptionService.getSubscriptionInvoiceEntity(subscriptionEntity.getMobile(), "1", subscriptionEntity, AppConstant.MOBITEL);
+				SubscriptionInvoiceEntity subscriptionInvoiceEntity = subscriptionService.getSubscriptionInvoiceEntity("1", subscriptionEntity);
 				subscriptionEntity.setAmount(0.0);
 				subscriptionInvoiceEntity.setExpireDate(appUtility.getbeforeDay(AppConstant.TRIAL_DAYS_MOBITEL, new Date()));
 				subscriptionInvoiceRepository.save(subscriptionInvoiceEntity);
@@ -395,7 +395,7 @@ public class MobitelServiceImpl implements MobitelService {
 					paymentLogService.createPaymentLog("Mobitel", returnValue, "-", subscriptionEntity.getViewerId(), mobileNo, AppConstant.DECLINE);
 					if (returnValue.equals("0002")) {
 						lastTransaciontId = idGeneratorService.generateId(AppConstant.MOBITEL+(int)subscriptionEntity.getAmount().doubleValue());
-						SubscriptionInvoiceEntity subscriptionInvoiceEntity=  subscriptionService.getSubscriptionInvoiceEntity(mobileNo, "1", subscriptionEntity, AppConstant.MOBITEL);
+						SubscriptionInvoiceEntity subscriptionInvoiceEntity=  subscriptionService.getSubscriptionInvoiceEntity("1", subscriptionEntity);
 						subscriptionInvoiceEntity.setDecision(AppConstant.DECLINE);
 						subscriptionInvoiceEntity.setSuccess(AppConstant.INACTIVE);
 						
@@ -421,7 +421,7 @@ public class MobitelServiceImpl implements MobitelService {
 
 				merchantAccountRepository.save(merchantAccountEntity);*/
 				paymentLogService.createPaymentLog("Mobitel", returnValue, "-", subscriptionEntity.getViewerId(), mobileNo, AppConstant.ACCEPT);
-				SubscriptionInvoiceEntity subscriptionInvoiceEntity=  subscriptionService.getSubscriptionInvoiceEntity(mobileNo, "1", subscriptionEntity, AppConstant.MOBITEL);
+				SubscriptionInvoiceEntity subscriptionInvoiceEntity=  subscriptionService.getSubscriptionInvoiceEntity("1", subscriptionEntity);
 				subscriptionEntity.setPolicyExpDate(appUtility.getbeforeDay(subscriptionEntity.getSubscribedDays(), new Date()));
 				subscriptionInvoiceRepository.save(subscriptionInvoiceEntity);
 				paymentStatus = "Success";
@@ -436,7 +436,7 @@ public class MobitelServiceImpl implements MobitelService {
 
 				merchantAccountRepository.save(merchantAccountEntity);*/
 				paymentLogService.createPaymentLog("Mobitel", returnValue, "-", subscriptionEntity.getViewerId(), mobileNo, AppConstant.DECLINE);
-				SubscriptionInvoiceEntity subscriptionInvoiceEntity=  subscriptionService.getSubscriptionInvoiceEntity(mobileNo, "1", subscriptionEntity, AppConstant.MOBITEL);
+				SubscriptionInvoiceEntity subscriptionInvoiceEntity=  subscriptionService.getSubscriptionInvoiceEntity("1", subscriptionEntity);
 				subscriptionInvoiceEntity.setDecision(AppConstant.DECLINE);
 				subscriptionInvoiceEntity.setSuccess(AppConstant.INACTIVE);
 				

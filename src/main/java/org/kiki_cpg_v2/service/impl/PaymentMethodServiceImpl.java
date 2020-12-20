@@ -9,6 +9,7 @@ import org.kiki_cpg_v2.entity.PaymentMethodEntity;
 import org.kiki_cpg_v2.entity.PaymentMethodPlanEntity;
 import org.kiki_cpg_v2.repository.PaymentMethodRepository;
 import org.kiki_cpg_v2.service.PaymentMethodService;
+import org.kiki_cpg_v2.service.PaymentPlanService;
 import org.kiki_cpg_v2.util.AppConstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,9 @@ public class PaymentMethodServiceImpl implements PaymentMethodService {
 
 	@Autowired
 	private PaymentMethodRepository paymentMethodRepository;
+	
+	@Autowired
+	private PaymentPlanService paymentPlanService;
 
 	@Override
 	public List<PaymantPlanDto> getPaymentPlan(Integer paymentMethodId, String lang) {
@@ -26,48 +30,36 @@ public class PaymentMethodServiceImpl implements PaymentMethodService {
 		List<PaymantPlanDto> paymantPlanDtos = new ArrayList<PaymantPlanDto>();
 		paymentMethodEntity.getPaymentMethodPlanEntities().forEach(e -> {
 			if (e.getStatus() == 1) {
-				paymantPlanDtos.add(getPaymantPlanDto(e, paymentMethodId, lang));
+				paymantPlanDtos.add(paymentPlanService.getPaymantPlanDto(e, lang));
 			}
 		});
 		return paymantPlanDtos;
 	}
 
-	private PaymantPlanDto getPaymantPlanDto(PaymentMethodPlanEntity e, Integer paymentMethodId, String lang) {
-		PaymantPlanDto dto = new PaymantPlanDto();
-		dto.setId(e.getId());
-
-		if (lang != null && !lang.isEmpty()) {
-			if (lang.equalsIgnoreCase("si")) {
-				dto.setName(e.getNameSinhala());
-				dto.setValue("රු . " + e.getValue() + " + බදු");
-			}
-
-			if (lang.equalsIgnoreCase("en")) {
-				dto.setName(e.getName());
-				dto.setValue("Rs. " + e.getValue() + " + Tax");
-			}
-
-			if (lang.equalsIgnoreCase("ta")) {
-				dto.setName(e.getNameTamil());
-				dto.setValue("Rs. " + e.getValue() + " + Tax");
-			}
-		} else {
-			dto.setName(e.getName());
-			dto.setValue("Rs. " + e.getValue() + " + Tax");
-		}
-
-		dto.setAmount(e.getValue());
-		dto.setOffer(e.getOffer());
-		dto.setPaymentMethodId(paymentMethodId);
-		dto.setDay(e.getDays());
-		dto.setTrialDays(e.getTrialDays());
-		dto.setTrialText(e.getTrialText());
-
-		System.out.println(dto.getAmount());
-
-		return dto;
-	}
-
+	/*
+	 * private PaymantPlanDto getPaymantPlanDto(PaymentMethodPlanEntity e, Integer
+	 * paymentMethodId, String lang) { PaymantPlanDto dto = new PaymantPlanDto();
+	 * dto.setId(e.getId());
+	 * 
+	 * if (lang != null && !lang.isEmpty()) { if (lang.equalsIgnoreCase("si")) {
+	 * dto.setName(e.getNameSinhala()); dto.setValue("රු . " + e.getValue() +
+	 * " + බදු"); }
+	 * 
+	 * if (lang.equalsIgnoreCase("en")) { dto.setName(e.getName());
+	 * dto.setValue("Rs. " + e.getValue() + " + Tax"); }
+	 * 
+	 * if (lang.equalsIgnoreCase("ta")) { dto.setName(e.getNameTamil());
+	 * dto.setValue("Rs. " + e.getValue() + " + Tax"); } } else {
+	 * dto.setName(e.getName()); dto.setValue("Rs. " + e.getValue() + " + Tax"); }
+	 * 
+	 * dto.setAmount(e.getValue()); dto.setOffer(e.getOffer());
+	 * dto.setPaymentMethodId(paymentMethodId); dto.setDay(e.getDays());
+	 * dto.setTrialDays(e.getTrialDays()); dto.setTrialText(e.getTrialText());
+	 * 
+	 * System.out.println(dto.getAmount());
+	 * 
+	 * return dto; }
+	 */
 	@Override
 	public Double getPaymentPlanAmount(Integer day, Integer paymentMethodId) {
 

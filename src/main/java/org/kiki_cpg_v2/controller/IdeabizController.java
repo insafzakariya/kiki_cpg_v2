@@ -34,6 +34,21 @@ public class IdeabizController {
 	@Autowired
 	private SubscriptionPaymentService subscriptionService;
 	
+	@GetMapping("/generateOtp/{mobile_no}/{methodId}")
+	public ResponseEntity<Object> generateOTP(@PathVariable String mobile_no, @PathVariable Integer methodId) {
+
+		try {
+			DialogOtpDto dialogOtoDto = dialogClient.generateOTP(mobile_no, methodId);
+			System.out.println(dialogOtoDto.getServerRef());
+			return new ResponseEntity<Object>(dialogOtoDto, HttpStatus.OK);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ResponseEntity<Object>("error : " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	
+	// not needed after angular release
 	@GetMapping("/otp/send/{mobile_no}/{day}")
 	public ResponseEntity<Object> sentOtp(@PathVariable String mobile_no, @PathVariable Integer day) {
 
@@ -49,6 +64,7 @@ public class IdeabizController {
 		}
 	}
 	
+	//not use after angular
 	@RequestMapping(value = "/pin_subscription_confirm", method = RequestMethod.POST, produces = "application/json")
 	@ResponseBody
 	public ResponseEntity<Object> pin_subscription_confirm(@RequestBody DialogOtpConfirmDto dialogOtpConfirmDto,
@@ -59,6 +75,29 @@ public class IdeabizController {
 			DialogPaymentConfirmDto dialogPaymentConfirmDto = null;
 			if(isValied) {
 				 dialogPaymentConfirmDto =ideabizService.pinSubscriptionConfirm(dialogOtpConfirmDto);	
+			} else {
+				dialogPaymentConfirmDto = new DialogPaymentConfirmDto();
+				dialogPaymentConfirmDto.setStatusCode("Expired");
+				dialogPaymentConfirmDto.setMessage("Subscription Token Expired");
+			}
+			return new ResponseEntity<Object>(dialogPaymentConfirmDto, HttpStatus.OK);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ResponseEntity<Object>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+
+	}
+	
+	@RequestMapping(value = "/payment", method = RequestMethod.POST, produces = "application/json")
+	@ResponseBody
+	public ResponseEntity<Object> payment(@RequestBody DialogOtpConfirmDto dialogOtpConfirmDto,
+			HttpServletRequest request) {
+		System.out.println(dialogOtpConfirmDto.toString());
+		try {
+			boolean isValied = subscriptionService.validateSubscriptionPayment(dialogOtpConfirmDto.getSubscriptionPaymentId());
+			DialogPaymentConfirmDto dialogPaymentConfirmDto = null;
+			if(isValied) {
+				 dialogPaymentConfirmDto =ideabizService.payment(dialogOtpConfirmDto);	
 			} else {
 				dialogPaymentConfirmDto = new DialogPaymentConfirmDto();
 				dialogPaymentConfirmDto.setStatusCode("Expired");

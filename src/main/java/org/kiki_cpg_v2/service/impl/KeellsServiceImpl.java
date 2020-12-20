@@ -118,7 +118,7 @@ public class KeellsServiceImpl implements KeellsService {
 					.findById(subscriptionEntity.getPaymentPlan()).get();
 			if (subscriptionEntity != null) {
 				SubscriptionInvoiceEntity invoiceEntity = subscriptionService.getSubscriptionInvoiceEntity(
-						viewerEntity.getMobileNumber(), "", subscriptionEntity, AppConstant.KEELLS);
+						 "", subscriptionEntity);
 				double subscribeDays = paymentRequestDto.getAmount() / paymentMethodPlanEntity.getValue();
 				subscriptionEntity.setPolicyExpDate(appUtility.getbeforeDay((int) subscribeDays, new Date()));
 				subscriptionEntity.setUpdateDate(new Date());

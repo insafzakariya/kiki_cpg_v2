@@ -9,6 +9,7 @@ import java.util.List;
 import org.kiki_cpg_v2.entity.SubscriptionEntity;
 import org.kiki_cpg_v2.entity.SubscriptionInvoiceEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 /**
  * @author Anjana Thrishakya
@@ -72,6 +73,21 @@ public interface SubscriptionRepository extends JpaRepository<SubscriptionEntity
 	 */
 	SubscriptionEntity findFirstByMobileContainingAndStatusAndSubscribeAndType(String mobileNo, Integer status, Integer subscribe,
 			String hutch);
+
+	/**
+	 * @param viewerId
+	 * @param type
+	 * @return
+	 */
+	List<SubscriptionEntity> findByViewerIdAndType(Integer viewerId, String type) throws Exception;
+
+	/**
+	 * @param mobileNo
+	 * @param type
+	 * @param active
+	 * @return
+	 */
+	List<SubscriptionEntity> findByMobileContainingAndTypeAndStatus(String mobileNo, String type, Integer active);
 
 
 }

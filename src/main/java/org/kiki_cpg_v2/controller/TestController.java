@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.kiki_cpg_v2.client.AppleClient;
+import org.kiki_cpg_v2.client.DialogClient;
 import org.kiki_cpg_v2.dto.NotificationDto;
 import org.kiki_cpg_v2.entity.ViewerEntity;
 import org.kiki_cpg_v2.repository.ViewerRepository;
@@ -26,11 +27,21 @@ public class TestController {
 
 	@Autowired
 	private CronScheduler cronScheduler;
+	
+	@Autowired
+	private DialogClient dialogClient;
 
 	
 	@GetMapping
 	public String test() {
-		cronScheduler.cronStart("Test");
+		try {
+			String auth = dialogClient.createAccessToken();
+			dialogClient.unsubscribe(auth, 1, 30, "+94776497074");
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		
 		return "work";
 	}
