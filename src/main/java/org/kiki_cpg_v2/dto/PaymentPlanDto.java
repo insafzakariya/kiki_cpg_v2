@@ -1,6 +1,12 @@
+/**
+ * @DaJan 4, 2021 @PaymentPlanDto.java
+ */
 package org.kiki_cpg_v2.dto;
 
-public class PaymantPlanDto {
+/**
+ * @author Anjana Thrishakya
+ */
+public class PaymentPlanDto {
 
 	private Integer id;
 	private String name;
@@ -12,6 +18,8 @@ public class PaymantPlanDto {
 	private Integer trialDays;
 	private String trialText;
 	private String serviceId;
+	
+	
 
 	public Integer getId() {
 		return id;
@@ -84,7 +92,7 @@ public class PaymantPlanDto {
 	public void setTrialText(String trialText) {
 		this.trialText = trialText;
 	}
-
+	
 	public String getServiceId() {
 		return serviceId;
 	}
@@ -93,4 +101,5 @@ public class PaymantPlanDto {
 		this.serviceId = serviceId;
 	}
 
+	
 }

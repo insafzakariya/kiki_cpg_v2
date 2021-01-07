@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.kiki_cpg_v2.dto.PaymantPlanDto;
 import org.kiki_cpg_v2.dto.PaymentRefDto;
 import org.kiki_cpg_v2.dto.request.TransactionBeginDto;
 import org.kiki_cpg_v2.entity.PaymentMethodPlanEntity;
@@ -17,6 +18,7 @@ import org.kiki_cpg_v2.entity.SubscriptionInvoiceEntity;
 import org.kiki_cpg_v2.repository.PaymentMethodPlanRepository;
 import org.kiki_cpg_v2.repository.SubscriptionRepository;
 import org.kiki_cpg_v2.service.SubscriptionService;
+import org.kiki_cpg_v2.service.ViewerUnsubscriptionService;
 import org.kiki_cpg_v2.util.AppConstant;
 import org.kiki_cpg_v2.util.AppUtility;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +40,9 @@ public class SubscriptionServiceImpl implements SubscriptionService{
 	
 	@Autowired
 	private SubscriptionRepository subscriptionRepository;
+	
+	@Autowired
+	private ViewerUnsubscriptionService viewerUnsubscriptionService;
 	
 	@Override
 	public SubscriptionEntity getSubsctiptionEntity(TransactionBeginDto transactionBeginDto,
@@ -120,10 +125,30 @@ public class SubscriptionServiceImpl implements SubscriptionService{
 		});
 		
 		if(subscriptionRepository.saveAll(entities) != null) {
+			
+			if (viewerUnsubscriptionService.unubscribe("", id, "UNSUBSCRIBE", "Dialog")) {
+				return true;
+			}
 			return true;
 		}
 		
 		return false;
 		
+	}
+	
+	@Override
+	public SubscriptionEntity generateSubsctiptionEntity(String mobileNo, Integer viewerId, PaymantPlanDto paymentPlanDto,  String type) throws Exception{
+		SubscriptionEntity entity = new SubscriptionEntity();
+
+		entity.setAmount(paymentPlanDto.getAmount());
+		entity.setCreateDate(new Date());
+		entity.setMobile("+94" + appUtility.getNineDigitMobileNumber(mobileNo));
+		entity.setPaymentPlan(paymentPlanDto.getId());
+		entity.setStatus(AppConstant.ACTIVE);
+		entity.setSubscribe(AppConstant.ACTIVE);
+		entity.setSubscribedDays(paymentPlanDto.getDay());
+		entity.setType(type);
+		entity.setViewerId(viewerId);
+		return entity;
 	}
 }

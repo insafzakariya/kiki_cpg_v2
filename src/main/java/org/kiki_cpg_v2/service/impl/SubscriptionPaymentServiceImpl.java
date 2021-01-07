@@ -104,11 +104,21 @@ public class SubscriptionPaymentServiceImpl implements SubscriptionPaymentServic
 			
 
 			if (!type.equalsIgnoreCase("new")) {
-				ViewerSubscriptionEntity viewerSubscriptionEntity = viewerSubscriptionRepository
-						.findOneBySubscriptionTypeAndViewers(SubscriptionType.MOBITEL_ADD_TO_BILL,
-								subscriptionPaymentEntity.getViewerID());
-				IdeabizEntity ideabizEntity = ideabizRepository
-						.findOneByViwerIdAndSubscribe(subscriptionPaymentEntity.getViewerID(), AppConstant.ACTIVE);
+				/*
+				 * ViewerSubscriptionEntity viewerSubscriptionEntity =
+				 * viewerSubscriptionRepository
+				 * .findOneBySubscriptionTypeAndViewers(SubscriptionType.MOBITEL_ADD_TO_BILL,
+				 * subscriptionPaymentEntity.getViewerID());
+				 */
+				SubscriptionEntity viewerSubscriptionEntity = subscriptionRepository.findFirstByViewerIdAndStatusAndSubscribeAndTypeOrderByIdDesc(subscriptionPaymentEntity.getViewerID(), AppConstant.ACTIVE, AppConstant.ACTIVE, AppConstant.MOBITEL);
+				/*
+				 * IdeabizEntity ideabizEntity = ideabizRepository
+				 * .findOneByViwerIdAndSubscribe(subscriptionPaymentEntity.getViewerID(),
+				 * AppConstant.ACTIVE);
+				 */
+				
+				SubscriptionEntity ideabizEntity = subscriptionRepository.findFirstByViewerIdAndStatusAndSubscribeAndTypeOrderByIdDesc(subscriptionPaymentEntity.getViewerID(), AppConstant.ACTIVE, AppConstant.ACTIVE, AppConstant.DIALOG);
+				
 				CustomerEntity customerEntity = customerRepository.findOneByViewerIdAndMobileNoAndStatus(
 						subscriptionPaymentEntity.getViewerID(), viewerEntity.getMobileNumber(),
 						DealerSubscriptionType.activated);
@@ -129,11 +139,11 @@ public class SubscriptionPaymentServiceImpl implements SubscriptionPaymentServic
 				}
 
 				if (ideabizEntity != null) {
-					InvoiceEntity invoiceEntity = invoiceRepository.findFirstByViewerIdAndSuccessOrderByIdDesc(viewerEntity.getId(), AppConstant.ACTIVE);
+					//InvoiceEntity invoiceEntity = invoiceRepository.findFirstByViewerIdAndSuccessOrderByIdDesc(viewerEntity.getId(), AppConstant.ACTIVE);
 
-					if (invoiceEntity != null) {
+					if (ideabizEntity.getUpdateDate() != null) {
 						subscriptionPaymentDto.setLastSubscribeDay(
-								new SimpleDateFormat("yyyy-MM-dd").format(invoiceEntity.getCreatedDate()));
+								new SimpleDateFormat("yyyy-MM-dd").format(ideabizEntity.getUpdateDate()));
 					}
 
 					subscriptionPaymentDto.getSubscriptionTypeList().add("IDEABIZ");
@@ -143,12 +153,17 @@ public class SubscriptionPaymentServiceImpl implements SubscriptionPaymentServic
 				}
 
 				if (viewerSubscriptionEntity != null) {
-					MerchantAccountEntity merchantAccountEntity = merchantAccountRepository
-							.findFirstByViewerIdAndIsSuccessOrderByIdDesc(viewerEntity.getId(), true);
-
-					if (merchantAccountEntity != null) {
+					/*
+					 * MerchantAccountEntity merchantAccountEntity = merchantAccountRepository
+					 * .findFirstByViewerIdAndIsSuccessOrderByIdDesc(viewerEntity.getId(), true);
+					 * 
+					 * if (merchantAccountEntity != null) {
+					 * subscriptionPaymentDto.setLastSubscribeDay( new
+					 * SimpleDateFormat("yyyy-MM-dd").format(merchantAccountEntity.getDate())); }
+					 */
+					if (viewerSubscriptionEntity.getUpdateDate() != null) {
 						subscriptionPaymentDto.setLastSubscribeDay(
-								new SimpleDateFormat("yyyy-MM-dd").format(merchantAccountEntity.getDate()));
+								new SimpleDateFormat("yyyy-MM-dd").format(ideabizEntity.getUpdateDate()));
 					}
 					subscriptionPaymentDto.getSubscriptionTypeList().add("MOBITEL");
 					subscriptionPaymentDto.setSubscriptionType("MOBITEL");

@@ -94,6 +94,7 @@
 							var day = sessionStorage.getItem("day");
 							var viewerId = sessionStorage.getItem("viewerId");
 							var methodId = sessionStorage.getItem("methodId");
+							var planId = sessionStorage.getItem("planId");
 
 							var isTrial = sessionStorage.getItem('isFreeTrial');
 							var otp = $('#d1').val();
@@ -107,6 +108,7 @@
 									"subscriptionPaymentId" : subscriptionPaymentId,
 									"day" : day,
 									"viewerId" : viewerId,
+									"planId" : planId,
 									"trial" : isTrial
 								};
 
