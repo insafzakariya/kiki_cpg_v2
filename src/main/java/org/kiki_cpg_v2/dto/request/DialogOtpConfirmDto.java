@@ -7,6 +7,7 @@ public class DialogOtpConfirmDto {
 	private Integer subscriptionPaymentId;
 	private Integer day;
 	private Integer viewerId;
+	private Integer planId;
 	private boolean trial;
 
 	public String getPin() {
@@ -49,6 +50,14 @@ public class DialogOtpConfirmDto {
 		this.viewerId = viewerId;
 	}
 
+	public Integer getPlanId() {
+		return planId;
+	}
+
+	public void setPlanId(Integer planId) {
+		this.planId = planId;
+	}
+
 	public boolean isTrial() {
 		return trial;
 	}
@@ -60,6 +69,7 @@ public class DialogOtpConfirmDto {
 	@Override
 	public String toString() {
 		return "DialogOtpConfirmDto [pin=" + pin + ", serverRef=" + serverRef + ", subscriptionPaymentId="
-				+ subscriptionPaymentId + ", day=" + day + ", viewerId=" + viewerId + ", trial=" + trial + "]";
+				+ subscriptionPaymentId + ", day=" + day + ", viewerId=" + viewerId + ", planId=" + planId + ", trial="
+				+ trial + "]";
 	}
 }

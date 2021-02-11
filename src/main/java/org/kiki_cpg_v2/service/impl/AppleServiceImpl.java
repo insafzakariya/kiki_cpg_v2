@@ -79,6 +79,10 @@ public class AppleServiceImpl implements AppleService {
 
 	@Override
 	public PaymentRefDto pay(ApplePayDto applePayDto) throws Exception {
+		
+		paymentLogService.createPaymentLog(AppConstant.APPLE, "SUBSCRIPTION", "SUBSCRIPTION",
+				applePayDto.getViewerId(), "" , applePayDto.toString());
+		
 		if (!checkSubsciption(applePayDto.getViewerId())) {
 			throw new RuntimeException("Save Error | Can't Unsubscribe Previous Package");
 		}
@@ -184,6 +188,7 @@ public class AppleServiceImpl implements AppleService {
 		SubscriptionInvoiceEntity invoiceEntity = new SubscriptionInvoiceEntity();
 		invoiceEntity.setAmount(subscriptionEntity.getAmount());
 		invoiceEntity.setCreatedDate(new Date());
+		invoiceEntity.setExpireDate(appUtility.getbeforeDay(paymentMethodPlanEntity.getDays(), new Date()));
 		invoiceEntity.setMobile(subscriptionEntity.getMobile());
 		invoiceEntity.setReferanceNo(UUID.randomUUID().toString());
 		invoiceEntity.setStatus(AppConstant.ACTIVE);
@@ -229,6 +234,13 @@ public class AppleServiceImpl implements AppleService {
 		} else {
 			return true;
 		}
+	}
+
+	@Override
+	public void callback(HashMap<String, Object> data) {
+		paymentLogService.createPaymentLog(AppConstant.APPLE, "CALLBACK", "CALLBACK",
+				-1, "" , data.toString());
+		//return null;
 	}
 	
 }

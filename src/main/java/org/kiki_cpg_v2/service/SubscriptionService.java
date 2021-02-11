@@ -3,6 +3,7 @@
  */
 package org.kiki_cpg_v2.service;
 
+import org.kiki_cpg_v2.dto.PaymantPlanDto;
 import org.kiki_cpg_v2.dto.PaymentRefDto;
 import org.kiki_cpg_v2.dto.request.TransactionBeginDto;
 import org.kiki_cpg_v2.entity.SubscriptionEntity;
@@ -44,5 +45,16 @@ public interface SubscriptionService {
 	 * @return
 	 */
 	boolean inavtive(Integer viewerId, String type) throws Exception;
+
+	/**
+	 * @param mobileNo
+	 * @param viewerId
+	 * @param paymentPlanDto
+	 * @param type
+	 * @return
+	 * @throws Exception
+	 */
+	SubscriptionEntity generateSubsctiptionEntity(String mobileNo, Integer viewerId, PaymantPlanDto paymentPlanDto,
+			String type) throws Exception;
 
 }

@@ -5,6 +5,8 @@
  */
 package org.kiki_cpg_v2.service;
 
+import java.util.HashMap;
+
 import org.kiki_cpg_v2.dto.ApplePayDto;
 import org.kiki_cpg_v2.dto.PaymentRefDto;
 import org.kiki_cpg_v2.dto.request.TransactionBeginDto;
@@ -51,5 +53,11 @@ public interface AppleService {
 	 * @throws Exception
 	 */
 	boolean checkSubsciption(Integer viewerId) throws Exception;
+
+	/**
+	 * @param data
+	 * @return
+	 */
+	void callback(HashMap<String, Object> data);
 
 }

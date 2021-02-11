@@ -13,7 +13,7 @@
     <body onload="initialize()">
         <div class="main_container">
             <div class="header_container">
-                <h5 class="header">Please enter your number below</h5>
+                <h5 id="title" class="header">Please enter your number below</h5>
                 <!-- <p class="tagline">You will get a verification code to given mobile number after you this form</p> -->
             </div>
             <div class="body_container">
@@ -46,8 +46,26 @@
 
     </body>
     <!-- global js -->
-    <script src="<c:url value='/static/js/jquery-1.11.3.min.js'/>"
+    <script src="<c:url value='/static/js/jquery-3.5.1.min.js'/>"
     type="text/javascript"></script>
+    <script src="<c:url value='/static/js/i18n/CLDRPluralRuleParser.js'/>"
+		type="text/javascript"></script>
+	<script src="<c:url value='/static/js/i18n/jquery.i18n.js'/>"
+		type="text/javascript"></script>
+	<script
+		src="<c:url value='/static/js/i18n/jquery.i18n.messagestore.js'/>"
+		type="text/javascript"></script>
+	<script src="<c:url value='/static/js/i18n/jquery.i18n.fallbacks.js'/>"
+		type="text/javascript"></script>
+	<script src="<c:url value='/static/js/i18n/jquery.i18n.parser.js'/>"
+		type="text/javascript"></script>
+	<script src="<c:url value='/static/js/i18n/jquery.i18n.emitter.js'/>"
+		type="text/javascript"></script>
+	<script
+		src="<c:url value='/static/js/i18n/jquery.i18n.emitter.bidi.js'/>"
+		type="text/javascript"></script>
+	<script src="<c:url value='/static/js/i18n/jquery.i18n.language.js'/>"
+		type="text/javascript"></script>
     <script src="<c:url value='/static/js/globle.js'/>"
     type="text/javascript"></script>
 
@@ -55,6 +73,23 @@
         function initialize() {
             var mobile = sessionStorage.getItem("mobile");
             $("#mobile_no").val(mobile);
+            $.i18n({
+                locale: sessionStorage.getItem('language').toLowerCase()
+            });
+            $.i18n().load({
+                en: './static/language/en.json',
+                si: './static/language/si.json',
+                ta: './static/language/ta.json'
+            }).done(function() {
+                console.log('done!')
+                $("#title").text($.i18n('num-verify-title'));
+                $("#dialogIncorrect").text($.i18n('num-verify-error-1'));
+                $("#hutchIncorrect").text($.i18n('num-verify-error-2'));
+                $("#mobitelIncorrect").text($.i18n('num-verify-error-3'));
+                $("#mobileIncorrest").text($.i18n('num-verify-error-4'));
+                $("#numbernotvalied").text($.i18n('num-verify-error-5'));
+                
+            });
         }
 
         $("#mobile_no").keyup(function () {

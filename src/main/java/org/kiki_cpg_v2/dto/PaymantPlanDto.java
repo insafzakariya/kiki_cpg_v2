@@ -11,7 +11,8 @@ public class PaymantPlanDto {
 	private Double amount;
 	private Integer trialDays;
 	private String trialText;
-	
+	private String serviceId;
+
 	public Integer getId() {
 		return id;
 	}
@@ -82,6 +83,14 @@ public class PaymantPlanDto {
 
 	public void setTrialText(String trialText) {
 		this.trialText = trialText;
+	}
+
+	public String getServiceId() {
+		return serviceId;
+	}
+
+	public void setServiceId(String serviceId) {
+		this.serviceId = serviceId;
 	}
 
 }

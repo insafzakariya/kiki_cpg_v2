@@ -17,7 +17,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "subscription_invoice")
-public class SubscriptionInvoiceEntity {
+public class SubscriptionInvoiceEntity{
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -56,6 +56,9 @@ public class SubscriptionInvoiceEntity {
 
 	@Column(name = "success")
 	private Integer success;
+	
+	@Column(name = "policy_exp_date")
+	private Date expireDate;
 
 	@Column(name = "createdDate")
 	private Date createdDate;
@@ -157,6 +160,14 @@ public class SubscriptionInvoiceEntity {
 
 	public void setSuccess(Integer success) {
 		this.success = success;
+	}
+
+	public Date getExpireDate() {
+		return expireDate;
+	}
+
+	public void setExpireDate(Date expireDate) {
+		this.expireDate = expireDate;
 	}
 
 	public Date getCreatedDate() {

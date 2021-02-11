@@ -31,6 +31,7 @@ import org.kiki_cpg_v2.service.NotificationService;
 import org.kiki_cpg_v2.service.PackageConfigService;
 import org.kiki_cpg_v2.service.PaymentDetailService;
 import org.kiki_cpg_v2.service.PaymentLogService;
+import org.kiki_cpg_v2.service.ViewerNotificationService;
 import org.kiki_cpg_v2.service.ViewerPolicyService;
 import org.kiki_cpg_v2.service.ViewerService;
 import org.kiki_cpg_v2.service.ViewerUnsubscriptionService;
@@ -83,6 +84,9 @@ public class HNBServiceImpl implements HNBService {
 
 	@Autowired
 	private CronViewerRepostService cronViewerRepostService;
+	
+	@Autowired
+	private ViewerNotificationService viewerNotificationService;
 	
 	@Autowired
 	private ViewerRepository viewerRepository;
@@ -251,7 +255,18 @@ public class HNBServiceImpl implements HNBService {
 								String body = "Welcome to KiKi. You will be charged Rs " + amount
 											+ " + tax/ " + appUtility.getHutchPackageFrequance(
 													cardDataEntity.getSubscribedDays());
-								notificationService.sendSubscriptionNotification(body, viewerEntity.getDeviceId());
+								
+								try {
+									notificationService.sendSubscriptionNotification(body, viewerEntity.getDeviceId());
+								} catch (Exception e) {
+									e.printStackTrace();
+								}
+								
+								try {
+									viewerNotificationService.save(body, viewerEntity.getId());
+								} catch (Exception e) {
+									e.printStackTrace();
+								}
 								
 							}
 						}

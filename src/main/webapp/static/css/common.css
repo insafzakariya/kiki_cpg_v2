@@ -41,6 +41,22 @@
 	margin: auto !important;
 }
 
+.body_frame {
+	margin-bottom : 10px;
+	min-height : 50px;
+	padding: .5em 1em !important;
+	cursor: pointer !important;
+	border: 2px solid #24A9A6 !important;
+	color: #fff !important;
+	background-color: #707070 !important;
+	border-radius: 5px;
+}
+.center{
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
 @media ( min-width :340px) {
 	.col-sm-4 {
 		width: 33.33333333% !important;

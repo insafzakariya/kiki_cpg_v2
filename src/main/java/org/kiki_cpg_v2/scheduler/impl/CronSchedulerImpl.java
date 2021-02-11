@@ -25,12 +25,13 @@ public class CronSchedulerImpl implements CronScheduler {
 	public void cronSetup1() {
 		logger.info("Cron Started");
 		System.out.println("Cron Started");
-		cronStart("C-1");
+		//cronStart("C-1");
 	}
 
-	@Scheduled(cron = "0 00 19 * * *") // 19.00
+	@Scheduled(cron = "0 30 20 * * *") // 20.00
 	public void cronSetup2() {
-		cronStart("C-2");
+		System.out.println("start CRON 2030");
+		//cronStart("C-2");
 	}
 
 	@Override
@@ -40,7 +41,7 @@ public class CronSchedulerImpl implements CronScheduler {
 
 		String date = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
 		String time = new SimpleDateFormat("HH:mm:ss").format(new Date());
-
+		
 		Thread dialogThread = new Thread() {
 			public void run() {
 				cronService.startDialogCron(name ,ipAddress, date, time);
@@ -59,13 +60,12 @@ public class CronSchedulerImpl implements CronScheduler {
 		
 		/*Thread hnbThread = new Thread() {
 			public void run() {
-				
+				cronService.startHnbCron(name, ipAddress, date, time);
 			}
 		};
 
 		hnbThread.start();*/
 		
-		//cronService.startHnbCron(name, ipAddress, date, time);
 
 	}
 

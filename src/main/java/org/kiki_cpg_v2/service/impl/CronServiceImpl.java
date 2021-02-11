@@ -9,14 +9,12 @@ import org.kiki_cpg_v2.entity.CronErrorEntity;
 import org.kiki_cpg_v2.entity.CronReportEntity;
 import org.kiki_cpg_v2.entity.SubscriptionEntity;
 import org.kiki_cpg_v2.entity.custom.IdeabizViewerCusrtomEntity;
-import org.kiki_cpg_v2.entity.custom.ViewerSubscriptionCustomEntity;
 import org.kiki_cpg_v2.repository.CardDataReository;
 import org.kiki_cpg_v2.repository.CronErrorRepository;
 import org.kiki_cpg_v2.repository.CronMetaDataRepository;
 import org.kiki_cpg_v2.repository.CronReportRepository;
 import org.kiki_cpg_v2.repository.IdeabizRepository;
 import org.kiki_cpg_v2.repository.SubscriptionRepository;
-import org.kiki_cpg_v2.repository.ViewerSubscriptionRepository;
 import org.kiki_cpg_v2.service.CronService;
 import org.kiki_cpg_v2.service.HNBService;
 import org.kiki_cpg_v2.service.IdeabizService;
@@ -24,6 +22,7 @@ import org.kiki_cpg_v2.service.MobitelService;
 import org.kiki_cpg_v2.service.PaymentMethodService;
 import org.kiki_cpg_v2.service.SmsService;
 import org.kiki_cpg_v2.util.AppConstant;
+import org.kiki_cpg_v2.util.AppUtility;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,6 +68,9 @@ public class CronServiceImpl implements CronService {
 	
 	@Autowired
 	private HNBService hnbService;
+	
+	@Autowired
+	private AppUtility appUtility;
 
 	@Override
 	public void startDialogCron(String cronName, String ipAddress, String date, String time) {
@@ -87,32 +89,39 @@ public class CronServiceImpl implements CronService {
 
 			smsService.sendSms(AppConstant.CRON_NOTIFY_MOBILES,
 					"Ideabiz Cron " + cronName + " Strated " + date + " " + time);
-			List<IdeabizViewerCusrtomEntity> ideabizViewerJoinEntities = ideabizRepository
-					.getIdeabizViewerCusrtomEntityExpireBeforeToday();
+			/*
+			 * List<IdeabizViewerCusrtomEntity> ideabizViewerJoinEntities =
+			 * ideabizRepository .getIdeabizViewerCusrtomEntityExpireBeforeToday();
+			 */
+			
+			Date expireDateTill = appUtility.getLastMinitue();
+			
+			List<SubscriptionEntity> subscriptionEntities = subscriptionRepository.findBySubscribeAndStatusAndPolicyExpDateLessThanEqualAndType(AppConstant.ACTIVE, AppConstant.ACTIVE, expireDateTill, AppConstant.DIALOG);
 
-			if (ideabizViewerJoinEntities != null) {
+			if (subscriptionEntities != null) {
 
-				ideabizViewerJoinEntities.forEach(e -> {
+				subscriptionEntities.forEach(e -> {
 					System.out.println("Dialog Viewer Id : " + e.getViewerId());
 					logger.info("Dialog Viewer Id : " + e.getViewerId());
 				});
 
 				CronReportEntity cronReportEntity = saveCron(cronName, ipAddress, date, time, "Dialog");
+				//System.out.println(cronReportEntity.toString());
 				if (cronReportEntity != null) {
 					smsService.sendSms(AppConstant.CRON_NOTIFY_MOBILES,
-							"Ideabiz Pending Subscribtion Count Is : " + ideabizViewerJoinEntities.size()
+							"Ideabiz Pending Subscribtion Count Is : " + subscriptionEntities.size()
 									+ " - Cron Started :" + time + " -Server Ip : " + ipAddress);
 
 					Integer transactionCount = 0;
 
-					for (IdeabizViewerCusrtomEntity ideabizViewerCusrtomEntity : ideabizViewerJoinEntities) {
-						Double amount = paymentMethodService.getPaymentPlanAmount(ideabizViewerCusrtomEntity.getDays(),
+					for (SubscriptionEntity subscriptionEntity : subscriptionEntities) {
+						Double amount = paymentMethodService.getPaymentPlanAmount(subscriptionEntity.getSubscribedDays(),
 								4);
 						try {
 							List resp = ideabizService.processIdeabizPayment(null,
-									ideabizViewerCusrtomEntity.getViewerId(), ideabizViewerCusrtomEntity.getDays(),
-									ideabizViewerCusrtomEntity.getMobile(), amount, false, true,
-									cronReportEntity.getCronId());
+									subscriptionEntity.getViewerId(), subscriptionEntity.getSubscribedDays(),
+									subscriptionEntity.getMobile(), amount, false, true,
+									cronReportEntity.getCronId(), subscriptionEntity);
 							if (resp.get(1).toString().equalsIgnoreCase("Success")) {
 								transactionCount += 1;
 							}
@@ -121,7 +130,7 @@ public class CronServiceImpl implements CronService {
 							logger.error(e.getLocalizedMessage());
 
 							cronErrorSave(cronReportEntity.getCronId(), e.getMessage(), e.getLocalizedMessage(),
-									"IS crtInv", ideabizViewerCusrtomEntity.getViewerId());
+									"IS crtInv", subscriptionEntity.getViewerId());
 						}
 
 					}
@@ -130,7 +139,7 @@ public class CronServiceImpl implements CronService {
 
 					smsService.sendSms(AppConstant.CRON_NOTIFY_MOBILES,
 							"Ideabiz Done Subscribtion Count Is :" + transactionCount + " / "
-									+ ideabizViewerJoinEntities.size() + " -Cron Stoped :" + endTime + " -Server Ip : "
+									+ subscriptionEntities.size() + " -Cron Stoped :" + endTime + " -Server Ip : "
 									+ ipAddress);
 
 					cronReportEntity.setEndTime(endTime);
@@ -166,8 +175,10 @@ public class CronServiceImpl implements CronService {
 
 			smsService.sendSms(AppConstant.CRON_NOTIFY_MOBILES,
 					"Mobitel Cron " + cronName + " Strated " + date + " " + time);
-
-			List<SubscriptionEntity> subscriptionEntities = subscriptionRepository.findBySubscribeAndStatusAndPolicyExpDateLessThanEqualAndType(AppConstant.ACTIVE, AppConstant.ACTIVE, new Date(), AppConstant.MOBITEL);
+			
+			Date expireDateTill = appUtility.getLastMinitue();
+			
+			List<SubscriptionEntity> subscriptionEntities = subscriptionRepository.findBySubscribeAndStatusAndPolicyExpDateLessThanEqualAndType(AppConstant.ACTIVE, AppConstant.ACTIVE, expireDateTill, AppConstant.MOBITEL);
 			
 			/*
 			 * List<ViewerSubscriptionCustomEntity> viewerSubscriptionCustomEntities =

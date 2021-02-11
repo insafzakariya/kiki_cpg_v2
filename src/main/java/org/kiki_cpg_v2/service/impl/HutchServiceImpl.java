@@ -31,6 +31,7 @@ import org.kiki_cpg_v2.service.NotificationService;
 import org.kiki_cpg_v2.service.PackageConfigService;
 import org.kiki_cpg_v2.service.PaymentDetailService;
 import org.kiki_cpg_v2.service.PaymentLogService;
+import org.kiki_cpg_v2.service.ViewerNotificationService;
 import org.kiki_cpg_v2.service.ViewerPolicyService;
 import org.kiki_cpg_v2.service.ViewerService;
 import org.kiki_cpg_v2.service.ViewerUnsubscriptionService;
@@ -83,6 +84,9 @@ public class HutchServiceImpl implements HutchService {
 
 	@Autowired
 	private ViewerService viewerService;
+	
+	@Autowired
+	private ViewerNotificationService viewerNotificationService;
 
 	@Autowired
 	private HutchClient hutchClient;
@@ -156,7 +160,8 @@ public class HutchServiceImpl implements HutchService {
 					SubscriptionInvoiceEntity invoiceEntity = getSubscriptionInvoiceEntity(requestMap,
 							subscriptionEntity);
 					subscriptionEntity.setPolicyExpDate(
-							appUtility.getbeforeDay(subscriptionEntity.getSubscribedDays(), new Date()));
+							appUtility.getbeforeDay(subscriptionEntity.getSubscribedDays(), appUtility.getLastMinitue()));
+					invoiceEntity.setExpireDate(appUtility.getbeforeDay(subscriptionEntity.getSubscribedDays(), appUtility.getLastMinitue()));
 					subscriptionEntity.setUpdateDate(new Date());
 
 					if (subscriptionRepository.save(subscriptionEntity) != null) {
@@ -194,6 +199,12 @@ public class HutchServiceImpl implements HutchService {
 												System.out.println(notificationDto.toString());
 												try {
 													notificationService.sendNotification(notificationDto);
+												} catch (Exception e) {
+													e.printStackTrace();
+												}
+												
+												try {
+													viewerNotificationService.save(body, viewerEntity.getId());
 												} catch (Exception e) {
 													e.printStackTrace();
 												}
@@ -348,7 +359,7 @@ public class HutchServiceImpl implements HutchService {
 	@Transactional
 	public PaymentRefDto beginSubscribe(TransactionBeginDto beginDto) throws Exception {
 
-		if (!checkSubsciption(beginDto.getMobileNo())) {
+		if (!checkSubsciption(beginDto.getMobileNo(), beginDto.getPlanId())) {
 			throw new RuntimeException("Save Error | Can't Unsubscribe Previous Package");
 		}
 
@@ -360,6 +371,7 @@ public class HutchServiceImpl implements HutchService {
 		SubscriptionInvoiceEntity subscriptionInvoiceEntity = getBeginSubscriptionInvoiceEntity(beginDto,
 				subscriptionEntity, paymentRefDto);
 		subscriptionInvoiceEntity.setAmount(0.0);
+		subscriptionInvoiceEntity.setExpireDate(appUtility.getbeforeDay(AppConstant.TRIAL_DAYS_HUTCH, appUtility.getLastMinitue()));
 		subscriptionEntity = subscriptionRepository.save(subscriptionEntity);
 		if (subscriptionEntity != null) {
 			subscriptionInvoiceEntity = subscriptionInvoiceRepository.save(subscriptionInvoiceEntity);
@@ -425,8 +437,16 @@ public class HutchServiceImpl implements HutchService {
 															+ " + tax/ " + appUtility.getHutchPackageFrequance(
 																	paymentRefDto.getDays());
 												}
-												notificationService.sendSubscriptionNotification(body, viewerEntity.getDeviceId());
-												
+												try {
+													notificationService.sendSubscriptionNotification(body, viewerEntity.getDeviceId());
+												} catch (Exception e) {
+													e.printStackTrace();
+												}
+												try {
+													viewerNotificationService.save(body, viewerEntity.getId());
+												} catch (Exception e) {
+													e.printStackTrace();
+												}
 
 											} catch (Exception e) {
 												e.printStackTrace();
@@ -476,11 +496,11 @@ public class HutchServiceImpl implements HutchService {
 	}
 
 	@Override
-	public boolean checkSubsciption(String mobileNo) throws Exception {
+	public boolean checkSubsciption(String mobileNo, Integer planId) throws Exception {
 		SubscriptionEntity subscriptionEntity = subscriptionRepository
 				.findFirstByMobileContainingAndStatusAndSubscribeAndType(mobileNo, AppConstant.ACTIVE,
 						AppConstant.ACTIVE, AppConstant.HUTCH);
-		if (subscriptionEntity != null) {
+		if (subscriptionEntity != null && !subscriptionEntity.getPaymentPlan().equals(planId)) {
 			return processUnsubscription(subscriptionEntity.getViewerId(), subscriptionEntity.getMobile());
 		} else {
 			return true;
@@ -551,8 +571,8 @@ public class HutchServiceImpl implements HutchService {
 			if (hutchResponseDto.getResponseCode().equals("0")
 					|| hutchResponseDto.getResponseCode().equals("41501020")) {
 				if (subscriptionRepository.save(subscriptionEntity) != null) {
-					if (viewerUnsubscriptionService.unubscribe(subscriptionEntity.getMobile(), viewerid, "UNSUBSCRIBE",
-							"Dialog")) {
+					if (viewerUnsubscriptionService.unubscribe(subscriptionEntity.getMobile(), viewerid, "UNSUBSCRIBE", "Hutch")) {
+
 						return true;
 					}
 				}

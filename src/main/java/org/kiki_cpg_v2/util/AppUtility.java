@@ -1,5 +1,7 @@
 package org.kiki_cpg_v2.util;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -151,5 +153,19 @@ public class AppUtility {
 		}
 		
 		return text;
+	}
+	
+
+	/**
+	 * @return
+	 * @throws ParseException 
+	 */
+	public Date getLastMinitue() throws ParseException {
+		Date d = new Date();
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		String dateString = simpleDateFormat.format(d) + " 23:59:00";
+		Date expireDateTill = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(dateString);
+		
+		return expireDateTill;
 	}
 }

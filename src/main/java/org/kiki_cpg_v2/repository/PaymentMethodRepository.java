@@ -13,4 +13,10 @@ public interface PaymentMethodRepository extends JpaRepository<PaymentMethodEnti
 	 */
 	List<PaymentMethodEntity> findByStatus(Integer active);
 
+	/**
+	 * @param active
+	 * @return
+	 */
+	List<PaymentMethodEntity> findByStatusOrderByOrder(Integer active);
+
 }

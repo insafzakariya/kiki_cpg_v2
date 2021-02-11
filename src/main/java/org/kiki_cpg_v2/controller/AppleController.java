@@ -5,6 +5,8 @@
  */
 package org.kiki_cpg_v2.controller;
 
+import java.util.HashMap;
+
 import org.kiki_cpg_v2.dto.ApplePayDto;
 import org.kiki_cpg_v2.dto.PaymentRefDto;
 import org.kiki_cpg_v2.service.AppleService;
@@ -34,6 +36,17 @@ public class AppleController {
 		} catch (Exception e) {
 			e.printStackTrace();
 			return new ResponseEntity<Object>(e.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	@PostMapping("/apple-callback")
+	public void appleCallback(@RequestBody HashMap<String, Object> data) {
+		try {
+			appleService.callback(data);
+			//return new ResponseEntity<Object>(paymentRefDto, HttpStatus.OK);
+		} catch (Exception e) {
+			e.printStackTrace();
+			//return new ResponseEntity<Object>(e.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 

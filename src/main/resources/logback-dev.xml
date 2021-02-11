@@ -1,0 +1,46 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+<configuration>
+	<appender name="STDOUT"
+		class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>[%d{yyyy-MM-dd'T'HH:mm:ss.sss'Z'}] [%C] [%t] [%L] [%-5p]
+				%m%n</pattern>
+		</encoder>
+	</appender>
+
+	<appender name="FILE" class="ch.qos.logback.core.FileAppender">
+		<File>D:\\var\log\\kiki-cpg-dev.log</File>
+		<encoder>
+			<pattern>[%d{yyyy-MM-dd'T'HH:mm:ss.sss'Z'}] [%C] [%t] [%L] [%-5p]
+				%m%n</pattern>
+			<!-- <pattern>%d{HH:mm:ss,SSS} %-5p [%c] - %m%n</pattern> -->
+		</encoder>
+	</appender>
+
+	<appender name="validation-appender"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>D:\\var\log\\kiki-cpg-validation-dev.log </file>
+
+		<rollingPolicy
+			class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<!-- hourly rollover -->
+			<fileNamePattern>D:/var/log/kiki-cpg-validation-dev.%d{yyyy-MM-dd-HH}.log
+			</fileNamePattern>
+			<!-- retain 30 days logs -->
+			<maxHistory>30</maxHistory>
+		</rollingPolicy>
+
+		<encoder>
+			<pattern>%d{HH:mm:ss,SSS} %-5p [%c] - %m%n</pattern>
+		</encoder>
+	</appender>
+
+	<logger name="validation-logger">
+		<appender-ref ref="validation-appender" />
+	</logger>
+
+	<root level="INFO">
+		<appender-ref ref="FILE" />
+		<appender-ref ref="STDOUT" />
+	</root>
+</configuration>

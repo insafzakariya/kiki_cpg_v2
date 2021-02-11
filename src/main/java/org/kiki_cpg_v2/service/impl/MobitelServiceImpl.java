@@ -31,6 +31,7 @@ import org.kiki_cpg_v2.service.PackageConfigService;
 import org.kiki_cpg_v2.service.PaymentLogService;
 import org.kiki_cpg_v2.service.SubscriptionPaymentService;
 import org.kiki_cpg_v2.service.SubscriptionService;
+import org.kiki_cpg_v2.service.ViewerNotificationService;
 import org.kiki_cpg_v2.service.ViewerPolicyService;
 import org.kiki_cpg_v2.service.ViewerService;
 import org.kiki_cpg_v2.service.ViewerUnsubscriptionService;
@@ -99,6 +100,9 @@ public class MobitelServiceImpl implements MobitelService {
 	private IDGeneratorService idGeneratorService;
 	
 	@Autowired
+	private ViewerNotificationService viewerNotificationService;
+	
+	@Autowired
 	private ViewerRepository viewerRepository;
 	
 	@Autowired
@@ -156,6 +160,11 @@ public class MobitelServiceImpl implements MobitelService {
 		Integer subscribedDays = paymentRefDto.getDays();
 		if(subscriptionEntity != null) {
 			if(trial) {
+				SubscriptionInvoiceEntity subscriptionInvoiceEntity = subscriptionService.getSubscriptionInvoiceEntity(subscriptionEntity.getMobile(), "1", subscriptionEntity, AppConstant.MOBITEL);
+				subscriptionInvoiceEntity.setAmount(0.0);
+				subscriptionInvoiceEntity.setExpireDate(appUtility.getbeforeDay(AppConstant.TRIAL_DAYS_MOBITEL, new Date()));
+				subscriptionInvoiceRepository.save(subscriptionInvoiceEntity);
+				
 				viewerService.updateViewerMobileNumberAndTrial(mobileNo, viewerId,
 						false);
 				String paymentResp = proceedPayment(viewerId, subscribedDays, mobileNo, subscriptionPaymentId, planId, subscriptionEntity, trial);
@@ -211,7 +220,18 @@ public class MobitelServiceImpl implements MobitelService {
 									+ " + tax/ " + appUtility.getHutchPackageFrequance(
 											paymentRefDto.getDays());
 						}
-						notificationService.sendSubscriptionNotification(body, viewerEntity.getDeviceId());
+						try {
+							notificationService.sendSubscriptionNotification(body, viewerEntity.getDeviceId());
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+						
+						try {
+							viewerNotificationService.save(body, viewerEntity.getId());
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+						
 						
 						try {
 							mobitelClient.updateOneCCTool(true, mobileNo, new Date(), null);
@@ -307,7 +327,7 @@ public class MobitelServiceImpl implements MobitelService {
 				if (viewerPolicyService.updateViewerPolicy(dto, subscribedDays).equalsIgnoreCase("success")) {
 					if (subscriptionPaymentService.updateStatus(subscriptionPaymentId)) {
 						
-						subscriptionEntity.setPolicyExpDate(appUtility.getbeforeDay(subscribedDays, new Date()));
+						subscriptionEntity.setPolicyExpDate(appUtility.getbeforeDay(subscribedDays, appUtility.getLastMinitue()));
 						subscriptionEntity.setUpdateDate(new Date());
 						
 						if (subscriptionRepository.save(subscriptionEntity)!= null) {
@@ -402,7 +422,7 @@ public class MobitelServiceImpl implements MobitelService {
 				merchantAccountRepository.save(merchantAccountEntity);*/
 				paymentLogService.createPaymentLog("Mobitel", returnValue, "-", subscriptionEntity.getViewerId(), mobileNo, AppConstant.ACCEPT);
 				SubscriptionInvoiceEntity subscriptionInvoiceEntity=  subscriptionService.getSubscriptionInvoiceEntity(mobileNo, "1", subscriptionEntity, AppConstant.MOBITEL);
-				subscriptionEntity.setPolicyExpDate(appUtility.getbeforeDay(subscriptionEntity.getSubscribedDays(), new Date()));
+				subscriptionEntity.setPolicyExpDate(appUtility.getbeforeDay(subscriptionEntity.getSubscribedDays(), appUtility.getLastMinitue()));
 				subscriptionInvoiceRepository.save(subscriptionInvoiceEntity);
 				paymentStatus = "Success";
 				responseMsg = "Activation Successful";
@@ -465,7 +485,7 @@ public class MobitelServiceImpl implements MobitelService {
 			String paymentResp = cronProceedPayment(subscriptionEntity.getViewerId(), packageId, subscriptionEntity.getMobile(), subscriptionEntity.getSubscribedDays());
 			
 			if(paymentResp.equals("success")) {
-				subscriptionEntity.setPolicyExpDate(appUtility.getbeforeDay(subscriptionEntity.getSubscribedDays(), new Date()));
+				subscriptionEntity.setPolicyExpDate(appUtility.getbeforeDay(subscriptionEntity.getSubscribedDays(), appUtility.getLastMinitue()));
 				subscriptionEntity.setUpdateDate(new Date());
 				
 				if(subscriptionRepository.save(subscriptionEntity) != null) {
