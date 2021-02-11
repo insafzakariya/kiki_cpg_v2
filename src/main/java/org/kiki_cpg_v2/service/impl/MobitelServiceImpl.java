@@ -161,7 +161,7 @@ public class MobitelServiceImpl implements MobitelService {
 		if(subscriptionEntity != null) {
 			if(trial) {
 				SubscriptionInvoiceEntity subscriptionInvoiceEntity = subscriptionService.getSubscriptionInvoiceEntity(subscriptionEntity.getMobile(), "1", subscriptionEntity, AppConstant.MOBITEL);
-				subscriptionEntity.setAmount(0.0);
+				subscriptionInvoiceEntity.setAmount(0.0);
 				subscriptionInvoiceEntity.setExpireDate(appUtility.getbeforeDay(AppConstant.TRIAL_DAYS_MOBITEL, new Date()));
 				subscriptionInvoiceRepository.save(subscriptionInvoiceEntity);
 				
@@ -327,7 +327,7 @@ public class MobitelServiceImpl implements MobitelService {
 				if (viewerPolicyService.updateViewerPolicy(dto, subscribedDays).equalsIgnoreCase("success")) {
 					if (subscriptionPaymentService.updateStatus(subscriptionPaymentId)) {
 						
-						subscriptionEntity.setPolicyExpDate(appUtility.getbeforeDay(subscribedDays, new Date()));
+						subscriptionEntity.setPolicyExpDate(appUtility.getbeforeDay(subscribedDays, appUtility.getLastMinitue()));
 						subscriptionEntity.setUpdateDate(new Date());
 						
 						if (subscriptionRepository.save(subscriptionEntity)!= null) {
@@ -422,7 +422,7 @@ public class MobitelServiceImpl implements MobitelService {
 				merchantAccountRepository.save(merchantAccountEntity);*/
 				paymentLogService.createPaymentLog("Mobitel", returnValue, "-", subscriptionEntity.getViewerId(), mobileNo, AppConstant.ACCEPT);
 				SubscriptionInvoiceEntity subscriptionInvoiceEntity=  subscriptionService.getSubscriptionInvoiceEntity(mobileNo, "1", subscriptionEntity, AppConstant.MOBITEL);
-				subscriptionEntity.setPolicyExpDate(appUtility.getbeforeDay(subscriptionEntity.getSubscribedDays(), new Date()));
+				subscriptionEntity.setPolicyExpDate(appUtility.getbeforeDay(subscriptionEntity.getSubscribedDays(), appUtility.getLastMinitue()));
 				subscriptionInvoiceRepository.save(subscriptionInvoiceEntity);
 				paymentStatus = "Success";
 				responseMsg = "Activation Successful";
@@ -485,7 +485,7 @@ public class MobitelServiceImpl implements MobitelService {
 			String paymentResp = cronProceedPayment(subscriptionEntity.getViewerId(), packageId, subscriptionEntity.getMobile(), subscriptionEntity.getSubscribedDays());
 			
 			if(paymentResp.equals("success")) {
-				subscriptionEntity.setPolicyExpDate(appUtility.getbeforeDay(subscriptionEntity.getSubscribedDays(), new Date()));
+				subscriptionEntity.setPolicyExpDate(appUtility.getbeforeDay(subscriptionEntity.getSubscribedDays(), appUtility.getLastMinitue()));
 				subscriptionEntity.setUpdateDate(new Date());
 				
 				if(subscriptionRepository.save(subscriptionEntity) != null) {

@@ -123,6 +123,22 @@ body {
 
 									</div>
 									
+									<!-- <div id="button10" class="row body_frame" value="10"
+										style="margin-left: 0px; margin-right: 0px;">
+										<div class="col-md-4 pull-left center">
+											<img src="/susilawebpay/static/assets/images/hutch.jpg"
+												class="img-rounded" alt="Cinque Terre" width="50"
+												height="50">
+										</div>
+										<div class="col-md-5">
+											<p>
+												<strong>Airtel</strong>
+											</p>
+											<p class="type-postfix">Add to bill</p>
+										</div>
+
+									</div> -->
+									
 									<!-- <div id="button8" class="row body_frame" value="9"
 										style="margin-left: 0px; margin-right: 0px;">
 										<div class="col-md-4 pull-left center">
@@ -361,6 +377,11 @@ body {
         
         $('#button8').click(function () {
             sessionStorage.setItem('paymentId', '9');
+            window.location.replace(baseURL + "/plan");
+        });
+        
+        $('#button10').click(function () {
+            sessionStorage.setItem('paymentId', '11');
             window.location.replace(baseURL + "/plan");
         });
 

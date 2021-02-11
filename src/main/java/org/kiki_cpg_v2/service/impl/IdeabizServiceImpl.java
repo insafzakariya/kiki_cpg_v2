@@ -226,10 +226,12 @@ public class IdeabizServiceImpl implements IdeabizService {
 					.updateViewerPolicy(viewerPolicyService.getViewerPolicyUpdateRequestDto(viewerId, packageId),
 							packageConfigEntity.getDays())
 					.equalsIgnoreCase("success")) {
+				
+				subscriptionEntity.setPolicyExpDate(appUtility.getbeforeDay(packageConfigEntity.getDays(), appUtility.getLastMinitue()));
+				subscriptionEntity.setUpdateDate(new Date());
 
-				IdeabizEntity ideabizEntity = updateIdeabizPolicyExpDate(viewerId, packageConfigEntity.getDays(),
-						new Date());
-				if (ideabizEntity != null) {
+				
+				if (subscriptionRepository.save(subscriptionEntity) != null) {
 					if (viewerUnsubscriptionService.save(mobile, viewerId, "SUBSCRIBE", "Dialog", true)) {
 
 						logger.info("Viewer Id : " + viewerId + " Success trial");
@@ -330,7 +332,7 @@ public class IdeabizServiceImpl implements IdeabizService {
 									viewerPolicyService.getViewerPolicyUpdateRequestDto(viewerId, packageId), -1)
 							.equalsIgnoreCase("success")) {
 						
-						subscriptionEntity.setPolicyExpDate(appUtility.getbeforeDay(day, subscriptionInvoiceEntity.getCreatedDate()));
+						subscriptionEntity.setPolicyExpDate(appUtility.getbeforeDay(day, appUtility.getLastMinitue()));
 						subscriptionEntity.setUpdateDate(new Date());
 
 						/*
@@ -376,14 +378,14 @@ public class IdeabizServiceImpl implements IdeabizService {
 		}
 	}
 
-	@Override
-	public IdeabizEntity updateIdeabizPolicyExpDate(Integer viewerId, Integer valiedDate, Date createDate)
-			throws Exception {
-		IdeabizEntity ideabizEntity = ideabizRepository.findOneByViwerIdAndSubscribe(viewerId, AppConstant.ACTIVE);
-		ideabizEntity.setLastPolicyUpdatedAt(createDate);
-		ideabizEntity.setPolicyExpireAt(appUtility.getbeforeDay(valiedDate, createDate));
-		return ideabizRepository.save(ideabizEntity);
-	}
+	/*
+	 * @Override public IdeabizEntity updateIdeabizPolicyExpDate(Integer viewerId,
+	 * Integer valiedDate, Date createDate) throws Exception { IdeabizEntity
+	 * ideabizEntity = ideabizRepository.findOneByViwerIdAndSubscribe(viewerId,
+	 * AppConstant.ACTIVE); ideabizEntity.setLastPolicyUpdatedAt(createDate);
+	 * ideabizEntity.setPolicyExpireAt(appUtility.getbeforeDay(valiedDate,
+	 * createDate)); return ideabizRepository.save(ideabizEntity); }
+	 */
 
 	@Override
 	public String paymentConfirm(String serverRef, String mobileNo, Double amount, Integer subscribedDays,
@@ -393,19 +395,15 @@ public class IdeabizServiceImpl implements IdeabizService {
 		return paid;
 	}
 
-	@Override
-	public IdeabizEntity getIdeabizEntity(Integer viewerId, String mobileNo, Integer day) throws Exception {
-		IdeabizEntity ideabizEntity = new IdeabizEntity();
-		Date date = new Date();
-		long time = date.getTime();
-		Timestamp ts = new Timestamp(time);
-
-		ideabizEntity.setMobile(mobileNo);
-		ideabizEntity.setViwerId(viewerId);
-		ideabizEntity.setCreatedDate(ts);
-		ideabizEntity.setSubscribe(1);
-		ideabizEntity.setSubscribedDays(day);
-		return ideabizEntity;
-	}
+	/*
+	 * @Override public IdeabizEntity getIdeabizEntity(Integer viewerId, String
+	 * mobileNo, Integer day) throws Exception { IdeabizEntity ideabizEntity = new
+	 * IdeabizEntity(); Date date = new Date(); long time = date.getTime();
+	 * Timestamp ts = new Timestamp(time);
+	 * 
+	 * ideabizEntity.setMobile(mobileNo); ideabizEntity.setViwerId(viewerId);
+	 * ideabizEntity.setCreatedDate(ts); ideabizEntity.setSubscribe(1);
+	 * ideabizEntity.setSubscribedDays(day); return ideabizEntity; }
+	 */
 
 }

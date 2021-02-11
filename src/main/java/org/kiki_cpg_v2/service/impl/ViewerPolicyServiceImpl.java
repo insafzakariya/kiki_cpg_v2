@@ -1,5 +1,6 @@
 package org.kiki_cpg_v2.service.impl;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -15,6 +16,7 @@ import org.kiki_cpg_v2.repository.ViewerPackageRepository;
 import org.kiki_cpg_v2.repository.ViewerPolicyRepository;
 import org.kiki_cpg_v2.service.ViewerPolicyService;
 import org.kiki_cpg_v2.util.AppConstant;
+import org.kiki_cpg_v2.util.AppUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,6 +32,9 @@ public class ViewerPolicyServiceImpl implements ViewerPolicyService {
 
 	@Autowired
 	private PackageRepository packageRepository;
+	
+	@Autowired
+	private AppUtility appUtility;
 
 	@Override
 	@Transactional
@@ -56,8 +61,13 @@ public class ViewerPolicyServiceImpl implements ViewerPolicyService {
 
 					List<ViewerPolicyEntity> viewerPolicyEntities = new ArrayList<>();
 					packagePolicyEntities.forEach(e -> {
-						viewerPolicyEntities.add(getViewerPolicyEntity(packageEntity, e, viewerPackageEntity,
-								viewerPolicyUpdateRequestDto.getViewerId(), dateCount));
+						try {
+							viewerPolicyEntities.add(getViewerPolicyEntity(packageEntity, e, viewerPackageEntity,
+									viewerPolicyUpdateRequestDto.getViewerId(), dateCount));
+						} catch (ParseException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
 					});
 
 					if (viewerPolicyEntities != null && !viewerPolicyEntities.isEmpty()) {
@@ -89,8 +99,13 @@ public class ViewerPolicyServiceImpl implements ViewerPolicyService {
 								.save(tempViewerPackageEntity);
 						List<ViewerPolicyEntity> viewerPolicyEntities = new ArrayList<>();
 						packageEntityNew.getPackagePoliciesEntities().forEach(e -> {
-							viewerPolicyEntities.add(getViewerPolicyEntity(packageEntityNew, e, newViewerPackageEntity,
-									viewerPolicyUpdateRequestDto.getViewerId(),dateCount));
+							try {
+								viewerPolicyEntities.add(getViewerPolicyEntity(packageEntityNew, e, newViewerPackageEntity,
+										viewerPolicyUpdateRequestDto.getViewerId(),dateCount));
+							} catch (ParseException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							}
 						});
 
 						if (viewerPolicyEntities != null && !viewerPolicyEntities.isEmpty()) {
@@ -126,7 +141,7 @@ public class ViewerPolicyServiceImpl implements ViewerPolicyService {
 	}
 
 	public ViewerPolicyEntity getViewerPolicyEntity(PackageEntity packageEntity,
-			PackagePolicyEntity packagePolicyEntity, ViewerPackageEntity viewerPackageEntity, Integer viewerId, Integer dateCount) {
+			PackagePolicyEntity packagePolicyEntity, ViewerPackageEntity viewerPackageEntity, Integer viewerId, Integer dateCount) throws ParseException {
 		ViewerPolicyEntity entity = new ViewerPolicyEntity();
 
 		entity.setPolicyEntity(packagePolicyEntity.getPolicyEntity());
@@ -134,15 +149,16 @@ public class ViewerPolicyServiceImpl implements ViewerPolicyService {
 		entity.setStatus(AppConstant.ACTIVE);
 		entity.setViewerId(viewerId);
 		entity.setViewerPackageEntity(viewerPackageEntity);
-		Calendar c = Calendar.getInstance();
-		c.setTime(new Date());
+		System.out.println(dateCount);
 		if(dateCount > 0) {
-			c.add(Calendar.DATE, dateCount);
+			System.out.println(1);
+			entity.setEndDate(appUtility.getbeforeDay(dateCount, appUtility.getLastMinitue()));
 		} else {
-			c.add(Calendar.DATE, packageEntity.getAvailableDays());
+			System.out.println(2);
+			System.out.println( packageEntity.getAvailableDays());
+			entity.setEndDate(appUtility.getbeforeDay( packageEntity.getAvailableDays(), appUtility.getLastMinitue()));
 		}
 		
-		entity.setEndDate(c.getTime());
 		entity.setLastUpdated(new Date());
 		return entity;
 	}

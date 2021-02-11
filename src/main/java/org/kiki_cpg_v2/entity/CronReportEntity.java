@@ -83,5 +83,12 @@ public class CronReportEntity {
 	public void setCronName(String cronName) {
 		this.cronName = cronName;
 	}
+
+	@Override
+	public String toString() {
+		return "CronReportEntity [cronId=" + cronId + ", cronType=" + cronType + ", startTime=" + startTime
+				+ ", endTime=" + endTime + ", startedDate=" + startedDate + ", serverIp=" + serverIp + ", cronName="
+				+ cronName + "]";
+	}
     
 }

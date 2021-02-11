@@ -160,8 +160,8 @@ public class HutchServiceImpl implements HutchService {
 					SubscriptionInvoiceEntity invoiceEntity = getSubscriptionInvoiceEntity(requestMap,
 							subscriptionEntity);
 					subscriptionEntity.setPolicyExpDate(
-							appUtility.getbeforeDay(subscriptionEntity.getSubscribedDays(), new Date()));
-					invoiceEntity.setExpireDate(appUtility.getbeforeDay(subscriptionEntity.getSubscribedDays(), new Date()));
+							appUtility.getbeforeDay(subscriptionEntity.getSubscribedDays(), appUtility.getLastMinitue()));
+					invoiceEntity.setExpireDate(appUtility.getbeforeDay(subscriptionEntity.getSubscribedDays(), appUtility.getLastMinitue()));
 					subscriptionEntity.setUpdateDate(new Date());
 
 					if (subscriptionRepository.save(subscriptionEntity) != null) {
@@ -371,7 +371,7 @@ public class HutchServiceImpl implements HutchService {
 		SubscriptionInvoiceEntity subscriptionInvoiceEntity = getBeginSubscriptionInvoiceEntity(beginDto,
 				subscriptionEntity, paymentRefDto);
 		subscriptionInvoiceEntity.setAmount(0.0);
-		subscriptionInvoiceEntity.setExpireDate(appUtility.getbeforeDay(AppConstant.TRIAL_DAYS_HUTCH, new Date()));
+		subscriptionInvoiceEntity.setExpireDate(appUtility.getbeforeDay(AppConstant.TRIAL_DAYS_HUTCH, appUtility.getLastMinitue()));
 		subscriptionEntity = subscriptionRepository.save(subscriptionEntity);
 		if (subscriptionEntity != null) {
 			subscriptionInvoiceEntity = subscriptionInvoiceRepository.save(subscriptionInvoiceEntity);

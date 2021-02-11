@@ -19,8 +19,7 @@ public class AppConstant {
 	public static final Integer ACTIVE = 1;
 	public static final Integer INACTIVE = 0;
 	public static final String IDEABIZ = "Ideabiz";
-	 public static final String [] CRON_NOTIFY_MOBILES = {"+94776497074",
-	 "+94773799390", "+94779922990", "+94717571655", "+94767072477"};
+	public static final String [] CRON_NOTIFY_MOBILES = {"+94776497074", "+94779922990", "+94717571655", "+94767072477", "+94775060150", "+94772092419"};
 	//public static final String[] CRON_NOTIFY_MOBILES = { "+94776497074" };
 	public static final String DIALOG = "DIALOG";
 	public static final String MOBITEL = "MOBITEL";
@@ -41,5 +40,6 @@ public class AppConstant {
 	public static final String APPLE = "APPLE";
 	public static final Integer TRIAL_DAYS_HUTCH = 3;
 	public static final Integer TRIAL_DAYS_MOBITEL = 3;
+	public static final String URL_AIRLET_SUBSCRIBE = "";
 
 }

@@ -25,6 +25,8 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -144,16 +146,24 @@ public class DialogClientImpl implements DialogClient {
 	public String createAccessToken() throws Exception {
 		RestTemplate restTemplate = new RestTemplate();
 		String authorizationToken = genarateAuthorizationCode();
+		
+		System.out.println(authorizationToken);
 
-		UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(AppConstant.URL_IDEABIZ_ACCESS_TOKEN)
-				.queryParam("grant_type", "password").queryParam("username", "mobilevisionsnew")
-				.queryParam("password", "Mobile8686").queryParam("scope", "PRODUCTION");
+		UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(AppConstant.URL_IDEABIZ_ACCESS_TOKEN);
 
 		HttpHeaders headers = new HttpHeaders();
 		headers.set("content-type", "application/x-www-form-urlencoded");
 		headers.set("authorization", authorizationToken);
+		
+		MultiValueMap<String, String> map= new LinkedMultiValueMap<String, String>();
+		
+		map.add("grant_type", "password");
+		map.add("username", "mobilevisionsnew");
+		map.add("password", "Mobile8686");
+		map.add("scope", "PRODUCTION");
 
-		HttpEntity<?> entity = new HttpEntity<>(headers);
+
+		HttpEntity<?> entity = new HttpEntity<>(map,headers);
 
 		HttpEntity<String> response = restTemplate.exchange(builder.toUriString(), HttpMethod.POST, entity,
 				String.class);

@@ -235,5 +235,12 @@ public class AppleServiceImpl implements AppleService {
 			return true;
 		}
 	}
+
+	@Override
+	public void callback(HashMap<String, Object> data) {
+		paymentLogService.createPaymentLog(AppConstant.APPLE, "CALLBACK", "CALLBACK",
+				-1, "" , data.toString());
+		//return null;
+	}
 	
 }

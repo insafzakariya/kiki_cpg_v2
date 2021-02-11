@@ -22,6 +22,7 @@ import org.kiki_cpg_v2.service.MobitelService;
 import org.kiki_cpg_v2.service.PaymentMethodService;
 import org.kiki_cpg_v2.service.SmsService;
 import org.kiki_cpg_v2.util.AppConstant;
+import org.kiki_cpg_v2.util.AppUtility;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,6 +68,9 @@ public class CronServiceImpl implements CronService {
 	
 	@Autowired
 	private HNBService hnbService;
+	
+	@Autowired
+	private AppUtility appUtility;
 
 	@Override
 	public void startDialogCron(String cronName, String ipAddress, String date, String time) {
@@ -90,7 +94,9 @@ public class CronServiceImpl implements CronService {
 			 * ideabizRepository .getIdeabizViewerCusrtomEntityExpireBeforeToday();
 			 */
 			
-			List<SubscriptionEntity> subscriptionEntities = subscriptionRepository.findBySubscribeAndStatusAndPolicyExpDateLessThanEqualAndType(AppConstant.ACTIVE, AppConstant.ACTIVE, new Date(), AppConstant.DIALOG);
+			Date expireDateTill = appUtility.getLastMinitue();
+			
+			List<SubscriptionEntity> subscriptionEntities = subscriptionRepository.findBySubscribeAndStatusAndPolicyExpDateLessThanEqualAndType(AppConstant.ACTIVE, AppConstant.ACTIVE, expireDateTill, AppConstant.DIALOG);
 
 			if (subscriptionEntities != null) {
 
@@ -100,6 +106,7 @@ public class CronServiceImpl implements CronService {
 				});
 
 				CronReportEntity cronReportEntity = saveCron(cronName, ipAddress, date, time, "Dialog");
+				//System.out.println(cronReportEntity.toString());
 				if (cronReportEntity != null) {
 					smsService.sendSms(AppConstant.CRON_NOTIFY_MOBILES,
 							"Ideabiz Pending Subscribtion Count Is : " + subscriptionEntities.size()
@@ -168,8 +175,10 @@ public class CronServiceImpl implements CronService {
 
 			smsService.sendSms(AppConstant.CRON_NOTIFY_MOBILES,
 					"Mobitel Cron " + cronName + " Strated " + date + " " + time);
-
-			List<SubscriptionEntity> subscriptionEntities = subscriptionRepository.findBySubscribeAndStatusAndPolicyExpDateLessThanEqualAndType(AppConstant.ACTIVE, AppConstant.ACTIVE, new Date(), AppConstant.MOBITEL);
+			
+			Date expireDateTill = appUtility.getLastMinitue();
+			
+			List<SubscriptionEntity> subscriptionEntities = subscriptionRepository.findBySubscribeAndStatusAndPolicyExpDateLessThanEqualAndType(AppConstant.ACTIVE, AppConstant.ACTIVE, expireDateTill, AppConstant.MOBITEL);
 			
 			/*
 			 * List<ViewerSubscriptionCustomEntity> viewerSubscriptionCustomEntities =
