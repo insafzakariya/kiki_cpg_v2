@@ -168,4 +168,21 @@ public class AppUtility {
 		
 		return expireDateTill;
 	}
+
+	/**
+	 * @param number
+	 * @return
+	 */
+	public boolean getIsAirtelNumber(String number) {
+		if (number == null || number.isEmpty()) {
+			return false;
+		}
+		number = "0" + getNineDigitMobileNumber(number);
+
+		String serviceProviderCode = number.substring(0, 3);
+		if (serviceProviderCode.equals("075")) {
+			return true;
+		}
+		return false;
+	}
 }

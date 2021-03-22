@@ -41,5 +41,6 @@ public class AppConstant {
 	public static final Integer TRIAL_DAYS_HUTCH = 3;
 	public static final Integer TRIAL_DAYS_MOBITEL = 3;
 	public static final String URL_AIRLET_SUBSCRIBE = "";
+	public static final String AIRTEL = "AIRTEL";
 
 }

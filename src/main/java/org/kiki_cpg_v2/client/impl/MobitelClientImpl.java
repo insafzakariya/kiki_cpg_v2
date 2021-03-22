@@ -34,12 +34,12 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.w3c.dom.NodeList;
 
-import lk.mobitel.esms.message.SMSManager;
+/*import lk.mobitel.esms.message.SMSManager;
 import lk.mobitel.esms.session.NullSessionException;
 import lk.mobitel.esms.session.SessionManager;
 import lk.mobitel.esms.ws.Alias;
 import lk.mobitel.esms.ws.SmsMessage;
-import lk.mobitel.esms.ws.User;
+import lk.mobitel.esms.ws.User;*/
 
 @Component
 public class MobitelClientImpl implements MobitelClient {
@@ -223,58 +223,58 @@ public class MobitelClientImpl implements MobitelClient {
 		return saltStr;
 
 	}
-	@Override
-	public void testMobitelConnection() {
-		User user = new User();
-		user.setUsername("esmsusr_kikitv");
-		user.setPassword("K1K1t7");
-		lk.mobitel.esms.test.ServiceTest st = new lk.mobitel.esms.test.ServiceTest();
-		System.out.println(st.testService(user));
-	}
+//	@Override
+//	public void testMobitelConnection() {
+//		User user = new User();
+//		user.setUsername("esmsusr_kikitv");
+//		user.setPassword("K1K1t7");
+//		lk.mobitel.esms.test.ServiceTest st = new lk.mobitel.esms.test.ServiceTest();
+//		System.out.println(st.testService(user));
+//	}
 
-	@Override
-	public void logInToMobitelESMS(String userName, String password) {
-		User user = new User();
-		user.setUsername(userName);
-		user.setPassword(password);
-		SessionManager sm = SessionManager.getInstance();
-		sm.login(user);
-	}
+//	@Override
+//	public void logInToMobitelESMS(String userName, String password) {
+//		User user = new User();
+//		user.setUsername(userName);
+//		user.setPassword(password);
+//		SessionManager sm = SessionManager.getInstance();
+//		sm.login(user);
+//	}
 
-	@Override
-	public Integer sendSms(String aliasMsg, String mobile, String message) {
-		Alias alias = new Alias();
-		alias.setAlias(aliasMsg);
-		SmsMessage msg = new SmsMessage();
-		if (message == null || message.isEmpty()) {
-			msg.setMessage("Thank You for subscribing to KiKi. Please re login to the app");
-		} else {
-			msg.setMessage(message);
-		}
+//	@Override
+//	public Integer sendSms(String aliasMsg, String mobile, String message) {
+//		Alias alias = new Alias();
+//		alias.setAlias(aliasMsg);
+//		SmsMessage msg = new SmsMessage();
+//		if (message == null || message.isEmpty()) {
+//			msg.setMessage("Thank You for subscribing to KiKi. Please re login to the app");
+//		} else {
+//			msg.setMessage(message);
+//		}
+//
+//		msg.setSender(alias);
+//		msg.getRecipients().add(mobile);
+//		try {
+//			SMSManager smsMgr = new SMSManager();
+//			int resultCode = smsMgr.sendMessage(msg);
+//			if (resultCode == 200) {
+//				logger.info("sms sent to user successfully");
+//				return 200;
+//			} else {
+//				logger.info("Error Code = " + resultCode);
+//				return resultCode;
+//			}
+//		} catch (NullSessionException ex) {
+//			logger.info("Null session exception " + ex);
+//			return 0;
+//		}
+//	}
 
-		msg.setSender(alias);
-		msg.getRecipients().add(mobile);
-		try {
-			SMSManager smsMgr = new SMSManager();
-			int resultCode = smsMgr.sendMessage(msg);
-			if (resultCode == 200) {
-				logger.info("sms sent to user successfully");
-				return 200;
-			} else {
-				logger.info("Error Code = " + resultCode);
-				return resultCode;
-			}
-		} catch (NullSessionException ex) {
-			logger.info("Null session exception " + ex);
-			return 0;
-		}
-	}
-
-	@Override
-	public void logOutFromMobitelESMS() {
-		SessionManager sm = SessionManager.getInstance();
-		sm.logout();
-
-	}
+//	@Override
+//	public void logOutFromMobitelESMS() {
+//		SessionManager sm = SessionManager.getInstance();
+//		sm.logout();
+//
+//	}
 
 }

@@ -465,6 +465,112 @@
 															"hide");
 												}
 											});
+								} else if (methodId == 11) {
+
+									$
+									.ajax({
+										type : "post",
+										contentType : "application/json",
+										dataType : 'json',
+										url : baseURL
+												+ "/rest/otp/confirm",
+										data : JSON.stringify(data_st),
+										success : function(data) {
+											var isTrial = sessionStorage
+													.getItem('isFreeTrial');
+											if (data.status == "Success") {
+												var data_st2 = {
+													"mobileNo" : sessionStorage
+															.getItem("mobile"),
+													"viewerId" : sessionStorage
+															.getItem("viewerId"),
+													"planId" : sessionStorage
+															.getItem("planId"),
+													"trial" : isTrial
+												};
+												$
+														.ajax({
+															type : "post",
+															contentType : "application/json",
+															dataType : 'json',
+															url : baseURL
+																	+ "/rest/airlet/subscribe",
+															data : JSON
+																	.stringify(data_st2),
+															success : function(
+																	data) {
+																if (data.status == "ACCEPT") {
+																	sessionStorage
+																			.setItem(
+																					'invoiceId',
+																					data.cardInvoiceId);
+																	var url = baseURL
+																			+ "/thanks/8";
+																	window.location
+																			.replace(url);
+																} else if (data.status == "DUPLICATE") {
+																	$(
+																			"#error-p")
+																			.text(
+																					'Already Subscribed for this service');
+																	$(
+																			"#error")
+																			.removeClass(
+																					"hide");
+																} else {
+																	$(
+																			"#error-p")
+																			.text(
+																					'An error occurred while connecting Payment Gateway');
+																	console
+																			.log('An error occurred while connecting Payment Gateway : ');
+																	$(
+																			"#error")
+																			.removeClass(
+																					"hide");
+																}
+
+															},
+															error : function(
+																	e) {
+																$(
+																		"#error-p")
+																		.text(
+																				'An error occurred while connecting Payment Gateway');
+																console
+																		.log(
+																				'An error occurred while connecting Payment Gateway : ',
+																				e);
+																$(
+																		"#error")
+																		.removeClass(
+																				"hide");
+															}
+														});
+											} else {
+												$("#error-p").text(
+														data.status);
+												$("#error")
+														.removeClass(
+																"hide");
+												var x = document
+														.getElementById("gif-load");
+												x.style.display = "none";
+											}
+										},
+										error : function(e) {
+											$("#error-p")
+													.text(
+															'An error occurred while updating payment transaction : '
+																	+ e.responseText);
+											console
+													.log(
+															'An error occurred while updating payment transaction : ',
+															e);
+											$("#error").removeClass(
+													"hide");
+										}
+									});
 								} else {
 									$("#error-p").text('Invalied Method');
 									$("#error").removeClass("hide");

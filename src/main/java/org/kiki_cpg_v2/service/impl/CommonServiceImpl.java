@@ -30,6 +30,10 @@ public class CommonServiceImpl implements CommonService{
 			if (appUtility.getIsHutchNumber(number)) {
 				resp = "success";
 			}
+		} else if (method == 11) {
+			if (appUtility.getIsAirtelNumber(number)) {
+				resp = "success";
+			}
 		}
 
 		return resp;

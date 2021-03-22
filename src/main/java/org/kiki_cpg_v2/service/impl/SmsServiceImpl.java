@@ -11,7 +11,7 @@ public class SmsServiceImpl implements SmsService {
 	@Autowired
 	private MobitelClient mobitelClient;
 
-	@Override
+	/*@Override
 	public Integer sendSms(String mobile, String message) throws Exception {
 		try {
 			mobitelClient.testMobitelConnection();
@@ -29,8 +29,13 @@ public class SmsServiceImpl implements SmsService {
 			mobitelClient.logOutFromMobitelESMS();
 		}
 
-	}
+	}*/
 
+	public Integer sendSms(String mobile, String message) throws Exception {
+		return 200;
+
+	}
+	
 	@Override
 	public Integer sendSms(String[] mobiles, String message) throws Exception {
 		try {

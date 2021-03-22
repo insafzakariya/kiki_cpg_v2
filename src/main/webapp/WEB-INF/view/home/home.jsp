@@ -123,7 +123,7 @@ body {
 
 									</div>
 									
-									<!-- <div id="button10" class="row body_frame" value="10"
+									 <div id="button10" class="row body_frame" value="11"
 										style="margin-left: 0px; margin-right: 0px;">
 										<div class="col-md-4 pull-left center">
 											<img src="/susilawebpay/static/assets/images/hutch.jpg"
@@ -137,7 +137,7 @@ body {
 											<p class="type-postfix">Add to bill</p>
 										</div>
 
-									</div> -->
+									</div> 
 									
 									<!-- <div id="button8" class="row body_frame" value="9"
 										style="margin-left: 0px; margin-right: 0px;">
